@@ -70,6 +70,7 @@ make_static()
     cp -r Templated/_templa* $PWD
     echo "Created media, static, and templates directories."
     echo ""
+    pip install -r requirements.txt
 }
 
 
