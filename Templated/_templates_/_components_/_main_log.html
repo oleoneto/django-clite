@@ -1,0 +1,6 @@
+<!--
+sch: {{ request.scheme | upper }}
+cur: {{ request.build_absolute_uri }}
+date: {% now 'r T' %}
+agent: {{ request.META.HTTP_USER_AGENT }}
+--->

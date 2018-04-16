@@ -1,0 +1,32 @@
+{% extends '_base_/main.html' %}
+{% load static from staticfiles %}
+
+{% block title %}:: Notícias{% endblock %}
+{% block active-news %} active {% endblock %}
+
+{% block search-route %}/news/{% endblock %}
+{% block search-autofocus %}autofocus{% endblock %}
+{% block search-placeholder %}Procurar notícias{% endblock %}
+
+{% block bodyclass %} bg-white {% endblock %}
+
+{% block body %}
+
+<div class="container top-100">
+
+    <div class="row">
+        {% for article in articles %}
+        <div class="col-md-4 bottom-40">
+            <img class="img-fluid bottom-10" src="{{ article.urlToImage }}" alt="">
+            <p><span>{{ article.source.name}}</span></p>
+            <a href="{{ article.url }}" target="_blank">
+                <h5 class="bottom-10 text-bold">{{ article.title | safe}}</h5>
+            </a>
+            <p>{{ article.description | slice:"150"}}...</p>
+        </div>
+        {% endfor %}
+    </div>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,17 @@
+{% extends '_base_/main.html' %}
+{% load static from staticfiles %}
+
+{% block bodyclass %} bg-white {% endblock %}
+
+{% block body %}
+<div class="container top-100 bottom-100">
+    <div class="top-100 bottom-60 heading animated fadeInUp">
+      <p><span>Desconectado</span></p>
+      <h1 class="text-semibold">Sessão Terminada</h1>
+      <h3 class="top-40 bottom-20">A sua sessão foi terminada com sucesso. <br>
+          Pode continuar a navegar o site como de costume.<br>
+          Se preferir, pode voltar à <a href="/" class="underlined">página inicial</a>.
+      </h3>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,251 @@
+/*
+// ekos.css
+// EKOS Visual Framework.
+// EKOS is based on Bootstrap 4.
+// Developed by Leo Neto on Dec 17, 2017.
+// Ekletik Studios. Open-source License.
+
+INDEX
+1. HTML Elements
+2. Typography
+3. Display, Grids, Boxes, Borders
+4. Colors
+5.
+6.
+7.
+*/
+
+/*=============================
+1. HTML Elements
+=============================*/
+
+
+p span {
+  text-transform : uppercase;
+  color: #d7d7d7;
+}
+
+a {  color: #1d3461; color: inherit; }
+a:hover { text-decoration: none; }
+
+pre {
+  display          : block;
+  margin           : 0 0 10px;
+  padding          : 9.5px;
+  border           : 1px solid #eee;
+  border-radius    : 4px;
+  background-color : #F8F9FA!important;
+  font-size        : 13px;
+}
+code, pre {
+  word-break : break-all;
+  word-wrap  : break-word;
+}
+code {
+  padding       : 2px 4px;
+  border-radius : 4px;
+  font-size     : 90%;
+}
+
+
+/*=============================
+2. Typography
+=============================*/
+
+.text-uppercase * { text-transform: uppercase; }
+
+.chevron-link::after {
+    content: "›";
+    display: inline-block;
+    margin-left: 0.25em;
+}
+
+.heading {
+  font-weight: 300;
+}
+
+.heading h1 {
+  font-size   : 60px;
+}
+
+.heading h2 {
+  font-size   : 40px;
+}
+
+.heading h3 {
+  font-size   : 25px;
+}
+
+.heading p {
+  margin-top : 10px;
+  color      : #333;
+  font-size  : 16px;
+}
+
+.heading p > span {
+  font-size   : 12px;
+  font-weight : lighter;
+}
+
+.heading h4 > span {
+  font-size   : 14px;
+}
+
+.sub-heading p {
+  margin-top : 10px;
+  font-size  : 16px;
+}
+
+.sub-heading h1 {
+  font-size   : 60px;
+  font-weight : lighter;
+}
+
+.sub-heading h2 {
+  font-size   : 40px;
+  font-weight : lighter;
+}
+
+.sub-heading h3 {
+  font-size   : 25px;
+  font-weight : lighter;
+}
+
+.sub-heading p > span {
+  font-size   : 12px;
+  font-weight : lighter;
+}
+
+.markdown h1,
+.markdown h2,
+.markdown h3 {
+  padding-top : 25px;
+}
+
+.markdown p:first-of-type {
+  padding-top : 0;
+}
+
+.markdown p {
+  padding-top : 10px;
+}
+
+/*=============================
+3. Display, Grids, Boxes, Borders, Margins, Padding
+=============================*/
+
+.img-news { max-height: 200px !important; }
+
+.display-none  { display: none; visibility: hidden; }
+
+.border-radius { border-radius: 2px; }
+
+.border-radius-0 { border-radius: 0; }
+
+.border-top    { border-top: .5px solid #eee; }
+
+.border-bottom { border-bottom: .5px solid #eee; }
+
+.m-left-55   { margin-top: 55px;      }
+.m-left-25   { margin-left: 25px;     }
+.m-right-25  { margin-right: 25px;    }
+
+div.padded-10 { padding: 10px; }
+div.padded-20 { padding: 20px; }
+div.padded-40 { padding: 40px; }
+div.padded-60 { padding: 60px; }
+div.padded-100 { padding-left: 100px; padding-right: 100px; }
+/*div.padded-100{ padding: 100px; }*/
+
+.top-10      { padding-top : 10px;    }
+.top-20      { padding-top : 20px;    }
+.top-30      { padding-top : 30px;    }
+.top-40      { padding-top : 40px;    }
+.top-50      { padding-top : 50px;    }
+.top-60      { padding-top : 60px;    }
+.top-100     { padding-top : 100px;   }
+.top-200     { padding-top : 200px;   }
+.top-300     { padding-top : 300px;   }
+.bottom-10   { padding-bottom : 10px; }
+.bottom-20   { padding-bottom : 20px; }
+.bottom-40   { padding-bottom : 40px; }
+.bottom-60   { padding-bottom : 60px; }
+.bottom-100  { padding-bottom : 100px;}
+.bottom-200  { padding-bottom : 200px;}
+.bottom-300  { padding-bottom : 300px;}
+
+.mini-parallax,
+.parallax {
+  position              : relative;
+  width                 : 100vw;
+  background-repeat     : no-repeat;
+  background-attachment : fixed;
+  background-position   : center;
+  background-size       : cover;
+}
+
+@media (max-width: 780px) {
+  .parallax { background-attachment: scroll; }
+  .mini-parallax { background-attachment: scroll; }
+}
+
+.bg-musical {
+  background-image: url("https://images.unsplash.com/photo-1502781252888-9143ba7f074e?auto=format&fit=crop&w=2551&q=80");
+  opacity: .75;
+  background-blend-mode: darken;
+}
+.bg-jump {
+  background-image: url("https://images.unsplash.com/photo-1502086223501-7ea6ecd79368?ixlib=rb-0.3.5&s=4924878db615ba4ee564bdf597e33f87&auto=format&fit=crop&w=2823&q=80");
+  background-position-x: center;
+  background-position-y: 75%;
+  opacity: .9;
+  background-blend-mode: darken;
+}
+
+/*==============================
+4. Colors
+==============================*/
+
+button.btn-outline-blue        { border: 0.5px solid #3587A4; }
+button.btn-outline-blue:hover  { background-color: #3587A4; color: #FFFFFF; }
+.btn-outline-light:hover { color: #333333; }
+
+div.text-gray *     { color: #eeeeee; }
+div.text-platinum * { color: #e8eddf; }
+div.text-raisin *   { color: #333533; }
+div.text-white   *  { color: #FFFFFF; }
+
+
+.bg-blue     { background-color: #3587A4; }
+.bg-cadet    { background-color: #1d3461; }
+.bg-crayola  { background-color: #ed254e; }
+.bg-cream    { background-color: #f4fffd; }
+.bg-davy     { background-color: #575757; }
+.bg-grain    { background-color: #f5cb5c; }
+.bg-gray     { background-color: #eef0f2; }
+.bg-green    { background-color: #2D848A; }
+.bg-jet      { background-color: #333533; }
+.bg-orange   { background-color: #ff6b1c; }
+.bg-orange-2 { background-color: #F75C03; }
+.bg-platinum { background-color: #e8eddf; }
+.bg-purple   { background-color: #820263; }
+.bg-raisin   { background-color: #242423; }
+.bg-rose     { background-color: #D90368; }
+.bg-random   { background-color: #cfdbd5; }
+.bg-teal     { background-color: #0E7C7B; }
+.bg-white    { background-color: #FFFFFF; }
+
+.shadow-1 div { box-shadow: 6px 5px rgba(40,40,40, 0.1); }
+button.shadow-2 { box-shadow: 1px 2px rgba(157,180,192, 0.4); }
+
+.transparent    { opacity : .90 !important; }
+.transparent-10 { opacity : .10 !important; }
+.transparent-20 { opacity : .20 !important; }
+.transparent-40 { opacity : .40 !important; }
+.transparent-60 { opacity : .60 !important; }
+.transparent-90 { opacity : .90 !important; }
+.transparent-98 { opacity : .98 !important; }
+
+/*==============================
+5.
+==============================*/

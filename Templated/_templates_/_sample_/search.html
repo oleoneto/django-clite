@@ -1,0 +1,102 @@
+{% extends '_base_/main.html' %}
+{% load static from staticfiles %}
+
+{% block title %}:: Pesquisa :: {{ search }}{% endblock %}
+
+{% block body %}
+<div class="container top-60 bottom-100">
+
+
+<div class="top-20 bottom-100">
+
+    {% if search %}
+    <h2>{{ message | safe }}</h2>
+    {% else %}
+    <h2>Do que anda à procura?</h2>
+    {% endif %}
+    <div class="row top-40">
+    {#-----------------------#}
+
+    {% if tutorials %}
+        <div class="col-md-4">
+        <h5 class="text-bold">Artigos ({{ tutorials | length }})</h5>
+        <ul class="search-results">
+        {% for i in tutorials %}
+            <li>
+                <a href="{% url 'article' i.slug %}">
+                    <i class="fa fa-file"></i>
+                    {{ i.title }}
+                </a>
+            </li>
+        {% endfor %}
+        </ul>
+        </div>
+    {% endif %}
+    {#-----------------------#}
+
+    {% if projects %}
+        <div class="col-md-4">
+        <h5 class="text-bold">Projectos ({{ projects | length }})</h5>
+
+        <ul class="search-results">
+        {% for i in projects %}
+            <li>
+                <a href="{% url 'project' i.slug %}">
+                    <i class="fa fa-pencil"></i>
+                    {{ i }}
+                </a>
+            </li>
+        {% endfor %}
+        </ul>
+
+        </div>
+        {% endif %}
+    {#-----------------------#}
+
+    {% if people %}
+        <div class="col-md-4">
+        <h5 class="text-bold">Autores ({{ people | length }})</h5>
+            <ul class="search-results">
+            {% for person in people %}
+                {% if person.author_bio %}
+                    <li class="">
+                        <a href="{% url 'author' person.slug %}">
+                            <i class="fa fa-user"></i>
+                            {{ person }}
+                        </a>
+                    </li>
+                {% else %}
+                <li>
+                    <i class="fa fa-user"></i>
+                    {{ person }}
+                </li>
+                {% endif %}
+            {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
+
+
+    {% if not total %}
+        <div class="col-md-12">
+            <form action="/p/" method="POST">
+                {% csrf_token %}
+                <input type="text" name="keyword" class="form-control col-md-5" autofocus
+                       placeholder="{% if search %}Tente restringir a pesquisa...{% else %}Autores, artigos, projectos... etc{% endif %}">
+            </form>
+        </div>
+    {% endif %}
+
+
+    </div>
+    </div>
+
+    <hr>
+    <p class="">Obrigado por utilizar este serviço. Clique para voltar à
+        <a href="{% url 'homepage' %}"><code>página inicial</code></a>.
+    </p>
+    <hr>
+</div>
+
+
+{%endblock%}

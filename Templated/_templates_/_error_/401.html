@@ -1,0 +1,14 @@
+{% extends '_base_/error.html' %}
+
+{% block error_summary %}
+    Acesso Negado
+{% endblock %}
+
+{% block error_code %}
+    401
+{% endblock %}
+
+{% block error_description %}
+    O recurso que solicitou não está disponível para a sua visualização. <br>
+    Para ter acesso ao recurso que solicitou será preciso autenticar a sua conexão.
+{% endblock %}

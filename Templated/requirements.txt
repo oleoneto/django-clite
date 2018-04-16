@@ -1,0 +1,11 @@
+django==2.0.4
+Pillow
+cloudinary
+falcon==1.4.1
+coreapi
+djangorestframework==3.7.7
+django-oauth2-provider
+django-oauth-plus
+django-guardian
+django-disqus
+spotipy

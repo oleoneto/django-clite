@@ -1,0 +1,20 @@
+{% extends '_base_/main.html' %}
+
+{% block bodyclass %} bg-white {% endblock %}
+
+{% block body %}
+  <div class="container top-100 bottom-100">
+
+    <div class="top-100 bottom-60 heading animated fadeInUp">
+      <p><span>{% block error_summary %}Algo Errado{% endblock %}</span></p>
+      <h1>{% block error_code %}Erro 000{% endblock %}</h1>
+
+      <h3>{% block error_description %}
+          Explicação do que poderá ter ocorrido de errado com <br>
+          o request que trouxe o usuário até a esta página.
+          {% endblock %}
+      </h3>
+    </div>
+
+  </div>
+{% endblock %}

@@ -1,0 +1,359 @@
+<html lang="en" class="gr__127_0_0_1"><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Templated | Website</title>
+  <!-- Normalize CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/7.0.0/normalize.min.css">
+  <!-- Bootstrap 4 -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
+  <!-- Fontawesome CSS Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <!-- Icono, CSS Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/icono/1.3.0/icono.min.css">
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="static/css/ekos.css">
+  <link rel="stylesheet" href="static/css/spotify.css">
+</head>
+
+<body data-gr-c-s-loaded="true">
+
+  <!-- Navigation -->
+  <div class="fixed-top border-bottom bg-white" id="navigation">
+
+    <div class="padded-100 alert alert-warning alert-dismissible fade show display-none" role="alert" id="offline-alert">
+      <strong>Offline!</strong> You should check your connection.
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">×</span>
+      </button>
+    </div>
+
+    <nav class="container navbar navbar-expand-lg navbar-inverted">
+      <a href="/" class="navbar-brand">Template</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+
+        <ul class="navbar-nav mr-auto">
+          <li class="nav-item"><a class="nav-link" href="/about/">About</a></li>
+          <li class="nav-item"><a class="nav-link" href="/work/">Work</a></li>
+          <li class="nav-item"><a class="nav-link" href="/contact/">Contact</a></li>
+          <li class="nav-item"><a class="nav-link" href="mailto:mail@example.com">Support</a></li>
+        </ul>
+
+        <ul class="navbar-nav text-uppercase">
+          <li class="nav-item">
+            <a class="nav-link" href="/accounts/login/">
+              <button class="btn btn-sm bg-white">Log In</button>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/accounts/register/">
+              <button class="btn btn-sm btn-outline-blue">Sign Up</button>
+            </a>
+          </li>
+        </ul>
+
+      </div>
+    </nav>
+  </div>
+  <!-- end Navigation -->
+
+
+  <!-- Hero -->
+  <div class="jumbotron top-300 bottom-200 border-radius-0 parallax bg-jump">
+    <div class="container text-white">
+      <h1 class="display-3">Template</h1>
+      <p class="lead promo-sub bottom-10">Nos especializamos na criação de algorítmos e sistemas, <br>
+        ao passo que também o ensinamos a pensar e a escrever como um programador.
+      </p>
+      <p class="lead">
+        <a class="btn btn-outline-light" href="/" role="button">Call to action</a>
+      </p>
+    </div>
+  </div>
+  <!-- end Hero -->
+
+
+
+  <!-- Hero section -->
+  <div id="section-hero" class="container border-bottom">
+    <div class="top-100"></div>
+    <div class="top-100"></div>
+    <h1 class="display-4">This Life of Mine.</h1>
+    <p class="lead">Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+      Harum laborum adipisci consequuntur nobis laudantium! <br>
+      Modi saepe quae, qui tempora corporis facere! Amet nostrum, culpa,
+      aperiam eaque vero dignissimos aliquam <br>
+      perspiciatis. Dolor sit amet, consectetur adipisicing elit.
+      Natus eius asperiores labore eligendi ipsa itaque laborum, <br>
+      atque impedit, inventore, reiciendis laudantium eaque similique excepturi illum sint?
+      <a href="/" class="chevron-link text-primary">Take me somewhere.</a>
+    </p>
+    <div class="bottom-100"></div>
+    <div class="bottom-10"></div>
+  </div>
+  <!-- end Hero section -->
+
+
+
+  <!-- Music -->
+  <div id="section-music" class="bg-gray heading top-100 bottom-100">
+    <div class="container">
+      <p><span>Music for the mind</span></p>
+      <h1>Musically.</h1>
+
+      <div class="row top-20">
+
+        <div class="col-md-4 col-sm-12 shadow-1">
+          <div class="album-wrapper">
+            <div class="cover-art-wrapper">
+              <img src="https://i.scdn.co/image/af99a51d05f0a5116fae6ca2f8631b5ae84d17c3" alt="Canção de Quem Fica by Felipe Valente" class="img-fluid" id="image-74">
+            </div>
+            <button class="play-button-wrapper shadow-2" onclick="PlayTrack(this.id)" id="b74">
+              <i class="fa fa-play"></i>
+              <audio class="audio-item" src="https://p.scdn.co/mp3-preview/b1ec54fcd590953ac40cfff7706a0094143817f1?cid=de8419b6b859449eb41e4d375de68c97" id="song-b74" onended="ProcessEndedTrack(this)">
+            </audio></button>
+          </div>
+          <div class="hidden-info">
+            <p id="title-b74">Canção de Quem Fica</p>
+            <p id="album-b74">Reversos</p>
+            <p id="artist-b74">Felipe Valente</p>
+          </div>
+        </div>
+
+        <div class="col-md-4 col-sm-12 shadow-1">
+          <div class="album-wrapper">
+            <div class="cover-art-wrapper">
+              <img src="https://i.scdn.co/image/eb91f5d7b7cc0afcd60296623549ec744edba0f7" alt="Jeremias by Gabriel Iglesias" class="img-fluid" id="image-69">
+            </div>
+            <button class="play-button-wrapper shadow-2" onclick="PlayTrack(this.id)" id="b69">
+              <i class="fa fa-play"></i>
+              <audio class="audio-item" src="https://p.scdn.co/mp3-preview/01723643b23f459c34c99a933c4332c461d893ec?cid=de8419b6b859449eb41e4d375de68c97" id="song-b69" onended="ProcessEndedTrack(this)">
+            </audio></button>
+          </div>
+          <div class="hidden-info">
+            <p id="title-b69">Jeremias</p>
+            <p id="album-b69">Pedra em Carne</p>
+            <p id="artist-b69">Gabriel Iglesias</p>
+          </div>
+        </div>
+
+        <div class="col-md-4 col-sm-12 shadow-1">
+          <div class="album-wrapper">
+            <div class="cover-art-wrapper">
+              <img src="https://i.scdn.co/image/b7b9856c7f0b86351a1b59d551340875783480a6" alt="Open Sea by Billy Otto" class="img-fluid" id="image-45">
+            </div>
+            <button class="play-button-wrapper shadow-2" onclick="PlayTrack(this.id)" id="b45">
+              <i class="fa fa-play"></i>
+              <audio class="audio-item" src="https://p.scdn.co/mp3-preview/23db3b14b434d89e543d90de775d781ad8021e18?cid=de8419b6b859449eb41e4d375de68c97" id="song-b45" onended="ProcessEndedTrack(this)">
+            </audio></button>
+          </div>
+          <div class="hidden-info">
+            <p id="title-b45">Open Sea</p>
+            <p id="album-b45">Floating Now</p>
+            <p id="artist-b45">Billy Otto</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+  <!-- end Music -->
+
+
+
+  <!-- Services -->
+  <div id="section-services">
+    <div class="container heading top-100 bottom-40">
+
+      <div class="bottom-60">
+        <p><span>Life and Work</span></p>
+        <h1>Cleverness.</h1>
+      </div>
+
+      <div class="row bottom-40">
+        <div class="col-md-5 animated fadeInUp">
+          <h2>Refrigeration</h2>
+          <p>Lorem busk dolor amet microdosing etsy iceland, meggings hot chicken brunch
+            chillwave authentic narwhal salvia seitan brooklyn.
+            Flannel shaman waistcoat put a bird on it tousled blue bottle offal
+            trust fund organic pinterest kinfolk keffiyeh
+            quinoa. Short attribute chia glossier vegan tumeric, banana wraps.
+            Trust fund next level typewriter cardigan chillwave. Selvage crucifix microdosing.
+          </p>
+        </div>
+        <div class="col-md-6 animated fadeInUp">
+          <h2>Baked Potato</h2>
+          <p>When your dolor amet microdosing etsy iceland, meggings hot chicken brunch
+            chillwave authentic novelty mart salvia seitan brooklyn. Gorgeous shaman waistcoat
+            put a bird on it tousled blue bottle offal trust fund organic pinterest kinfolk keffiyeh
+            quinoa. Plaid meggings chia glossier vegan tumeric, cinnamon buns.
+            Robustness of a level typewriter cardigan chillwave. Selvage crucifix microdosing,
+            art party keytar typewriter tilde bespoke. Etsy edison bulb flannel lo-fi, ramps sullivan.
+          </p>
+        </div>
+      </div>
+
+      <div class="animated fadeInUp">
+        <p>
+          <a class="text-primary chevron-link" href="/empresa">Take me somewhere new</a>
+        </p>
+      </div>
+    </div>
+  </div>
+  <!-- end Services -->
+
+
+  <!-- News -->
+  <div id="section-news" class="bg-gray">
+    <div class="container heading top-60 bottom-60">
+      <div>
+        <p><span>Inform. Reform. Transform.</span></p>
+        <h1>News Articles.</h1>
+      </div>
+
+      <div class="row top-20" id="news"><div class="col-md-4 bottom-10"><div><img class="img-fluid border-radius img-news" src="https://static.globalnoticias.pt/jn/image.aspx?brand=JN&amp;type=generate&amp;guid=6e9d5496-1634-4922-8c5d-09b21bb11d7a&amp;w=800&amp;h=420&amp;watermark=true&amp;t=20180410120800"><p><span>null</span></p><a href="https://www.jn.pt/justica/interior/mae-matou-filho-recem-nascido-a-faca-no-seixal-9247422.html" target="_blank"><h4>Mãe mata à facada filho recém-nascido depois do parto no Seixal</h4></a><div class="news-content">Uma mulher de 25 anos matou à facada o filho recém-nascido. O crime ocorreu, na noite de segunda-feira, na zona de Corroios, no Seixal, e a homicida foi detida pela Polícia Judiciária.</div></div></div><div class="col-md-4 bottom-10"><div><img class="img-fluid border-radius img-news" src="https://static.globalnoticias.pt/jn/image.aspx?brand=JN&amp;type=generate&amp;guid=78ce97ff-b8e8-46bc-902f-34e190804bdc&amp;w=800&amp;h=420&amp;watermark=true&amp;t=20180410115900"><p><span>null</span></p><a href="https://www.jn.pt/desporto/interior/figo-exclui-se-de-corrida-eleitoral-9247414.html" target="_blank"><h4>Figo exclui possível candidatura à presidência do Sporting</h4></a><div class="news-content">Luís Figo disse, esta terça-feira, que a equipa do Sporting "necessita neste momento de tranquilidade, paz e confiança", numa mensagem enviada à Lusa em que se exclui de uma corrida à presidência do clube.</div></div></div><div class="col-md-4 bottom-10"><div><img class="img-fluid border-radius img-news" src="http://www.iol.pt/multimedia/oratvi/multimedia/imagem/id/5a6630f70cf202387f93deeb/600.5a6630f70cf202387f93deeb.jpg"><p><span>null</span></p><a href="http://www.tvi24.iol.pt/sociedade/10-04-2018/fizz-orlando-figueira-apenas-proibido-de-ausentar-se-do-pais" target="_blank"><h4>Fizz: Orlando Figueira apenas proibido de ausentar-se do país</h4></a><div class="news-content">Atenuadas as medidas de coação ao ex-procurador do Ministério Público e ao advogado Paulo Blanco</div></div></div></div>
+    </div>
+  </div>
+  <!--end News-->
+
+
+
+  <!--People -->
+  <div id="section-people">
+    <div class="container heading top-60 bottom-100">
+
+      <div class="col-md-9 ml-auto mr-auto top-60 bottom-10 text-center">
+        <h2>Metaphors</h2>
+        <p>Ontem fomos dolor sit amet, consectetur adipisicing elit.
+          Amet doloremque ipsum magni odio quia saepe soluta totam? Adipisicing elit.
+          Atque cupiditate dolores incidunt ipsum laudantium libero maxime quo quod, sapiente voluptatibus.
+          Asperiores at atque aut delectus, id iure labore modi! Inventore.
+          Accusantium culpa dolorem, dolorum eligendi,
+          et laboriosam modi perspiciatis possimus reprehenderit rerum sequi?
+        </p>
+      </div>
+    </div>
+  </div>
+  <!--end People -->
+
+
+  <!-- Side-by-side blocks -->
+  <div id="section-portfolio-1" class="">
+    <div class="container-fluid heading top-40">
+      <div class="row">
+        <div class="col-md-6 top-40 bottom-40 padded-100 bg-gray">
+          <h2>Metaphors</h2>
+          <p>Ontem fomos dolor sit amet, consectetur adipisicing elit.
+            Amet doloremque ipsum magni odio quia saepe soluta totam?
+            Adipisicing elit. Atque cupiditate dolores incidunt ipsum laudantium
+            libero maxime quo quod, sapiente voluptatibus. Asperiores at atque aut delectus,
+            id iure labore modi! Inventore. Accusantium culpa dolorem, dolorum eligendi,
+            et laboriosam modi perspiciatis possimus reprehenderit rerum sequi?
+          </p>
+        </div>
+        <div class="col-md-6 top-40 bottom-40 padded-100 bg-green text-gray">
+          <h2>Vibrance</h2>
+          <p>Sense with dolor sit amet, consectetur adipisicing elit.
+            Atque cupiditate dolores incidunt ipsum laudantium libero maxime
+            quo quod, sapiente voluptatibus. Asperiores at atque aut delectus, id iure labore modi!
+            Inventore. Podem consectetur adipisicing elit. Amet doloremque ipsum magni odio quia
+            saepe soluta totam? Accusantium culpa dolorem, dolorum eligendi,
+            et laboriosam modi perspiciatis possimus reprehenderit rerum.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!--end Side-by-side blocks-->
+
+
+
+  <!-- Design -->
+  <div id="section-design" class="">
+    <div class="container heading top-40 bottom-100 border-bottom">
+      <div class="top-60 bottom-40">
+        <p><span>Technology</span></p>
+        <h1>Design.</h1>
+      </div>
+      <div class="row">
+        <div class="col-md-4 animated fadeInUp">
+          <h3>Affordability</h3>
+          <p>Tiramos a massada à gestão do seu negócio online.
+            Mantenha o foco no que sabe fazer melhor e nós o ajudamos.</p>
+        </div>
+        <div class="col-md-4 animated fadeInUp">
+          <h3>Development</h3>
+          <p>Tiramos a massada à gestão do seu negócio online.
+            Mantenha o foco no que sabe fazer melhor e nós o ajudamos.</p>
+        </div>
+        <div class="col-md-4 animated fadeInUp">
+          <h3>Experience</h3>
+          <p class="smiley-symbol">Tiramos a massada à gestão do seu negócio online.
+            Mantenha o foco no que sabe fazer melhor e nós o ajudamos.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- end Design -->
+
+
+
+  <!-- Side-by-side blocks -->
+  <div id="section-portfolio-2" class="display-none">
+    <div class="container-fluid heading top-40">
+      <div class="row">
+        <div class="col-md-6 top-60 bottom-40 padded-100 bg-orange text-platinum">
+          <h2>Metaphors</h2>
+          <p>Ontem fomos dolor sit amet, consectetur adipisicing elit.
+            Amet doloremque ipsum magni odio quia saepe soluta totam? Adipisicing elit.
+            Atque cupiditate dolores incidunt ipsum laudantium libero maxime quo quod, sapiente voluptatibus.
+            Asperiores at atque aut delectus, id iure labore modi! Inventore. Accusantium culpa dolorem, dolorum eligendi,
+            et laboriosam modi perspiciatis possimus reprehenderit rerum sequi? </p>
+        </div>
+        <div class="col-md-6 top-60 bottom-40 padded-100 bg-gray">
+          <h2>Vibrance</h2>
+          <p>Sense with dolor sit amet, consectetur adipisicing elit.
+            Atque cupiditate dolores incidunt ipsum laudantium libero maxime quo quod, sapiente voluptatibus.
+            Asperiores at atque aut delectus, id iure labore modi! Inventore. Podem consectetur adipisicing elit.
+            Amet doloremque ipsum magni odio quia saepe soluta totam? Accusantium culpa dolorem, dolorum eligendi,
+            et laboriosam modi perspiciatis possimus reprehenderit rerum.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!--end Side-by-side blocks-->
+
+
+  <!--Conversation section -->
+  <div id="section-conversation" class="heading">
+    <div class="container top-40 bottom-10">
+      <div class="row">
+        <div class="col-md-2 ml-auto">
+          <h3><i class="fa fa-comments-o fa-3x"></i></h3>
+        </div>
+        <div class="col-md-6 mr-auto">
+          <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+            Accusantium aliquid consequatur deleniti, impedit provident tempora tempore vitae?
+            Culpa illum, ipsum? <a href="/" class="text-primary chevron-link">Start a conversation</a></p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!--end Conversation section-->
+
+
+
+  <!-- Bootstrap 4 with jQuery -->
+  <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous">
+  </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js" integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4" crossorigin="anonymous">
+  </script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js" integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1" crossorigin="anonymous">
+  </script>
+  <!-- Custom imports -->
+  <script src="/static/js/spotify.js"></script>
+  <script src="/static/js/newsapi.js"></script>
+  <script src="/static/js/window.js"></script>

@@ -1,0 +1,39 @@
+{% extends '_base_/main.html' %}
+
+{% block title %}:: {{ title }}{% endblock %}
+{% block active-articles %} active {% endblock %}
+
+{% block bodyclass %} bg-white {% endblock %}
+
+{% block body %}
+    <div class="container top-100 bottom-100">
+
+        <form method="POST">
+
+            {% csrf_token %}
+
+                <div class="form-group col-md-6">
+                    <label for="title">Título do Artigo</label>
+                    <input name="title" type="text" class="form-control"
+                           id="title" placeholder="Um Artigo Interessante" required>
+                </div>
+
+                <div class="form-group col-md-6">
+                    <label for="summary">Resumo</label>
+                    <input name="summary" type="text" class="form-control"
+                           id="summary" placeholder="Uma breve descrição do conteúdo do seu artigo ou tutorial" required>
+                </div>
+
+
+                <div class="form-group col-md-10">
+                    <label for="content">Conteúdo do Artigo</label>
+                    <textarea class="form-control" name="content"
+                              id="content" cols="30" rows="15" minlength="100" required placeholder="Escreva aqui o conteúdo do seu artigo ou tutorial."></textarea>
+                    <div class="bottom-20"></div>
+                    <button type="submit" class="btn btn-primary">Submeter o artigo</button>
+                </div>
+
+
+        </form>
+    </div>
+{% endblock %}

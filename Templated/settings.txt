@@ -1,0 +1,14 @@
+STATICFILES_DIRS = [os.path.join(BASE_DIR, '_static_'),]
+MEDIA_URL = '/media/'
+
+if DEBUG:
+    MEDIA_ROOT = os.path.join(BASE_DIR, '_media_')
+else:
+    STATIC_ROOT = '/var/www/mysite.com/_static_/'
+    MEDIA_ROOT = '/var/www/mysite.com/_media_/'
+
+LOGIN_REDIRECT_URL = '/'
+LOGIN_URL = '/i/sys/'
+
+EMAIL_HOST = 'localhost'
+EMAIL_PORT = 1025
