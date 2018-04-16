@@ -12,6 +12,7 @@ firstapp=$2
 secondapp=$3
 thirdapp=$4
 fourthapp=$5
+CUR_DIR=$PWD
 
 
 
