@@ -51,26 +51,27 @@ make_main()
   cd $SITE
 
   echo "Updating urls..."
-  sed -i -e 's/\]/\] \# \+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)/' $PWD/$SITE/urls.py
-  cat Templated/urls.txt >> $PWD/$SITE/urls.py
+  sed -i 's/\]/\] \# \+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)/' $PWD/$SITE/urls.py
+  cat $CUR_DIR/Templated/urls.txt >> $PWD/$SITE/urls.py
 
   echo "Updating settings..."
-  cat Templated/settings.txt >> $PWD/$SITE/settings.py
-  sed -i -e 's/\: \[\]/: [os.path.join(BASE_DIR, "_templates_")]/' $PWD/$SITE/settings.py
+  cat $CUR_DIR/Templated/settings.txt >> $PWD/$SITE/settings.py
+  sed -i 's/\: \[\]/: [os.path.join(BASE_DIR, "_templates_")]/' $PWD/$SITE/settings.py
 }
 
 make_static()
 {
-    cp Templated/requirements.txt $PWD
-    cp Templated/_libraries_/*.py $PWD
+    cp $CUR_DIR/Templated/requirements.txt $PWD
+    cp $CUR_DIR/Templated/_libraries_/*.py $PWD
     echo "Copied importable libraries."
     echo ""
 
     mkdir _media_
-    cp -r Templated/_sta* $PWD
-    cp -r Templated/_templa* $PWD
+    cp -r $CUR_DIR/Templated/_sta* $PWD
+    cp -r $CUR_DIR/Templated/_templa* $PWD
     echo "Created media, static, and templates directories."
     echo ""
+
     pip install -r requirements.txt
 }
 
@@ -101,7 +102,7 @@ run_server()
 
 copy_content()
 {
-    cp Templated/_appfiles_/*.py $PWD
+    cp $CUR_DIR/Templated/_appfiles_/*.py $PWD
     echo "Copied application files."
     echo ""
 }
