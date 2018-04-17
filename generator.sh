@@ -51,12 +51,14 @@ make_main()
   cd $SITE
 
   echo "Updating urls..."
-  sed -i 's/\]/\] \# \+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)/' $PWD/$SITE/urls.py
+  sed -i -e 's/\]/\] \# \+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)/' $PWD/$SITE/urls.py
   cat $CUR_DIR/Templated/urls.txt >> $PWD/$SITE/urls.py
 
   echo "Updating settings..."
   cat $CUR_DIR/Templated/settings.txt >> $PWD/$SITE/settings.py
-  sed -i 's/\: \[\]/: [os.path.join(BASE_DIR, "_templates_")]/' $PWD/$SITE/settings.py
+
+  echo "Specifying the _templates_ directory..."
+  sed -i -e 's/\: \[\]/: [os.path.join(BASE_DIR, "_templates_")]/' $PWD/$SITE/settings.py
 }
 
 make_static()
