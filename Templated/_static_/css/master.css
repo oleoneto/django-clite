@@ -4,15 +4,16 @@ Author: Leo Neto
 Update: December 31, 2017
 w: https://ekletik.com
 e: info@ekletik.com
-*/
 
-/*
+INDEX
 1. HTML Elements
-2. Display, Grids, Boxes
+2. Display, Grids, and Boxes
 3. Navigation
 4. Typography
 5. Colors
-6. Media: Gallery, Carousel, Video
+6. Media: Video, Images, Galleries, Carousel
+7. Footer
+8. Miscellanious
 */
 
 
@@ -92,7 +93,7 @@ ul.search-results i:after {
 .border-radius-10 { border-radius: 10px !important; }
 
 .border-none { border: none!important; }
-.border-bottom {  border-bottom : 1px solid #eee;  }
+.border-bottom {  border-bottom : 4px solid #eee !important;  }
 .border-bottom-only { border: none; border-bottom: 1px solid #eee; }
 .border-top-only { border: none; border-top: 1px solid #eee; }
 .border-left  { border-left : solid 1px #eee; }
@@ -202,26 +203,18 @@ ul.search-results i:after {
   .mini-parallax { background-attachment: scroll; }
 }
 
-.bg-ek-1 { background-image: url(/static/imgs/ekcity.svg); }
-.bg-ek-2 { background-image: url(/static/imgs/icon.png); }
-.bg-ek-city { background-image: url(/static/imgs/ekcity.svg); }
-.bg-illustration { background-image: url(/static/imgs/EkletikCity.svg); background-position: bottom; }
-.bg-office-1 { background-image : url(http://bit.ly/2wvKXGM); }
-.bg-office-2 { background-image : url(http://bit.ly/2xk2QG9); }
-.bg-office-3 { background-image : url(http://bit.ly/2xzMhoV); }
-.bg-team     { background-image : url(http://bit.ly/2xA8t2f); }
-.bg-screen-1 { background-image : url(https://unsplash.com/photos/OP2EQ5g-Zkw); }
-.bg-screen-2 { background-image : url(https://images.unsplash.com/photo-1457612928689-a1ab27da0dad?auto=format&fit=crop&w=3150&q=80); }
+.bg-office-1 { background-image : url("http://bit.ly/2wvKXGM"); }
+.bg-office-2 { background-image : url("http://bit.ly/2xk2QG9"); }
+.bg-office-3 { background-image : url("http://bit.ly/2xzMhoV"); }
+.bg-team     { background-image : url("http://bit.ly/2xA8t2f"); }
+.bg-screen-1 { background-image : url("https://unsplash.com/photos/OP2EQ5g-Zkw"); }
+.bg-screen-2 { background-image : url("https://images.unsplash.com/photo-1457612928689-a1ab27da0dad?auto=format&fit=crop&w=3150&q=80"); }
 
-.audio-item{  }
 .album-wrapper{
   position: relative;
   border: 2px solid #333;
   width:  350px;
   height: 350px;
-  /*margin-top: 50px;*/
-  /*margin-bottom: 50px;*/
-  /*margin-left: 0px;*/
   background-color: #00FFAA;
 }
 .album-cover-wrapper{
@@ -282,9 +275,6 @@ textarea {
 #doc-create input{
   display: block;
 }
-
-
-
 
 /*==============================
 3. Navigation
@@ -379,8 +369,6 @@ li.nav-item.active {
   opacity       : .98;
   border-bottom : 1px solid #eee;
 }
-
-
 
 
 /*=============================
@@ -535,7 +523,6 @@ li.nav-item.active {
   border-bottom: solid 3px #E7E7E7;
 }
 
-
 @media (max-width:780px) {
   .blog-section h1 {
     font-size : 40px;
@@ -582,8 +569,6 @@ li.nav-item.active {
 .promo-lead {
     text-transform: lowercase;
 }
-
-
 
 /*==============================
 5. Colors
@@ -676,7 +661,6 @@ div.text-blue    *  { color: #0069FF; }
     top: 0;
     left: 0;
     width: 100vw;
-    /*background: #114B5F;*/
     z-index: 1;
     opacity: 0.65;
 }
@@ -908,8 +892,6 @@ div.text-blue    *  { color: #0069FF; }
 #wrapper, .layer { overflow : hidden; }
 
 #wrapper {
-  /*position   : relative;*/
-  /*top        : 55px;*/
   width      : 100%;
   min-height : 55vw;
 }
@@ -1023,22 +1005,16 @@ footer span { text-transform : capitalize; }
 
 
 
-
-
 /*==============================
-7. Miscellanious
+8. Miscellanious
 ==============================*/
 
-#clock {
-  /*font-size : 2rem;*/
-}
 .clock {
   font-size : 5em!important;
 }
 .clockGreeting {
   font-size : 3em!important;
 }
-
 #mini-viewer   {
     border-top-color: #333;
     position: fixed;
@@ -1059,7 +1035,6 @@ footer span { text-transform : capitalize; }
 .track-info p:last-of-type {
   margin-top: -15px;
 }
-
 .circle-service-image, .img-profile {
   max-width     : 210px;
   max-height    : 210px;
@@ -1069,6 +1044,3 @@ footer span { text-transform : capitalize; }
   position        : relative;
   background-size : cover;
 }
-
-
-/* TEMPORARY */

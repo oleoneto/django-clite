@@ -1,7 +1,5 @@
 /*
 // ekos.css
-// EKOS Visual Framework.
-// EKOS is based on Bootstrap 4.
 // Developed by Leo Neto on Dec 17, 2017.
 // Ekletik Studios. Open-source License.
 
@@ -10,9 +8,6 @@ INDEX
 2. Typography
 3. Display, Grids, Boxes, Borders
 4. Colors
-5.
-6.
-7.
 */
 
 /*=============================
@@ -201,7 +196,12 @@ div.padded-100 { padding-left: 100px; padding-right: 100px; }
   opacity: .9;
   background-blend-mode: darken;
 }
-
+.bg-office-1 { background-image : url("http://bit.ly/2wvKXGM"); }
+.bg-office-2 { background-image : url("http://bit.ly/2xk2QG9"); }
+.bg-office-3 { background-image : url("http://bit.ly/2xzMhoV"); }
+.bg-team     { background-image : url("http://bit.ly/2xA8t2f"); }
+.bg-screen-1 { background-image : url("https://unsplash.com/photos/OP2EQ5g-Zkw"); }
+.bg-screen-2 { background-image : url("https://images.unsplash.com/photo-1457612928689-a1ab27da0dad?auto=format&fit=crop&w=3150&q=80"); }
 /*==============================
 4. Colors
 ==============================*/
@@ -245,7 +245,3 @@ button.shadow-2 { box-shadow: 1px 2px rgba(157,180,192, 0.4); }
 .transparent-60 { opacity : .60 !important; }
 .transparent-90 { opacity : .90 !important; }
 .transparent-98 { opacity : .98 !important; }
-
-/*==============================
-5.
-==============================*/

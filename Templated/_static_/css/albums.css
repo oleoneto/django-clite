@@ -1,28 +1,9 @@
 /*
-// radio.css
-// EKOS Visual Framework.
-// EKOS is based on Bootstrap 4.
+// albums.css
 // Developed by Leo Neto on Dec 19, 2017.
 // Ekletik Studios. Open-source License.
 */
 
-
-.album-wrapper{
-    position: relative;
-    margin-top: 10px;
-    margin-bottom: 10px;
-    margin-left: 0px;
-    background-color: #00FFAA;
-}
-.cover-art-wrapper{
-    background: #F8F9FA;
-    background-size: cover;
-    background-repeat: no-repeat;
-}
-.cover-art-wrapper > img {
-    height: 100%;
-    width: 100%;
-}
 .song-info-wrapper {
     display: none;
     background-blend-mode: multiply;
@@ -31,19 +12,6 @@
     height: 70px;
     margin-top: -70px;
     box-shadow: 0px -.5px rgba(0,0,0, 0.1);
-}
-.album-wrapper .title{
-    position: absolute;
-    left: 25px;
-    bottom: 22px;
-    font-size: 100%;
-    font-weight: normal;
-}
-.album-wrapper .artist{
-    position: absolute;
-    left: 25px;
-    bottom: 1px;
-    font-size: 100%;
 }
 .play-button-wrapper {
     position: absolute;
@@ -61,4 +29,26 @@
 }
 .hidden-info{
     display: none;
+}
+
+.mainTitle{
+  padding-top: 30px;
+  font-size: 2.5em;
+  font-weight: 900;
+}
+.subTitle{
+  font-size: 1.5em;
+  font-weight: 400;
+}
+.song-clicked{
+  background: #e7e7e7;
+  color: #de356e;
+}
+
+#artwork{
+  padding-top: 50px;
+}
+
+#mainTable{
+  font-size: 16px;
 }
