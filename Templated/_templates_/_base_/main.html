@@ -1,5 +1,4 @@
 {% load static from staticfiles %}
-
 <!DOCTYPE html>
 
 <!--==========================
@@ -138,7 +137,7 @@ Date: February 10, 2018
             $('.markdown pre').each(function(i, block) {
                 hljs.highlightBlock(block);
             });
-            $("#aula").each(function(){
+            $(".highlight-js").each(function(){
                 var raw_content = $(this).text()
                 var marked_content = marked(raw_content)
                 $(this).html(marked_content)
