@@ -1,11 +1,15 @@
 /*
 // newsapi.js
-// EKOS Visual Framework
 // Developed by Leo Neto on Dec 17, 2017
 // Ekletik Studios. Open-source License.
 */
 
+let timeInterval = 60 * 1000
 let country = 'pt';
+let apikey = 'YOUR_AKI_KEY_HERE';
+let requestURL = 'https://newsapi.org/v2/top-headlines?country='+ country +'&apiKey=' + apikey;
+let $news = $('#news');
+
 $(document).ready(function () {
     NewsApi();
 });
@@ -14,14 +18,10 @@ $(document).ready(function () {
 function NewsApi() {
     var random = Math.random()*4;
     random = Math.floor(random);
-    var apikey = 'YOUR AKI KEY HERE';
-    var requestURL = 'https://newsapi.org/v2/top-headlines?country='+ country +'&apiKey=' + apikey;
     var requestObject = new XMLHttpRequest();
-    var $news = $('#news');
     var index = 0;
 
     requestObject.open('GET', requestURL);
-
     requestObject.onload = function () {
         var parsedResponse = JSON.parse(requestObject.responseText);
         var articles = parsedResponse.articles;
@@ -43,12 +43,15 @@ function NewsApi() {
                     article += '</div>';
                     article += '</div>';
                 }
+                // Limits the articles to 3
                 if (count==3) { index=length; }
             }
         }
         news.innerHTML = article ;
     };
     requestObject.send();
-    var requestAPI = setInterval(NewsApi, 60 * 1000);
-    console.log("News from NewsApi");
+    var requestAPI = setInterval(NewsApi, timeInterval);
+
+    // Debugging log...
+    console.log("News updates from NewsApi");
 }

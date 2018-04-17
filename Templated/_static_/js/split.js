@@ -1,7 +1,6 @@
 //
 // split.js
-// Based on a project by Traversy Media.
-// EKOS Visual Framework.
+// Based on a project from Traversy Media.
 // Developed by Leo Neto on Dec 20, 2017.
 // Ekletik Studios. Open-source License.
 

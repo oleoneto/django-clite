@@ -1,13 +1,11 @@
 //
 // drag.js
 // Based on W3 Schools.
-// EKOS Visual Framework.
 // Developed by Leo Neto on Dec 20, 2017.
 // Ekletik Studios. Open-source License.
 
 $(document).ready( function () {
    console.log("Loaded drag.js")
-
 });
 
 

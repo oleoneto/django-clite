@@ -1,7 +1,5 @@
 /*
-// spotify.js
-// EKOS Visual Framework.
-// EKOS is based on Bootstrap 4 and jQuery.
+// albums.js
 // Developed by Leo Neto on Dec 18, 2017.
 // Ekletik Studios. Open-source License.
 */
@@ -16,12 +14,11 @@ var currentButton;
 var currentIcon;
 var currentTitle;
 var songTitle;
-
-
+var $songs = $(".song");
 
 $(document).ready(function() {
-    console.log("Loaded spotify.js");
 
+    // Pauses the audio if the user switches to another tab.
     window.addEventListener('visibilitychange', function() {
         if (document.hidden){
             if (currentSong) {
@@ -37,6 +34,8 @@ $(document).ready(function() {
         }
     });
 
+    // Click on the first element of the table.
+    ClickTrack($songs[0]);
 });
 
 
@@ -49,7 +48,6 @@ function PlayTrack(id) {
     songTitle = "Playing: " + currentTitle;
 
     // console.log(currentTitle);
-
 
     if (currentSong.paused === true) {
         currentSong.play();
@@ -103,3 +101,58 @@ function ResumePlayBack(currentSong) {
     currentSong.play();
     UpdatePageTitle(songTitle);
 }
+
+// ------------------------------------
+// ------------------------------------
+// ------------------------------------
+// ------------------------------------
+// ------------------------------------
+
+function ChangeStyle(ref) {
+    // Adding highlight to the track and
+    // removing highlight from others.
+    var $song = ref;
+    $($song).addClass('song-clicked');
+    $($song).siblings().removeClass('song-clicked');
+}
+
+function GetId(ref) {
+    // The id of the song element...
+    var id = ref.children[0].id.replace('title-', '');
+    var $song_id = id; // ref.id;
+    return $song_id;
+}
+
+function DisplayAlbumMetadata(ref) {
+
+    // The title of the song that was clicked
+    // The artist of the song that was clicked...
+    var $song_title = ref.children[0];
+    var $song_artist = ref.children[1];
+
+    // The album of the song that was clicked...
+    // Replacing the albumHeader....
+    var $song_album = ref.children[2];
+    $('#albumHeader').html($song_album.innerText);
+
+    // Artwork displayed on the screen...
+    var $artwork = $('#artwork');
+
+    // The main header of the page, above the artwork
+    // Replacing the header text...
+    var $page = $('#artistHeader')[0];
+    $page.textContent = $song_artist.innerText;
+
+    // Replacing the artwork...
+    var image = document.getElementById('image-'+ GetId(ref));
+    var imageSrc = image.getAttribute("src");
+    $('#artwork').attr('src', imageSrc);
+}
+
+function ClickTrack(ref) {
+  // The song element that was clicked...
+  var $song = ref;
+  ChangeStyle(ref);
+  DisplayAlbumMetadata(ref);
+
+};//end of ClickTrack
