@@ -1,4 +1,3 @@
-# This Python file uses the following encoding: utf-8
 ### Django-Autogenerator
 
 """
@@ -26,22 +25,22 @@ MESSAGE_STATUS = (
 )
 
 MESSAGE_CHOICES = (
-        ('a', 'Produção de Áudio'),
-        ('i', 'Ilustração'),
-        ('v', 'Produção e/ou Edição de Vídeo'),
-        ('f', 'Fotografia'),
-        ('w', 'Criação de Website'),
-        ('d', 'Registrar Domínio'),
-        ('l', 'Logotipo'),
+        ('a', 'Production'),
+        ('i', 'Illustration'),
+        ('v', 'Video'),
+        ('p', 'Photography'),
+        ('w', 'Website'),
+        ('d', 'Domain'),
+        ('l', 'Logos'),
     )
 
 IDIOMAS = (
     ('en', 'English'),
-    ('es', 'Español'),
-    ('fr', 'Français'),
-    ('it', 'Italiano'),
-    ('pt', 'Português'),
-    ('ro', 'Roumain'),
+    ('es', 'Spanish'),
+    ('fr', 'French'),
+    ('it', 'Italian'),
+    ('pt', 'Portuguese'),
+    ('ro', 'Romanian'),
 )
 
 TOPIC_CHOICES  = (
