@@ -1,5 +1,4 @@
 #!/bin/bash
-# Requirements: Assumes Python3.6, Django 2.0.0, and Git
 # Django-Autogenerator
 # Requirements: Assumes Python3.6, PIP, Django 2.0.0, and Git
 # A handy script for creating Django Projects and their respective applications
@@ -91,7 +90,9 @@ make_git_repo()
   echo "Initializing git..."
   git init
   git add *
-  git commit -m "Initial commit"
+
+  # Uncomment this if you want to commit the repository
+  # git commit -m "Initial commit"
 }
 
 run_server()
@@ -167,6 +168,11 @@ if [ "$SITE" ]; then
 
     make_migrations_and_create_user
     make_git_repo
+
+    # Uncomment this if you want to commit the repository.
+    # You can also enable this from within `make_git_repo()`.
+    # git commit -m "Initial commit"
+
     run_server
 
     # Leaves project directory
