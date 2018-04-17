@@ -1,4 +1,4 @@
-# This Python file uses the following encoding: utf-8
+### Django-Autogenerator
 
 """
 Views Libraries
@@ -12,7 +12,6 @@ from __future__ import unicode_literals
 from django.http import HttpRequest, Http404, HttpResponse
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
-
 
 # System Authentication
 from django.contrib.auth import authenticate, logout, login

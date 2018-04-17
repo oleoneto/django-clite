@@ -1,3 +1,5 @@
+# Django-Autogenerator
+
 from rest_framework_httpsignature.authentication import SignatureAuthentication
 
 class APISignatureAuthentication(SignatureAuthentication):
@@ -12,4 +14,3 @@ class APISignatureAuthentication(SignatureAuthentication):
             return (user, user.secret)
         except User.DoesNotExist:
             return None
-    

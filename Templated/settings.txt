@@ -1,3 +1,6 @@
+
+# Django-Autogenerator
+
 STATICFILES_DIRS = [os.path.join(BASE_DIR, '_static_'),]
 MEDIA_URL = '/media/'
 
