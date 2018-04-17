@@ -1,14 +1,12 @@
 {% extends '_base_/main.html' %}
 {% load static from staticfiles %}
 
-{% block bodyclass %} bg-white {% endblock %}
-
 {% block login %}
 <div class="container top-100 bottom-100">
 
     <div class="top-60 bottom-20 heading animated fadeInUp">
-      <p><span>Portal de Entrada</span></p>
-      <h1 class="text-semibold">Iniciar Sessão</h1>
+      <p><span>Entry Portal</span></p>
+      <h1 class="text-semibold">Login</h1>
     </div>
 
     <form action="{% url 'login' %}" method="POST">
@@ -16,16 +14,16 @@
 
           <div class="form-group">
             <input autocomplete="username" type="text" class="form-control col-4" id="usernameInput"
-                   aria-describedby="username" placeholder="Nome de usuário" name="username" autofocus required>
+                   aria-describedby="username" placeholder="Username" name="username" autofocus required>
           </div>
 
           <div class="form-group">
             <input type="password" class="form-control col-4" id="passwordInput"
-                   placeholder="Palavra-passe" name="password" required>
+                   placeholder="Password" name="password" required>
           </div>
 
           <div class="form-check">
-            <button type="submit" class="btn btn-primary">Continuar</button>
+            <button type="submit" class="btn btn-primary">Login</button>
           </div>
     </form>
 </div>
