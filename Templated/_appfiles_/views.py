@@ -16,3 +16,10 @@ def homeView(request):
         #'instances': instances,
     }
     return render(request, '_sample_/home.html', context)
+
+
+def aboutView(request):
+    context = {
+        'page': 'aboutView',
+    }
+    return render(request, '_sample_/about.html', context)
