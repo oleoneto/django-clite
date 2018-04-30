@@ -32,4 +32,4 @@ Specify the name of the project, followed by the name of each application you'd 
 ### Pull requests
 Feel free to submit your contributions.
 
-**Django Autogenerator** is [MIT Licensed](LICENSE).
+**Autogenerator for Django** is [MIT Licensed](LICENSE).
