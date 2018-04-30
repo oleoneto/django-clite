@@ -1,4 +1,4 @@
-# Django-Autogenerator
+# Autogenerator for Django
 
 Generates a Django project with some sample HTML, CSS, and JavaScript placed inside the project directory.
 This script can be modified to perform more advanced tasks.
