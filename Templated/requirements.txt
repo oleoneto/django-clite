@@ -8,4 +8,3 @@ django-oauth2-provider
 django-oauth-plus
 django-guardian
 django-disqus
-spotipy
