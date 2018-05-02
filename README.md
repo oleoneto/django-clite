@@ -13,12 +13,12 @@ This script can be modified to perform more advanced tasks.
 ### Installation
 Start by cloning the repo.
 ```
-git clone https://github.com/oleoneto/Django-Autogenerator.git
+git clone https://github.com/oleoneto/Autogenerator-Django.git
 ```
 
 Give the script `generator.sh` permission to run.
 ```
-cd Django-Autogenerator
+cd Autogenerator-Django
 chmod 755 generator.sh
 ```
 
