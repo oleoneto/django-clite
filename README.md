@@ -4,7 +4,7 @@ Generates a Django project with some sample HTML, CSS, and JavaScript placed ins
 This script can be modified to perform more advanced tasks.
 
 ### Requirements
-- `django` (2.0.0 or later)
+- `django` (2.1 or later)
 - `Python 3.6` (or later)
 - `pip`
 - `git`
@@ -24,9 +24,9 @@ chmod 755 generator.sh
 
 ### Usage
 
-Specify the name of the project, followed by the name of each application you'd like to create inside your project. 
+Specify the name of the project, followed by the name of each application you'd like to create inside your project.
 ```
-./generator.sh PROJECTNAME AppName1 AppName2
+./generator.sh PROJECTNAME ...apps
 ```
 
 ### Pull requests

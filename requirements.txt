@@ -1,0 +1,46 @@
+# Django
+django>=2.1
+
+# Image Support
+Pillow
+
+# Cloud Storage
+cloudinary
+
+# MongoDB
+djongo
+pymongo
+
+# REST API Support
+coreapi
+djangorestframework==3.7.7
+djangorestframework-httpsignature
+django-oauth-plus
+django-oauth2-provider
+oauth2
+django-filter>=2.0.0
+djangorestframework-jsonapi>=2.6.0
+
+# Permissions
+django-decorator-include
+drfpasswordless
+
+# Dynamic Javascript
+django-require
+
+# Server
+django-livereload-server
+django-cors-headers
+httpie
+
+# Seeding data
+Faker
+pycountry
+
+# Markdown Support
+markdown
+
+# Messages
+# incompatible with Django 2.1
+# pinax-announcements
+# django-messages

@@ -8,13 +8,14 @@
 
 
 SITE=$1
-firstapp=$2
-secondapp=$3
-thirdapp=$4
-fourthapp=$5
-CUR_DIR=$PWD
-
-
+TEMP_DIRS="'DIRS': \[\]"
+NEW_DIRS="'DIRS': \[os.path.join(BASE_DIR, '_templates_')\]"
+CUR_DIR=$(dirname "$0")
+if [ "$2" != "" ]; then
+  APP=$2
+else
+  APP="AppName"
+fi
 
 # ----------------------------------------
 # ----------------------------------------
@@ -51,14 +52,16 @@ make_main()
   cd $SITE
 
   echo "Updating urls..."
-  sed -i -e 's/\]/\] \# \+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)/' $PWD/$SITE/urls.py
-  cat $CUR_DIR/Templated/urls.txt >> $PWD/$SITE/urls.py
-
+  cat $CUR_DIR/Templated/urls.txt > $PWD/$SITE/urls.py
+  sed -ie "s/APP/$APP/g" $PWD/$SITE/urls.py
+  
   echo "Updating settings..."
   cat $CUR_DIR/Templated/settings.txt >> $PWD/$SITE/settings.py
 
   echo "Specifying the _templates_ directory..."
-  sed -i -e 's/\: \[\]/: [os.path.join(BASE_DIR, "_templates_")]/' $PWD/$SITE/settings.py
+  sed -ie "s/$TEMP_DIRS/$NEW_DIRS/" $PWD/$SITE/settings.py
+
+  rm $PWD/$SITE/*.pye
 }
 
 make_static()
@@ -74,7 +77,7 @@ make_static()
     echo "Created media, static, and templates directories."
     echo ""
 
-    pip install -r requirements.txt
+    # pip install -r requirements.txt
 }
 
 
@@ -93,8 +96,8 @@ make_git_repo()
   git init
   git add *
 
-  # Uncomment this if you want to commit the repository
-  # git commit -m "Initial commit"
+  Uncomment this if you want to commit the repository
+  git commit -m "Initial commit"
 }
 
 run_server()
@@ -106,7 +109,7 @@ run_server()
 
 copy_content()
 {
-    cp $CUR_DIR/Templated/_appfiles_/*.py $PWD
+    cp $CUR_DIR/Templated/_appfiles_/ $PWD
     echo "Copied application files."
     echo ""
 }
@@ -124,10 +127,11 @@ make_app()
 
   mkdir -p _templates_/$1
   cd _templates_
-  touch $1/home.html
+  touch $1/index.html
   touch $1/create.html
-  touch $1/edit.html
-  touch $1/detail.html
+  touch $1/read.html
+  touch $1/update.html
+  touch $1/delete.html
 
   # Leaves _templates_
   cd ..
@@ -168,14 +172,14 @@ if [ "$SITE" ]; then
       fi
     done
 
-    make_migrations_and_create_user
-    make_git_repo
+    # make_migrations_and_create_user
+    # make_git_repo
 
     # Uncomment this if you want to commit the repository.
     # You can also enable this from within `make_git_repo()`.
     # git commit -m "Initial commit"
 
-    run_server
+    # run_server
 
     # Leaves project directory
     cd ..
