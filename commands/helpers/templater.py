@@ -41,8 +41,8 @@ admin.site.register({{ model | capitalize }}, {{model}}Admin)
 route_template = JTemplate("""
 def {{ route | lower }}(request):
     context = {
-        active: True,
-        route: '{{ route | lower }}',
+        'active': True,
+        'route': '{{ route | lower }}',
      }
     return render(request, '{{ route | lower }}.html', context)
 """)
