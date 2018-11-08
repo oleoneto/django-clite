@@ -1,3 +1,0 @@
-class $modelName{{Viewset}}(viewsets.ModelViewSet):
-    queryset = $modelName.objects.all()
-    serializer_class = $modelName{{Serializer}}
