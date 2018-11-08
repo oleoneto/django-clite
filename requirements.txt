@@ -40,6 +40,10 @@ pycountry
 # Markdown Support
 markdown
 
+# Other
+jinja2
+inflect
+
 # Messages
 # incompatible with Django 2.1
 # pinax-announcements

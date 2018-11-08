@@ -1,0 +1,4 @@
+class $modelName(forms.Form):
+    class Meta:
+        model = $modelName
+        fields = "__all__"

@@ -1,0 +1,89 @@
+{
+  "reserved_words": [
+    {
+      "relationships": [
+        {
+          "FK": "ForeignKey"
+        },
+        {
+          "Many": "ManyToManyField"
+        },
+        {
+          "One": "OneToOneField"
+        }
+      ]
+    },
+    {
+      "Text": "TextField"
+    },
+    {
+      "Char": "CharField"
+    },
+    {
+      "String": "TextField"
+    },
+    {
+      "Slug": "SlugField"
+    },
+    {
+      "Bool": "BooleanField"
+    },
+    {
+      "Int": "IntegerField"
+    },
+    {
+      "Integer": "IntegerField"
+    },
+    {
+      "Float": "FloatField"
+    },
+    {
+      "Decimal": "DecimalField"
+    },
+    {
+      "Date": "DateField"
+    },
+    {
+      "DateTime": "DateTimeField"
+    },
+    {
+      "Duration": "DurationField"
+    },
+    {
+      "Time": "TimeField"
+    },
+    {
+      "File": "FileField"
+    },
+    {
+      "FilePath": "FilePathField"
+    },
+    {
+      "Image": "ImageField"
+    },
+    {
+      "Email": "EmailField"
+    },
+    {
+      "URL": "URLField"
+    },
+    {
+      "IPAddress": "GenericIPAddressField"
+    },
+    {
+      "UUID": "UUIDField"
+    }
+  ],
+  "supported_editors": [
+    "Atom",
+    "PyCharm",
+    "Code Runner",
+    "vim",
+    "Sublime"
+  ],
+  "settings": {
+    "port": 8001,
+    "allow_blanks": true,
+    "livereload": true
+  }
+}

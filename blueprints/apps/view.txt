@@ -1,0 +1,6 @@
+def $routeName(request):
+    context = {
+        active: True,
+        route: '$routeName',
+     }
+    return render(request, '$routeName.html', context)
