@@ -2,19 +2,17 @@
 
 CLI that handles creating and managing Django projects
 
-#### Requirements
-- `django` (2.1 or later)
-- `Python 3.6` (or later)
+#### Minimum requirements
+- `django 2.1`
+- `python 3.6`
 - `pip`
 - `git`
 
 
-#### Installation
+#### Installation [WIP]
 Start by cloning the repo.
 ```
-git clone https://github.com/oleoneto/django-cli.git
-cd django-cli
-pip install
+git clone https://github.com/oleoneto/Django-CLI.git
 ```
 
 -----------------------------------------------
@@ -35,17 +33,17 @@ new       Creates new apps and projects
 
 ### Generating Models
 In order to generate a model, specify the type identifier and then the name of the attribute field. 
-Type identifiers are abbreviated to a more generic name without the word `Field`. An example is specified below.
+Type identifiers are abbreviated to a more generic name without the word `Field`. The input here is case-insensitive, but the fields will be CamelCased in the python file. An example is specified below.
 
 ```bash
-django-cli generate model Album Text:title Image:artwork Bool:compilation
+django-cli generate model Album text:title image:artwork bool:compilation
 ```
 
 This would add the following in model in `models.py`:
 ```python
 class Album(models.Model):
     title = models.TextField(blank=True)
-    artwork = models.ImageField(blank=True, upload_to=/uploads/)
+    artwork = models.ImageField(blank=True, upload_to='/uploads/')
     compilation = models.BooleanField(default=False)
     
     created_at = models.DateTimeField(auto_now_add=True, editable=False)
@@ -118,8 +116,8 @@ In `views.py`
 ```python
 def albums(request):
     context = {
-        active: True,
-        route: 'albums',
+        'active': True,
+        'route': 'albums',
     }
     return render(request, 'albums.html', context)
 ```
@@ -146,6 +144,7 @@ urlpatterns += [ path('albums/', albums, name='albums') ]
 ```
 
 **Defaults**
+
 The route generator makes two assumptions: 1. a template file is needed, 2. a url pattern is needed. 
 If this default behavior does not suit your project's design, you can disable the defaults by specifying the `--no-defaults` flag.
 Alternatively, you can opt out of either default individually.
