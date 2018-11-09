@@ -51,7 +51,7 @@ def default_options_for_attribute(attr, model):
     elif _type_ == "BooleanField":
         options = "default=False"
     elif _type_ == "ImageField" or _type_ == "FileField":
-        options += ", upload_to=/uploads/"
+        options += ", upload_to='/uploads/'"
     elif _type_ == "ForeignKey":
         related_name = p.plural(model.lower())
         options = "{}, {}, {}".format(_name_.capitalize(), "related_name='{}'".format(related_name), "on_delete=models.DO_NOTHING")
