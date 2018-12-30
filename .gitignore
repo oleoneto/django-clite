@@ -1,0 +1,6 @@
+A
+*.pyc
+pycache
+credentials
+keys
+secrets
