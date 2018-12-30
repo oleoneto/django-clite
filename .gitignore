@@ -4,3 +4,7 @@ pycache
 credentials
 keys
 secrets
+django_test
+dummy
+*pipelines.yml
+file*
