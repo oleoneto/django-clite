@@ -1,6 +1,7 @@
 from jinja2 import Template as JTemplate
 import inflect
-
+import re
+import pandas
 
 p = inflect.engine()
 
@@ -27,7 +28,7 @@ class {{ model | capitalize }}(models.Model):
         {% if abstract %}abstract = True{% endif %}
     
     def __str__(self):
-        return {% if descriptor %}self.{{ descriptor }}{% else %}None{% endif %}
+        return self.{% if descriptor %}{{ descriptor }}{% else %}created_at{% endif %}
 """)
 
 
@@ -45,6 +46,13 @@ def {{ route | lower }}(request):
         'route': '{{ route | lower }}',
      }
     return render(request, '{{ route | lower }}.html', context)
+""")
+
+
+route_url_template = JTemplate("""
+urlpatterns += [
+    path('{% if route == 'index' %}/{% else %}{{ route }}/{% endif %}', {{ route }}, name='{{ route }}'),
+]
 """)
 
 
@@ -108,3 +116,99 @@ html_template = JTemplate("""
 </body>
 </html>
 """)
+
+file_serializer_template = JTemplate("""
+from rest_framework import serializers
+from .models *
+""")
+
+file_viewsets_template = JTemplate("""
+from rest_framework import viewsets
+from .models import *
+from .serializers import *
+""")
+
+file_app_urls_template = JTemplate("""
+from django.contrib import admin
+from django.urls import path
+from .views import *
+from django.contrib.auth.decorators import login_required
+
+urlpatterns = [
+    path('', index, name='index'),
+]
+""")
+
+file_urls_template = JTemplate("""
+from django.contrib import admin
+from django.urls import path, include
+from rest_framework import routers
+from rest_framework.documentation import include_docs_urls
+import rest_framework.authtoken.views as rf
+from .views import *
+
+router = routers.SimpleRouter(trailing_slash=False)
+# router.register('model', ModelViewSet)
+
+urlpatterns = [
+    # path('/', route, name='route'),
+]
+""")
+
+file_settings_installed_apps = JTemplate("""
+INSTALLED_APPS += [
+    # API
+    'rest_framework',
+    'rest_framework.authtoken',
+    'rest_framework_httpsignature',
+
+    # Cross-Origin Resource Sharing (CORS)
+    'corsheaders',
+
+    # Livereload
+    'livereload',
+
+]""")
+
+file_settings_middleware = JTemplate("""
+MIDDLEWARE += [
+    # Cross-Origin Resource Sharing (CORS)
+    'corsheaders.middleware.CorsMiddleware',
+
+    # Livereload
+    'livereload.middleware.LiveReloadScript',
+]""")
+
+file_settings_template_dirs = JTemplate("""'DIRS': [os.path.join(BASE_DIR, 'templates')],""")
+
+file_settings_restframework = JTemplate("""
+# REST Framework using Django's standard `django.contrib.auth` permissions,
+# or allow read-only access for unauthenticated users.
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'dummy.auth.APISignatureAuthentication',
+        'rest_framework.authentication.TokenAuthentication',
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+    ),
+
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ],
+}
+
+JSON_API_FORMAT_TYPES = 'dasherize'
+JSON_API_PLURALIZE_TYPES = True
+""")
+
+file_settings_cors = JTemplate("""
+# Cross Origin Resource Sharing 
+CORS_ORIGIN_ALLOW_ALL = True""")
+
+regex_for_template_dirs = re.compile(r'\'DIRS\': \[\]')
+regex_replacer = """'DIRS': [os.path.join(BASE_DIR, 'templates')],"""
+
+
+file_settings_local = JTemplate("from settings_local import *")
+

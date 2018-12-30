@@ -3,7 +3,7 @@
     {
       "relationships": [
         {
-          "FK": "ForeignKey"
+          "Fk": "ForeignKey"
         },
         {
           "Many": "ManyToManyField"
@@ -12,9 +12,6 @@
           "One": "OneToOneField"
         }
       ]
-    },
-    {
-      "Text": "TextField"
     },
     {
       "Char": "CharField"
@@ -118,6 +115,8 @@
   "settings": {
     "port": 8001,
     "allow_blanks": true,
-    "livereload": true
+    "livereload": true,
+    "test_directory": "tests",
+    "output_directory": "tests/output"
   }
 }
