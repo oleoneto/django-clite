@@ -31,6 +31,26 @@ new       Creates new apps and projects
 
 ## Generator
 
+The generator is accessible through the `generate` command. It can be used to create `forms`, `models`, `routes`, `serializers`, and `viewsets`.
+The generator supports `dry run` meaning it can provide you with the console log of the desired command without creating any files in your directory structure. 
+This is useful if you want to see what a command does before committing to it. 
+You can also pipe the full output to a file and modify it to your liking. 
+This is supported by providing the `generate` command with the `--save` flag.
+
+So, instead of doing this:
+```bash
+django-cli generate --dry model Store char:name | cat > Store.py
+```
+
+You can do this:
+```bash
+django-cli generate --save model Store char:name
+```
+
+The `--save` flag will get the file names from the `form`, `model`, `serializer`, `route`, or `viewset` and add the object type to the name of the file to avoid clashing with other files.
+The flag is non-destructive and will not create files if it encounters files with the same name in the output directory.
+
+
 ### Generating Models
 In order to generate a model, specify the type identifier and then the name of the attribute field. 
 Type identifiers are abbreviated to a more generic name without the word `Field`. The input here is case-insensitive, but the fields will be CamelCased in the python file. An example is specified below.
