@@ -9,3 +9,5 @@ dummy
 *pipelines.yml
 file*
 _ignore
+.idea
+vscode
