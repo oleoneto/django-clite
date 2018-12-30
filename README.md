@@ -63,7 +63,7 @@ This would add the following in model in `models.py`:
 ```python
 class Album(models.Model):
     title = models.TextField(blank=True)
-    artwork = models.ImageField(blank=True, upload_to='/uploads/')
+    artwork = models.ImageField(blank=True, upload_to='/uploads')
     compilation = models.BooleanField(default=False)
     
     created_at = models.DateTimeField(auto_now_add=True, editable=False)
