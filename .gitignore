@@ -8,3 +8,4 @@ django_test
 dummy
 *pipelines.yml
 file*
+_ignore
