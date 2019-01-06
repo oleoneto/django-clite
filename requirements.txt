@@ -1,58 +1,12 @@
 # Django
 django>=2.1
 
-# Image Support
-Pillow
-
-# REST API Support
-coreapi
-djangorestframework>=3.7.7
-djangorestframework-httpsignature
-django-oauth-plus
-django-oauth2-provider
-oauth2
-django-filter>=2.0.0
-djangorestframework-jsonapi>=2.6.0
-
-# Server
-django-livereload-server
-django-cors-headers
-
-# Seeding data
-Faker
-pycountry
+# CLI tool
+Click
 
 # Templating
 jinja2
 inflect
 
-# Markdown Support
-markdown
-
-
-##########################
-##########################
-##########################
-##### Optional
-
-# Cloud Storage
-#cloudinary
-
-# MongoDB
-#djongo
-#pymongo
-
-# Permissions
-#django-decorator-include
-#drfpasswordless
-
-# Dynamic Javascript
-#django-require
-
-# Server
-#httpie
-
-##### end Optional
-##########################
-##########################
-##########################
+# Configuration
+setuptools
