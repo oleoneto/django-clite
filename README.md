@@ -124,6 +124,58 @@ Currently supported relationship identifiers
 - One: OneToOneField
 - Many: ManyToManyField
 
+#### Generating Serializers and ViewSets
+If you are working on an API and use the `Django REST Framework` to support your 
+project infrastructure, you can also use this CLI to create `serializers` and `viewsets`.
+
+The commands are much like the ones used to generate a model except you don't specify any model attributes,
+just the model name:
+
+```bash
+djangocli generate serializer Album
+```
+
+Which outputs:
+```python
+from rest_framework import serializers
+from ..models.album import Album
+
+
+class AlbumSerializer(serializers.ModelSerializer):
+    
+    # Add related fields below:
+    # Example relation fields are:
+    # -- HyperlinkedIdentityField
+    # -- HyperlinkedRelatedField
+    # -- PrimaryKeyRelatedField
+    # -- SlugRelatedField
+    # -- StringRelatedField
+    
+    # You can also create a custom serializer, like so:
+    # likes = LikeSerializer(many=True)
+
+    class Meta:
+        model = Album
+        fields = "__all__"
+```
+
+Similarly, a `viewset` can be generated like so:
+
+```bash
+djangocli generate viewset Album
+```
+
+Which in turn would generate the following `viewset`:
+```python
+from rest_framework import viewsets
+from ..models.album import Album
+from ..serializers.album import AlbumSerializer
+
+
+class AlbumViewSet(viewsets.ModelViewSet):
+    queryset = Album.objects.all()
+    serializer_class = AlbumSerializer
+```
 
 -----------------------------
 

@@ -17,7 +17,7 @@ class {{ model.capitalize() }}Serializer(serializers.ModelSerializer):
     # -- StringRelatedField
     
     # You can also create a custom serializer, like so:
-    # courses = CourseSerializer(many=True)
+    # likes = LikeSerializer(many=True)
 
     class Meta:
         model = {{ model.capitalize() }}
