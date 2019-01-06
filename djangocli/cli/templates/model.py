@@ -27,6 +27,7 @@ class {{ model.capitalize() }}Form(forms.Form):
 
 model_simple = Template(
     """from django.db import models
+from cloudinary.models import CloudinaryField
 
 
 class {{ model.capitalize() }}(models.Model):
@@ -37,7 +38,7 @@ class {{ model.capitalize() }}(models.Model):
 
 model = Template(
     """from django.db import models
-from cloudinary import CloudinaryField
+from cloudinary.models import CloudinaryField
 {% for model in imports %}{% if model %}from .{{ model.lower() }} import {{ model.capitalize() }}
 {% endif %}{% endfor %}
 
