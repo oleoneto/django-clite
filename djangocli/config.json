@@ -23,6 +23,9 @@
       "Slug": "SlugField"
     },
     {
+      "Text": "TextField"
+    },
+    {
       "Bool": "BooleanField"
     },
     {
