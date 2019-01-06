@@ -65,6 +65,7 @@ django-cli generate model album text:title image:artwork bool:compilation
 This would add the following model `album.py` under the `models` directory:
 ```python
 from django.db import models
+from cloudinary.models import CloudinaryField
 
 
 class Album(models.Model):
@@ -100,8 +101,8 @@ django-cli generate model album fk:artist
 Would create an `artist` attribute like so:
 ```python
 from django.db import models
+from cloudinary.models import CloudinaryField
 from .artist import Artist
-
 
 class Album(models.Model):
     artist = models.ForeignKey(Artist, related_name='albums', on_delete=models.DO_NOTHING)
