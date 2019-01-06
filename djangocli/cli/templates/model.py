@@ -3,7 +3,7 @@ from jinja2 import Template
 
 IE = inflect.engine()
 
-model_attribute = Template("""{{ name }} = models.{{ type }}({{ options }})""")
+model_attribute = Template("""{{ name }} = {% if not special %}models.{% endif %}{{ type }}({{ options }})""")
 
 
 model_admin = Template(
@@ -37,6 +37,7 @@ class {{ model.capitalize() }}(models.Model):
 
 model = Template(
     """from django.db import models
+from cloudinary import CloudinaryField
 {% for model in imports %}{% if model %}from .{{ model.lower() }} import {{ model.capitalize() }}
 {% endif %}{% endfor %}
 

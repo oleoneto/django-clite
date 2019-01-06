@@ -72,6 +72,9 @@
     },
     {
       "UUID": "UUIDField"
+    },
+    {
+      "Cloudinary": "CloudinaryField"
     }
   ],
   "supported_frameworks": [

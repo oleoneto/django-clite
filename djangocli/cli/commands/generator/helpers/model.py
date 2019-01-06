@@ -29,6 +29,7 @@ class ModelHelper(BaseHelper):
 
         options = 'blank=True'
         imports = None
+        special = False
 
         if attribute_type == "CharField":
             options += ", max_length=30"
@@ -38,6 +39,8 @@ class ModelHelper(BaseHelper):
             options = "unique=True"
         elif attribute_type == "ImageField" or attribute_type == "FileField":
             options += ", upload_to='uploads'"
+        elif attribute_type == "CloudinaryField":
+            special = True
         elif attribute_type == "ForeignKey":
             related_name = p.plural(current_model.lower())
             options = f"{attribute_name.capitalize()}, related_name='{related_name}', on_delete=models.DO_NOTHING"
@@ -49,7 +52,7 @@ class ModelHelper(BaseHelper):
         elif attribute_type == "ManyToManyField":
             options = f"{attribute_name.capitalize()}"
             imports = attribute_name
-        return options, imports
+        return options, imports, special
     # end def
 
     def type_for(self, token):
@@ -77,9 +80,6 @@ class ModelHelper(BaseHelper):
         # Attributes in the form field:name
         ATTRIBUTES = []
 
-        # Descriptor will be used with the __str__ method of the model
-        DESCRIPTOR = None
-
         # Imports
         imports = []
 
@@ -88,23 +88,23 @@ class ModelHelper(BaseHelper):
                 attribute = self.type_for(attr)
 
                 if attribute:
-                    if attribute[1] == "CharField":
-                        DESCRIPTOR = attribute[0]
                     options = self.parse_options(attribute, name)
                     imports.append(options[1])
-                    attribute = model_attribute.render(name=attribute[0], type=attribute[1], options=options[0])
+                    # TODO: Fix rendering of CloudinaryField
+                    attribute = model_attribute.render(name=attribute[0], type=attribute[1],
+                                                       options=options[0], special=options[2])
                     ATTRIBUTES.append(attribute)
 
         if no_defaults:
-            return self.parsed_simple_model_template(name, ATTRIBUTES, imports)
+            return self.parsed_simple_model_template(model=name, attributes=ATTRIBUTES, imports=imports)
         else:
-            return self.parsed_model_template(name, ATTRIBUTES, imports, DESCRIPTOR, abstract)
+            return self.parsed_model_template(model=name, attributes=ATTRIBUTES, imports=imports, abstract=abstract)
     # end def
 
-    def parsed_model_template(self, resource_name, attributes, imports, descriptor, abstract=False):
-        return mt_.render(model=resource_name, abstract=abstract, attributes=attributes, imports=imports, descriptor=descriptor)
+    def parsed_model_template(self, *args, **kwargs):
+        return mt_.render(**kwargs)
     # end def
 
-    def parsed_simple_model_template(self, resource_name, attributes, imports):
-        return model_simple.render(model=resource_name, attributes=attributes, imports=imports)
+    def parsed_simple_model_template(self, *args, **kwargs):
+        return model_simple.render(**kwargs)
     # end def
