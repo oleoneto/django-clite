@@ -33,7 +33,7 @@ run as `django-cli SUB-COMMAND COMMAND`
 """
 # main.add_command(configure)
 # main.add_command(db)
-# main.add_command(destroy)
+main.add_command(destroy)
 main.add_command(generate)
 # main.add_command(new)
 # main.add_command(install)
