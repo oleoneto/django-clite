@@ -23,7 +23,7 @@ def form(ctx, name):
     """
 
     # Default forms directory
-    base_dir = 'app/forms/'
+    base_dir = 'forms/'
 
     # Default helper
     helper = BaseHelper()
@@ -44,7 +44,7 @@ def model(ctx, name):
     """
 
     # Default models directory
-    base_dir = 'app/models/'
+    base_dir = 'models/'
 
     # TODO: handle models registered in admin.site
     # Default helper
@@ -66,7 +66,7 @@ def viewset(ctx, name):
     """
 
     # Default viewsets directory
-    base_dir = 'app/viewsets/'
+    base_dir = 'viewsets/'
 
     # Default helper
     helper = BaseHelper()
@@ -87,7 +87,7 @@ def serializer(ctx, name):
     """
 
     # Default serializer directory
-    base_dir = 'app/serializers/'
+    base_dir = 'serializers/'
 
     # TODO: handle viewsets that depend on this serializer
     # Default helper

@@ -10,7 +10,7 @@ class BaseHelper(object):
     # end def
 
     def create(self, name):
-        pass
+        raise NotImplementedError
     # end def
 
     def create_file(self, path, filename, file_content):

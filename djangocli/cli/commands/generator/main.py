@@ -4,6 +4,7 @@ from .helpers.model import ModelHelper
 from .helpers.viewset import ViewSetHelper
 from .helpers.serializer import SerializerHelper
 from .helpers.form import FormHelper
+from .helpers.template import TemplateHelper
 
 
 @click.group()
@@ -36,7 +37,7 @@ def model(ctx, admin, abstract, no_defaults, name, attributes):
     """
 
     # Default model directory
-    base_dir = 'app/models/'
+    base_dir = 'models/'
 
     # Default helper
     helper = ModelHelper()
@@ -74,7 +75,7 @@ def viewset(ctx, read_only, name):
     """
 
     # Default viewset directory
-    base_dir = 'app/viewsets/'
+    base_dir = 'viewsets/'
 
     # Default helper
     helper = ViewSetHelper()
@@ -108,7 +109,7 @@ def serializer(ctx, name):
     """
 
     # Default serializer directory
-    base_dir = 'app/serializers/'
+    base_dir = 'serializers/'
 
     # ViewSet Helper
     helper = SerializerHelper()
@@ -139,7 +140,7 @@ def form(ctx, name):
     """
 
     # Default forms directory
-    base_dir = 'app/forms/'
+    base_dir = 'forms/'
 
     # Form Helper
     helper = FormHelper()
@@ -156,6 +157,37 @@ def form(ctx, name):
         try:
             helper.create_file(base_dir, name, content)
             log_success(f"Created form {name}")
+        except FileExistsError:
+            log_error(f"File {name} already exists")
+            return
+
+
+@generate.command()
+@click.argument("name", required=True)
+@click.pass_context
+def template(ctx, name):
+    """
+    Generates an html template
+    """
+
+    # Default forms directory
+    base_dir = 'templates/'
+
+    # Template Helper
+    helper = TemplateHelper()
+
+    # Parse template
+    content = helper.create(name=name)
+
+    if ctx.obj['dry']:
+        log_success(content)
+        return
+    else:
+        name = f"{name.lower()}.html"
+
+        try:
+            helper.create_file(base_dir, name, content)
+            log_success(f"Created template {name}")
         except FileExistsError:
             log_error(f"File {name} already exists")
             return
