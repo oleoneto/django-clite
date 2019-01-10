@@ -11,6 +11,7 @@ A CLI that handles creating and managing Django projects
 import click
 from djangocli.cli.commands.destroyer.main import destroy
 from djangocli.cli.commands.generator.main import generate
+from djangocli.cli.commands.creator.main import new
 
 
 @click.group()
@@ -28,6 +29,7 @@ run as `django-cli SUB-COMMAND COMMAND`
 """
 main.add_command(destroy)
 main.add_command(generate)
+main.add_command(new)
 
 if __name__ == '__main__':
     main()
