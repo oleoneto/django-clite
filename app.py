@@ -9,12 +9,13 @@ A CLI that handles creating and managing Django projects
 """
 
 import click
+from djangocli.cli import AliasedGroup
 from djangocli.cli.commands.destroyer.main import destroy
 from djangocli.cli.commands.generator.main import generate
 from djangocli.cli.commands.creator.main import new
 
 
-@click.group()
+@click.command(cls=AliasedGroup)
 @click.pass_context
 def main(ctx):
     """
