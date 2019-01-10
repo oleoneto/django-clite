@@ -7,7 +7,7 @@ class SerializerHelper(BaseHelper):
     TODO: Parse model to retrieve relationships
     Add such relationships to serializer class
     """
-    def create(self, name, app='app'):
-        return model_serializer.render(model=name, app=app)
+    def create(self, *args, **kwargs):
+        return model_serializer.render(model=kwargs['name'])
     # end def
 # end class

@@ -1,10 +1,10 @@
 from .base import *
-from djangocli.cli.templates.viewset import __viewset__ as vs_
+from djangocli.cli.templates.viewset import model_viewset
 
 
 class ViewSetHelper(BaseHelper):
 
-    def create(self, name, app='app', read_only=False):
-        return vs_.render(model=name, app=app, read_only=read_only)
+    def create(self, *args, **kwargs):
+        return model_viewset.render(model=kwargs['name'], read_only=kwargs['read_only'])
     # end def
 # end class

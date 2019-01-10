@@ -6,22 +6,42 @@ from djangocli.cli.templates.model import model as mt_
 from djangocli.cli.templates.model import model_simple
 
 p = inflect.engine()
-
-file = open('djangocli/config.json')
+__DIR__ = os.path.dirname(os.path.abspath(__file__))
+file = open(f'{__DIR__}/fields.json')
 data = json.load(file)
 file.close()
 
 supported_fields = []
-supported_frameworks = []
 types = data['reserved_words']
 relationships = data['reserved_words'][0]['relationships']
-frameworks = data['supported_frameworks']
-
-for i in frameworks[0].keys():
-    supported_frameworks.append(i)
 
 
 class ModelHelper(BaseHelper):
+
+    def create(self, *args, **kwargs):
+        # Attributes in the form field:name
+        ATTRIBUTES = []
+
+        # Imports
+        imports = []
+
+        if kwargs['attributes']:
+            for attr in kwargs['attributes']:
+                attribute = self.type_for(attr)
+
+                if attribute:
+                    options = self.parse_options(attribute, kwargs['name'])
+                    imports.append(options[1])
+                    # TODO: Fix rendering of CloudinaryField
+                    attribute = model_attribute.render(name=attribute[0], type=attribute[1],
+                                                       options=options[0], special=options[2])
+                    ATTRIBUTES.append(attribute)
+
+        if kwargs['no_defaults']:
+            return self.parsed_simple_model_template(model=kwargs['name'], attributes=ATTRIBUTES, imports=imports)
+        else:
+            return self.parsed_model_template(model=kwargs['name'], attributes=ATTRIBUTES, imports=imports, abstract=kwargs['abstract'])
+    # end def
 
     def parse_options(self, attr, current_model):
         attribute_name = attr[0]
@@ -74,31 +94,6 @@ class ModelHelper(BaseHelper):
             if token[0] in t:
                 return token[1], t.get(token[0])
         return None
-    # end def
-
-    def create(self, name, attributes, no_defaults, abstract):
-        # Attributes in the form field:name
-        ATTRIBUTES = []
-
-        # Imports
-        imports = []
-
-        if attributes:
-            for attr in attributes:
-                attribute = self.type_for(attr)
-
-                if attribute:
-                    options = self.parse_options(attribute, name)
-                    imports.append(options[1])
-                    # TODO: Fix rendering of CloudinaryField
-                    attribute = model_attribute.render(name=attribute[0], type=attribute[1],
-                                                       options=options[0], special=options[2])
-                    ATTRIBUTES.append(attribute)
-
-        if no_defaults:
-            return self.parsed_simple_model_template(model=name, attributes=ATTRIBUTES, imports=imports)
-        else:
-            return self.parsed_model_template(model=name, attributes=ATTRIBUTES, imports=imports, abstract=abstract)
     # end def
 
     def parsed_model_template(self, *args, **kwargs):

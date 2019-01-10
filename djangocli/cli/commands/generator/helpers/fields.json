@@ -1,0 +1,80 @@
+{
+  "reserved_words": [
+    {
+      "relationships": [
+        {
+          "Fk": "ForeignKey"
+        },
+        {
+          "Many": "ManyToManyField"
+        },
+        {
+          "One": "OneToOneField"
+        }
+      ]
+    },
+    {
+      "Char": "CharField"
+    },
+    {
+      "String": "TextField"
+    },
+    {
+      "Slug": "SlugField"
+    },
+    {
+      "Text": "TextField"
+    },
+    {
+      "Bool": "BooleanField"
+    },
+    {
+      "Int": "IntegerField"
+    },
+    {
+      "Integer": "IntegerField"
+    },
+    {
+      "Float": "FloatField"
+    },
+    {
+      "Decimal": "DecimalField"
+    },
+    {
+      "Date": "DateField"
+    },
+    {
+      "DateTime": "DateTimeField"
+    },
+    {
+      "Duration": "DurationField"
+    },
+    {
+      "Time": "TimeField"
+    },
+    {
+      "File": "FileField"
+    },
+    {
+      "FilePath": "FilePathField"
+    },
+    {
+      "Image": "ImageField"
+    },
+    {
+      "Email": "EmailField"
+    },
+    {
+      "URL": "URLField"
+    },
+    {
+      "IPAddress": "GenericIPAddressField"
+    },
+    {
+      "UUID": "UUIDField"
+    },
+    {
+      "Cloudinary": "CloudinaryField"
+    }
+  ]
+}

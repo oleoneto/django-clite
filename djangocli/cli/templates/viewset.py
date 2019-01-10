@@ -1,7 +1,7 @@
 from jinja2 import Template
 
 
-__viewset__ = Template(
+model_viewset = Template(
     """from rest_framework import viewsets
 from ..models.{{ model.lower() }} import {{ model.capitalize() }}
 from ..serializers.{{ model.lower() }} import {{ model.capitalize() }}Serializer

@@ -43,7 +43,7 @@ def model(ctx, admin, abstract, no_defaults, name, attributes):
     helper = ModelHelper()
 
     # Parse args and create model
-    content = helper.create(name, attributes, no_defaults, abstract)
+    content = helper.create(name=name, attributes=attributes, no_defaults=no_defaults, abstract=abstract)
 
     # TODO: handle --admin flag
     # TODO: handle --no_defaults flag
@@ -56,7 +56,7 @@ def model(ctx, admin, abstract, no_defaults, name, attributes):
         name = f"{name.lower()}.py"
 
         try:
-            helper.create_file(base_dir, name, content)
+            helper.create_file(path=base_dir, filename=name, file_content=content)
             log_success(f"Created model {name}")
         except FileExistsError:
             log_error(f"File {name} already exists")
@@ -90,7 +90,7 @@ def viewset(ctx, read_only, name):
         name = f"{name.lower()}.py"
 
         try:
-            helper.create_file(base_dir, name, content)
+            helper.create_file(path=base_dir, filename=name, file_content=content)
             log_success(f"Created viewset {name}")
         except FileExistsError:
             log_error(f"File {name} already exists")
@@ -124,7 +124,7 @@ def serializer(ctx, name):
         name = f"{name.lower()}.py"
 
         try:
-            helper.create_file(base_dir, name, content)
+            helper.create_file(path=base_dir, filename=name, file_content=content)
             log_success(f"Created serializer {name}")
         except FileExistsError:
             log_error(f"File {name} already exists")
@@ -155,7 +155,7 @@ def form(ctx, name):
         name = f"{name.lower()}.py"
 
         try:
-            helper.create_file(base_dir, name, content)
+            helper.create_file(path=base_dir, filename=name, file_content=content)
             log_success(f"Created form {name}")
         except FileExistsError:
             log_error(f"File {name} already exists")
@@ -186,7 +186,7 @@ def template(ctx, name):
         name = f"{name.lower()}.html"
 
         try:
-            helper.create_file(base_dir, name, content)
+            helper.create_file(path=base_dir, filename=name, file_content=content)
             log_success(f"Created template {name}")
         except FileExistsError:
             log_error(f"File {name} already exists")

@@ -9,7 +9,7 @@ class BaseHelper(object):
         os.listdir(path)
     # end def
 
-    def create(self, name):
+    def create(self, args, **kwargs):
         raise NotImplementedError
     # end def
 
