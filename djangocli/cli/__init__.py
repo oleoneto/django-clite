@@ -1,6 +1,10 @@
 import click
 
 
+def log_info(message):
+    click.secho(message, fg='yellow')
+
+
 def log_success(message):
     click.secho(message, fg='green')
 

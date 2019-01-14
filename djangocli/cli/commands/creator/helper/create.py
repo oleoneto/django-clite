@@ -1,4 +1,4 @@
-from djangocli.cli import log_error, log_success
+from djangocli.cli import log_error, log_info, log_success
 import os
 import subprocess
 from django.core.management.base import CommandError
@@ -16,17 +16,8 @@ class CreatorHelper():
     # TODO: return each app directory
     def __create_app(self, *args, **kwargs):
 
-        # Get directory of manage.py file
-        __dir__ = self.__get_manage_py_dir()
-
-        # ...
-        if __dir__:
-            if 'nested' in kwargs.keys():
-                if kwargs['nested']:
-                    os.chdir(__dir__.split('/')[-1])
-
         for app_name in kwargs['apps']:
-            log_success(f"Creating application: {app_name}")
+            log_info(f"Creating application: {app_name}")
 
             # Handle creation of each app with django-admin
             try:
@@ -35,16 +26,24 @@ class CreatorHelper():
                 log_error("Error")
 
             # Run cli-specific configuration
-            # os.chdir(app_name)
+            os.chdir(app_name)
+            self.__create_app_packages('forms')
+            self.__create_app_packages('models')
+            self.__create_app_packages('serializers')
+            self.__create_app_packages('templates')
+            self.__create_app_packages('tests')
+            self.__create_app_packages('views')
+            self.__create_app_packages('viewsets')
 
             # Leave directory
-            # os.chdir('..')
+            log_success(f"Created app: '{app_name}' inside {os.getcwd()}")
+            os.chdir('..')
     # end def
 
     # TODO: return project directory
     def __create_project(self, *args, **kwargs):
         try:
-            log_success(f"Creating project: {kwargs['project']}")
+            log_info(f"Creating project: {kwargs['project']}")
 
             # Create project with django-admin
             subprocess.call(['django-admin', 'startproject', kwargs['project']])
@@ -52,6 +51,11 @@ class CreatorHelper():
             # Run cli-specific configuration
             # Inside nested directory
             os.chdir(kwargs['project'])
+
+            # Get current directory, i.e. Project/
+            kwargs['__dir__'] = os.getcwd()
+
+            # Get sub-directory, i.e. Project/Project/
             os.chdir(kwargs['project'])
 
             # ...
@@ -62,19 +66,21 @@ class CreatorHelper():
 
             # Leave directory
             os.chdir('..')
-            print(os.getcwd())
+            log_success(f"Created project: '{kwargs['project']}' inside {os.getcwd()}")
             return
         except KeyError:
             return
     # end def
 
-    def __get_manage_py_dir(self):
-        # TODO: search directory for manage.py to determine nested directory
+    def __create_app_packages(self, folder_name):
 
-        if "manage.py" not in os.listdir():
-            log_error("manage.py not found")
-            return None
-
-        return os.getcwd()
+        try:
+            os.mkdir(folder_name)
+            os.chdir(folder_name)
+            with open('__ini__.py', 'x') as file:
+                file.write('# Import modules here...\n')
+            os.chdir('..')
+        except FileExistsError:
+            return
     # end def
 # end class
