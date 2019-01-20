@@ -39,6 +39,7 @@ class {{ model.capitalize() }}(models.Model):
 model = Template(
     """from django.db import models
 from cloudinary.models import CloudinaryField
+from .helpers.identifier import make_identifier
 {% for model in imports %}{% if model %}from .{{ model.lower() }} import {{ model.capitalize() }}
 {% endif %}{% endfor %}
 
@@ -53,6 +54,11 @@ class {{ model.capitalize() }}(models.Model):
         db_table = '{{ model.lower() }}'
         ordering = ['-created_at']
         {% if abstract %}abstract = True\n{% endif %}
+    def save(self, *args, **kwargs):
+        if not self.id:
+            self.id = make_identifier()
+        super().save(*args, **kwargs)
+    
     def __str__(self):
         return self.{% if descriptor %}{{ descriptor }}{% else %}created_at{% endif %}
 """)
