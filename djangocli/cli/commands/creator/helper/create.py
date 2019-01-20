@@ -26,7 +26,13 @@ class CreatorHelper():
                 log_error("Error")
 
             # Run cli-specific configuration
+            # ---------------------------------------------------
             os.chdir(app_name)
+
+            # Remove unnecessary files (these will be replaced with packages)
+            subprocess.call(['rm', 'models.py', 'views.py', 'tests.py'])
+
+            # Create app packages
             self.__create_app_packages(path='forms')
             self.__create_app_packages(path='serializers')
             self.__create_app_packages(path='templates')
@@ -35,6 +41,7 @@ class CreatorHelper():
             self.__create_app_packages(path='viewsets')
             self.__create_app_packages(path='models')
 
+            # ---------------------------------------------------
             # Leave directory
             log_success(f"Created app: {app_name}")
             os.chdir('..')
