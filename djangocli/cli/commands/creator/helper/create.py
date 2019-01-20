@@ -1,5 +1,6 @@
 from djangocli.cli import log_error, log_info, log_success
 import os
+import shutil
 import subprocess
 from django.core.management.base import CommandError
 
@@ -13,11 +14,10 @@ class CreatorHelper():
             self.__create_app(**kwargs)
     # end def
 
-    # TODO: return each app directory
     def __create_app(self, *args, **kwargs):
 
         for app_name in kwargs['apps']:
-            log_info(f"Creating application: {app_name}")
+            log_info(f"Creating application...")
 
             # Handle creation of each app with django-admin
             try:
@@ -27,23 +27,22 @@ class CreatorHelper():
 
             # Run cli-specific configuration
             os.chdir(app_name)
-            self.__create_app_packages('forms')
-            self.__create_app_packages('models')
-            self.__create_app_packages('serializers')
-            self.__create_app_packages('templates')
-            self.__create_app_packages('tests')
-            self.__create_app_packages('views')
-            self.__create_app_packages('viewsets')
+            self.__create_app_packages(path='forms')
+            self.__create_app_packages(path='serializers')
+            self.__create_app_packages(path='templates')
+            self.__create_app_packages(path='tests')
+            self.__create_app_packages(path='views')
+            self.__create_app_packages(path='viewsets')
+            self.__create_app_packages(path='models')
 
             # Leave directory
-            log_success(f"Created app: '{app_name}' inside {os.getcwd()}")
+            log_success(f"Created app: {app_name}")
             os.chdir('..')
     # end def
 
-    # TODO: return project directory
     def __create_project(self, *args, **kwargs):
         try:
-            log_info(f"Creating project: {kwargs['project']}")
+            log_info(f"Creating project...")
 
             # Create project with django-admin
             subprocess.call(['django-admin', 'startproject', kwargs['project']])
@@ -66,21 +65,49 @@ class CreatorHelper():
 
             # Leave directory
             os.chdir('..')
-            log_success(f"Created project: '{kwargs['project']}' inside {os.getcwd()}")
+            log_success(f"Created project: {kwargs['project']}")
             return
         except KeyError:
             return
     # end def
 
-    def __create_app_packages(self, folder_name):
+    def __create_app_packages(self, **kwargs):
+
+        folder_name = kwargs['path']
+
+        # Get location of this very file...
+        __here__ = os.path.dirname(os.path.abspath(__file__))
 
         try:
-            os.mkdir(folder_name)
+            # Create main package
+            self.__create_sub_package(path=folder_name)
             os.chdir(folder_name)
-            with open('__ini__.py', 'x') as file:
-                file.write('# Import modules here...\n')
+
+            self.__create_sub_package(path='helpers')
+
+            # TODO: Fix: app packages being created inside /models
+            # Create files for /models directory
+            if folder_name == 'models':
+                self.__create_sub_package(path='managers')
+                self.__create_sub_package(path='signals')
+
+                # Copy identifier.py to /helpers
+                shutil.copyfile(f'{__here__}/identifier.py', 'helpers/identifier.py')
+
             os.chdir('..')
         except FileExistsError:
             return
+    # end def
+
+    def __create_sub_package(self, **kwargs):
+
+        # __init__ message
+        message = '# Import/register your modules here...\n'
+
+        os.mkdir(kwargs['path'])
+        os.chdir(kwargs['path'])
+        with open('__init__.py', 'x') as file:
+            file.write(message)
+        os.chdir('..')
     # end def
 # end class
