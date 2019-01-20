@@ -51,7 +51,9 @@ class ModelHelper(BaseHelper):
         imports = None
         special = False
 
-        if attribute_type == "CharField":
+        if attribute_name == "id":
+            options = "primary_key=True, editable=False"
+        elif attribute_type == "CharField":
             options += ", max_length=30"
         elif attribute_type == "BooleanField":
             options = "default=False"
