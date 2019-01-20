@@ -4,7 +4,7 @@ CLI that handles creating and managing Django projects
 
 #### Minimum requirements
 - `click 7.x`
-- `django 2.1`
+- `django 2.1.5`
 - `python 3.6`
 - `pip`
 - `git`
