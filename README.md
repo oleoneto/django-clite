@@ -59,7 +59,7 @@ Type identifiers are abbreviated to a more generic name that omits the word `Fie
 but the fields will be CamelCased in the python file as in the example specified below:
 
 ```bash
-django-cli generate model album text:title image:artwork bool:compilation
+djangocli generate model album text:title image:artwork bool:compilation
 ```
 
 This would add the following model `album.py` under the `models` directory:
@@ -96,7 +96,7 @@ The `db_table` name is inferred from the name of the model while the ordering at
 If a relationship identifier is passed, the attribute name will be used as the name of the model it relates to. 
 Specifying a relationship also adds an import statement to the model file. For example:
 ```bash
-django-cli generate model album fk:artist
+djangocli generate model album fk:artist
 ```
 Would create an `artist` attribute like so:
 ```python
