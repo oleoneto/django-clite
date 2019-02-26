@@ -2,12 +2,8 @@
 
 CLI that handles creating and managing Django projects
 
-#### Minimum requirements
-- `click 7.x`
-- `django 2.1.5`
-- `python 3.6`
-- `pip`
-- `git`
+#### Requirements
+[Requirements](requirements.txt)
 
 
 #### Installation [WIP]
@@ -18,48 +14,100 @@ cd Django-CLI
 pip install .
 ```
 
+----
 
-#### Project structure [WIP]
-This CLI makes some assumptions about the structure of your Django application.
-It assumes that each of your resources (models, forms, serializers) are grouped 
-together and that each resource is kept in its own Python file.
+#### Commands
+```
+destroy   Removes models, serializers, and other...
+generate  Adds models, routes, and other resources
+new       Creates projects and apps
+```
+
+----
+
+## New
+The `new` command (abbreviated `n`) can be used to start new projects as well as new applications. The command tries to simplify how a project is created as well as the applications contained in it. Here's an example of such simplification:
+
+Suppose you want to start a new project and want to create two apps within it:
+```
+django-admin startproject API
+cd API/API/
+django-admin startapp developers
+```
+
+The equivalent command in this CLI is:
+```
+django-cli new project API developers
+```
+Specifying an `app` when creating a project is optional, but you're likely to need to create one inside of your project directory, so the CLI can handle the creation of all of your apps as arguments after your project name.
+
+#### Project structure
+This CLI makes some assumptions about the structure of your Django project.
+1. It assumes that your apps are one level below the root of your project directory, one level below where `manage.py` is. For example:
+```
+PROJECT
+├── PROJECT
+│   ├── __init__.py
+│   ├── My_Application_1
+│   ├── My_Application_2
+│   ├── My_Application_3
+│   ├── settings.py
+│   ├── urls.py
+│   └── wsgi.py
+├── manage.py
+└── requirements.txt
+```
+2. It assumes that your app resources are grouped together by type. For example:
+```
+My_Application_1
+├── __init__.py
+├── admin.py
+├── apps.py
+├── forms
+├── migrations
+├── models
+├── serializers
+├── templates
+├── tests
+├── urls.py
+├── views
+└── viewsets
+```
+3. Each class representing a `model`, `serializer`, `viewset`, or `form` is located in its own Python file. For example:
+```
+models
+├── album.py
+├── book.py
+└── person.py
+```
 
 This is done in order to aid the CLI with the creation and deletion of files
-in the project as we'll see under the [`generate`](#generator) and [`destroy`](#destroyer) commands. 
+in the project as we'll see under the [`generate`](#generator) and [`destroy`](#destroyer) commands.
 
------------------------------------------------
-
-#### Commands [WIP]
-```
-destroy   Model, route, and template destroyer
-generate  Model, route, and template generator
-```
-
----------------------------------------------
-
+----
 
 ## Generator
 
-The generator is accessible through the `generate` command. 
+The generator is accessible through the `generate` command (abbreviated `g`).
 It can be used to create the following resources:
-- forms 
-- models
-- routes
-- serializers
-- viewsets
+- **forms**
+- **models**
+- **routes**
+- **serializers**
+- **viewsets**
 
-The generator supports `dry run`, meaning it can provide you with the console log 
-of the desired command without creating any files in your directory structure. 
-This is useful if you want to see what a command accomplishes before committing to it.
+The generator supports `--dry-run`, meaning it can provide you with the console log
+of the desired command without creating any files in your directory structure.
+This is useful if you want to see what a command accomplishes before fully committing to it.
 
 
 #### Generating Models
-In order to generate a model, specify the type identifier and then the name of the attribute field. 
-Type identifiers are abbreviated to a more generic name that omits the word `Field`. The input here is case-insensitive, 
-but the fields will be CamelCased in the python file as in the example specified below:
+In order to generate a model, specify the type identifier and then the name of the attribute field.
+Type identifiers are abbreviated to a more generic name that omits the word `Field`. The input here is case-insensitive,
+but the fields will be properly CamelCased in the corresponding Python file as in the example below:
 
 ```bash
-djangocli generate model album text:title image:artwork bool:compilation
+django-cli g model album text:title image:artwork bool:compilation
 ```
 
 This would add the following model `album.py` under the `models` directory:
@@ -72,7 +120,7 @@ class Album(models.Model):
     title = models.TextField(blank=True)
     artwork = models.ImageField(blank=True, upload_to='uploads')
     compilation = models.BooleanField(default=False)
-    
+
     # Default fields. Omit with the --no-defaults flag
     created_at = models.DateTimeField(auto_now_add=True, editable=False)
     updated_at = models.DateTimeField(auto_now=True, editable=False)
@@ -80,23 +128,23 @@ class Album(models.Model):
     class Meta:
         db_table = 'album'
         ordering = ['-created_at']
-        
+
     def __str__(self):
         return self.created_at
 
 ```
 **Defaults**
 
-As one can see, `class Meta` and `_str_` are added to a model by default along with both `created_at` and `updated_at` fields. 
-The `db_table` name is inferred from the name of the model while the ordering attribute is defined based on the default `created_at` field. 
+As one can see, `class Meta` and `_str_` are added to a model by default along with both `created_at` and `updated_at` fields.
+The `db_table` name is inferred from the name of the model while the ordering attribute is defined based on the default `created_at` field.
 
 
 **Relationships**
 
-If a relationship identifier is passed, the attribute name will be used as the name of the model it relates to. 
+If a relationship identifier is passed, the attribute name will be used as the name of the model it relates to.
 Specifying a relationship also adds an import statement to the model file. For example:
 ```bash
-djangocli generate model album fk:artist
+django-cli g model album fk:artist
 ```
 Would create an `artist` attribute like so:
 ```python
@@ -106,7 +154,7 @@ from .artist import Artist
 
 class Album(models.Model):
     artist = models.ForeignKey(Artist, related_name='albums', on_delete=models.DO_NOTHING)
-    
+
     # Default fields. Omit with the --no-defaults flag
     created_at = models.DateTimeField(auto_now_add=True, editable=False)
     updated_at = models.DateTimeField(auto_now=True, editable=False)
@@ -114,26 +162,25 @@ class Album(models.Model):
     class Meta:
         db_table = 'album'
         ordering = ['-created_at']
-        
+
     def __str__(self):
         return self.created_at
 
 ```
 
 Currently supported relationship identifiers
-- FK: ForeignKeyField
-- One: OneToOneField
-- Many: ManyToManyField
+- **FK**: ForeignKeyField
+- **One**: OneToOneField
+- **Many**: ManyToManyField
 
-#### Generating Serializers and ViewSets
-If you are working on an API and use the `Django REST Framework` to support your 
-project infrastructure, you can also use this CLI to create `serializers` and `viewsets`.
+#### Generating Serializers and Viewsets
+If you are working on an API and use the `Django REST Framework` to support your
+project backend, you can also use this CLI to create `serializers` and `viewsets`.
 
-The commands are much like the ones used to generate a model except you don't specify any model attributes,
-just the model name:
+The commands are much like the ones used to generate a model except you don't specify any model attributes, just the model name:
 
 ```bash
-djangocli generate serializer Album
+django-cli g serializer album
 ```
 
 Which outputs:
@@ -143,7 +190,7 @@ from ..models.album import Album
 
 
 class AlbumSerializer(serializers.ModelSerializer):
-    
+
     # Add related fields below:
     # Example relation fields are:
     # -- HyperlinkedIdentityField
@@ -151,7 +198,7 @@ class AlbumSerializer(serializers.ModelSerializer):
     # -- PrimaryKeyRelatedField
     # -- SlugRelatedField
     # -- StringRelatedField
-    
+
     # You can also create a custom serializer, like so:
     # likes = LikeSerializer(many=True)
 
@@ -163,7 +210,7 @@ class AlbumSerializer(serializers.ModelSerializer):
 Similarly, a `viewset` can be generated like so:
 
 ```bash
-djangocli generate viewset Album
+django-cli g viewset album
 ```
 
 Which in turn would generate the following `viewset`:
@@ -178,26 +225,33 @@ class AlbumViewSet(viewsets.ModelViewSet):
     serializer_class = AlbumSerializer
 ```
 
------------------------------
+----
 
 ## Destroyer
 This command can be used to undo all that a generator can generate.
 So, following our example `Album` model, one can remove it from the project by simply running:
 
 ```bash
-djangocli destroy model album
+django-cli d model album
 ```
 
 **Supported options:**
-- form
-- model
-- viewset
-- serializer
+- **form**
+- **model**
+- **viewset**
+- **serializer**
 
------------------------------
+----
 
+### To Do
+[Check open issues.](https://github.com/oleoneto/Django-CLI/issues)
+
+----
 
 ### Pull requests
 This project is a work in progress. Contributions are very much welcome.
 
+----
+
+### LICENSE
 **Django CLI** is [MIT Licensed](LICENSE).
