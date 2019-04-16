@@ -58,5 +58,5 @@ class {{ model.capitalize() }}(models.Model):
         super().save(*args, **kwargs)
     
     def __str__(self):
-        return self.{% if descriptor %}{{ descriptor }}{% else %}created_at{% endif %}
+        return self.{% if descriptor %}{{ descriptor }}{% else %}id{% endif %}
 """)
