@@ -1,4 +1,5 @@
 import click
+import os
 from djangocli.cli import log_error, log_success
 from .helpers.model import ModelHelper
 from .helpers.viewset import ViewSetHelper
@@ -6,6 +7,12 @@ from .helpers.serializer import SerializerHelper
 from .helpers.form import FormHelper
 from .helpers.template import TemplateHelper
 from .helpers.admin import AdminHelper
+
+
+def not_an_app_directory_warning(ctx):
+    if not ctx.obj['in_app']:
+        log_error("Not inside an app directory")
+        exit(1)
 
 
 @click.group()
@@ -17,6 +24,7 @@ def generate(ctx, dry):
     """
     ctx.ensure_object(dict)
     ctx.obj['dry'] = dry
+    ctx.obj['in_app'] = 'apps.py' in os.listdir('.')
 
 
 @generate.command()
@@ -26,6 +34,8 @@ def admin(ctx, name):
     """
     Generates an admin model within the admin directory.
     """
+
+    not_an_app_directory_warning(ctx)
 
     # Default admin models directory
     base_dir = 'admin/'
@@ -70,6 +80,8 @@ def model(ctx, admin, abstract, no_defaults, name, attributes):
     If the model is to be added to admin.site one can optionally opt in by specifying the --admin flag.
     """
 
+    not_an_app_directory_warning(ctx)
+
     # Default model directory
     base_dir = 'models/'
 
@@ -108,6 +120,8 @@ def viewset(ctx, read_only, name):
     Places the viewset under the viewset directory
     """
 
+    not_an_app_directory_warning(ctx)
+
     # Default viewset directory
     base_dir = 'viewsets/'
 
@@ -142,6 +156,8 @@ def serializer(ctx, name):
     before attempting to create a serializer for it. Aborts if model is not found.
     """
 
+    not_an_app_directory_warning(ctx)
+
     # Default serializer directory
     base_dir = 'serializers/'
 
@@ -173,6 +189,8 @@ def form(ctx, name):
     Generates a model form
     """
 
+    not_an_app_directory_warning(ctx)
+
     # Default forms directory
     base_dir = 'forms/'
 
@@ -203,6 +221,8 @@ def template(ctx, name):
     """
     Generates an html template
     """
+
+    not_an_app_directory_warning(ctx)
 
     # Default forms directory
     base_dir = 'templates/'
