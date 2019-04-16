@@ -33,7 +33,7 @@ class CreatorHelper(object):
             os.chdir(app_name)
 
             # Remove unnecessary files (these will be replaced with packages)
-            subprocess.call(['rm', 'models.py', 'views.py', 'tests.py'])
+            subprocess.call(['rm', 'models.py', 'views.py', 'tests.py', 'admin.py'])
 
             # Add app-specific urls configuration file
             subprocess.call(['touch', 'urls.py'])
