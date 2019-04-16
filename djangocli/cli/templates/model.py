@@ -42,6 +42,7 @@ from .helpers.identifier import make_identifier
 {% endif %}{% endfor %}
 
 class {{ model.capitalize() }}(models.Model):
+    id = models.BigIntegerField(primary_key=True, editable=False)
     {% for attribute in attributes %}{{ attribute }}
     {% endfor %}
     # Default fields. Omit with the --no-defaults flag
