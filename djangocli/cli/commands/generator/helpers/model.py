@@ -33,9 +33,9 @@ class ModelHelper(BaseHelper):
                 if attribute:
                     options = self.parse_options(attribute, kwargs['name'])
                     imports.append(options[1])
-                    # TODO: Fix rendering of CloudinaryField
-                    attribute = model_attribute.render(name=attribute[0], type=attribute[1],
-                                                       options=options[0], special=options[2])
+                    attribute = model_attribute.render(name=attribute[0],
+                                                       type=attribute[1],
+                                                       options=options[0])
                     ATTRIBUTES.append(attribute)
 
         if kwargs['no_defaults']:
@@ -62,8 +62,6 @@ class ModelHelper(BaseHelper):
             options = "unique=True"
         elif attribute_type == "ImageField" or attribute_type == "FileField":
             options += ", upload_to='uploads'"
-        elif attribute_type == "CloudinaryField":
-            special = True
         elif attribute_type == "ForeignKey":
             related_name = p.plural(current_model.lower())
             options = f"{attribute_name.capitalize()}, related_name='{related_name}', on_delete=models.DO_NOTHING"
@@ -75,7 +73,7 @@ class ModelHelper(BaseHelper):
         elif attribute_type == "ManyToManyField":
             options = f"{attribute_name.capitalize()}"
             imports = attribute_name
-        return options, imports, special
+        return options, imports
     # end def
 
     def type_for(self, token):
