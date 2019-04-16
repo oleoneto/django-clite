@@ -3,10 +3,13 @@ import os
 import shutil
 import subprocess
 from django.core.management.base import CommandError
+from djangocli.cli.templates.docker import docker_compose as ComposeTemplate, dockerfile as DockerfileTemplate
+from djangocli.cli.templates.requirements import requirements as RequirementsTemplate
+from .project import BaseHelper
 
 
-class CreatorHelper():
-    def create(self, *args, **kwargs):
+class CreatorHelper(object):
+    def create(self, **kwargs):
         if 'project' in kwargs.keys():
             self.__create_project(**kwargs)
             return
@@ -14,7 +17,7 @@ class CreatorHelper():
             self.__create_app(**kwargs)
     # end def
 
-    def __create_app(self, *args, **kwargs):
+    def __create_app(self, **kwargs):
 
         for app_name in kwargs['apps']:
             log_info(f"Creating application...")
@@ -32,6 +35,9 @@ class CreatorHelper():
             # Remove unnecessary files (these will be replaced with packages)
             subprocess.call(['rm', 'models.py', 'views.py', 'tests.py'])
 
+            # Add app-specific urls configuration file
+            subprocess.call(['touch', 'urls.py'])
+
             # Create app packages
             self.__create_app_packages(path='forms')
             self.__create_app_packages(path='serializers')
@@ -47,7 +53,7 @@ class CreatorHelper():
             os.chdir('..')
     # end def
 
-    def __create_project(self, *args, **kwargs):
+    def __create_project(self, **kwargs):
         try:
             log_info(f"Creating project...")
 
@@ -56,15 +62,31 @@ class CreatorHelper():
 
             # Run cli-specific configuration
             # Inside nested directory
+            # ----------------------------------------
             os.chdir(kwargs['project'])
 
-            # Get current directory, i.e. Project/
-            kwargs['__dir__'] = os.getcwd()
+            # Default helper
+            helper = BaseHelper()
+
+            reqs = helper.create_from_template(template=RequirementsTemplate, project=kwargs['project'])
+            helper.create_file(path='.', filename='requirements.txt', file_content=reqs)
+
+            if kwargs['docker']:
+
+                # Add content to docker-compose and requirements
+                compose = helper.create_from_template(template=ComposeTemplate, project=kwargs['project'])
+                helper.create_file(path='.', filename='docker-compose.yml', file_content=compose)
 
             # Get sub-directory, i.e. Project/Project/
             os.chdir(kwargs['project'])
 
+            if kwargs['docker']:
+                docker = helper.create_from_template(template=DockerfileTemplate, project=kwargs['project'])
+                helper.create_file(path='.', filename='Dockerfile', file_content=docker)
+
+            # TODO: Add configurations to settings.py
             # ...
+
             try:
                 self.__create_app(**kwargs)
             except KeyError:

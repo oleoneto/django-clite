@@ -16,9 +16,10 @@ def new(ctx, dry):
 
 @new.command()
 @click.argument('name')
+@click.option('--docker', is_flag=True, help="Add support for Docker")
 @click.argument('apps', nargs=-1)
 @click.pass_context
-def project(ctx, name, apps):
+def project(ctx, name, docker, apps):
     """
     Creates a new django project.
     \fThis is similar to using `django-admin startproject PROJECT_NAME`
@@ -26,9 +27,9 @@ def project(ctx, name, apps):
     helper = CreatorHelper()
 
     if apps:
-        helper.create(project=name, apps=apps, nested=True)
+        helper.create(project=name, apps=apps, nested=True, docker=docker)
     else:
-        helper.create(project=name)
+        helper.create(project=name, docker=docker)
 
 
 @new.command()
