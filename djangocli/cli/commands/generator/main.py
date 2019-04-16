@@ -5,6 +5,7 @@ from .helpers.viewset import ViewSetHelper
 from .helpers.serializer import SerializerHelper
 from .helpers.form import FormHelper
 from .helpers.template import TemplateHelper
+from .helpers.admin import AdminHelper
 
 
 @click.group()
@@ -16,6 +17,39 @@ def generate(ctx, dry):
     """
     ctx.ensure_object(dict)
     ctx.obj['dry'] = dry
+
+
+@generate.command()
+@click.argument('name')
+@click.pass_context
+def admin(ctx, name):
+    """
+    Generates an admin model within the admin directory.
+    """
+
+    # Default admin models directory
+    base_dir = 'admin/'
+
+    # Default helper
+    helper = AdminHelper()
+
+    # Create content for file
+    content = helper.create(name=name)
+
+    # Handling --dry flag
+    if ctx.obj['dry']:
+        log_success(content)
+        return
+    else:
+        file = f"{name.lower()}.py"
+
+        try:
+            helper.create_file(path=base_dir, filename=file, file_content=content)
+            log_success(f"Created admin model {name.capitalize()} in {file}")
+            helper.create_in_init(path=base_dir, name=name)
+        except FileExistsError:
+            log_error(f"File {name} already exists")
+            return
 
 
 @generate.command()

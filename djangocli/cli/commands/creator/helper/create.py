@@ -39,6 +39,7 @@ class CreatorHelper(object):
             subprocess.call(['touch', 'urls.py'])
 
             # Create app packages
+            self.__create_app_packages(path='admin')
             self.__create_app_packages(path='forms')
             self.__create_app_packages(path='serializers')
             self.__create_app_packages(path='templates')
@@ -122,6 +123,11 @@ class CreatorHelper(object):
 
                 # Copy identifier.py to /helpers
                 shutil.copyfile(f'{__here__}/identifier.py', 'helpers/identifier.py')
+
+            if folder_name == 'admin':
+                self.__create_sub_package(path='actions')
+                self.__create_sub_package(path='inlines')
+                self.__create_sub_package(path='permissions')
 
             os.chdir('..')
         except FileExistsError:
