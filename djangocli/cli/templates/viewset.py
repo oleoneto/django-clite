@@ -3,6 +3,7 @@ from jinja2 import Template
 
 model_viewset = Template(
     """from rest_framework import viewsets
+from rest_framework import permissions
 from ..models.{{ model.lower() }} import {{ model.capitalize() }}
 from ..serializers.{{ model.lower() }} import {{ model.capitalize() }}Serializer
 
