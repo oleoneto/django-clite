@@ -1,4 +1,4 @@
-from .base import BaseHelper
+from djangocli.cli.commands.base_helper import BaseHelper
 
 
 class TemplateHelper(BaseHelper):

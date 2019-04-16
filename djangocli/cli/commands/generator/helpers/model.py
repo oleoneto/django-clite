@@ -1,6 +1,7 @@
-from .base import *
-import json
 import inflect
+import json
+import os
+from djangocli.cli.commands.base_helper import BaseHelper
 from djangocli.cli.templates.model import model_attribute
 from djangocli.cli.templates.model import model as mt_
 from djangocli.cli.templates.model import model_simple
