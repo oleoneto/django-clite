@@ -29,8 +29,9 @@ def generate(ctx, dry):
 
 @generate.command()
 @click.argument('name')
+@click.option('--inline', is_flag=True, help='Register admin model as inline')
 @click.pass_context
-def admin(ctx, name):
+def admin(ctx, name, inline):
     """
     Generates an admin model within the admin directory.
     """
@@ -43,8 +44,12 @@ def admin(ctx, name):
     # Default helper
     helper = AdminHelper()
 
-    # Create content for file
-    content = helper.create(name=name)
+    if inline:
+        base_dir = base_dir + 'inlines/'
+        content = helper.create_inline(name=name)
+    else:
+        # Create content for file
+        content = helper.create(name=name)
 
     # Handling --dry flag
     if ctx.obj['dry']:

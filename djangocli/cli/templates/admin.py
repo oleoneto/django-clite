@@ -10,3 +10,13 @@ class {{ model.capitalize() }}Admin(admin.ModelAdmin):
 """)
 
 model_import = Template("""from .{{ model.lower() }} import {{ model.capitalize() }}""")
+
+
+model_admin_inline = Template("""from django.contrib import admin
+from ...models.{{ model.lower() }} import {{ model.capitalize() }}
+
+
+class {{ model.capitalize() }}Admin(admin.StackedInline):
+    model = {{ model.capitalize() }}
+    extra = 1
+""")
