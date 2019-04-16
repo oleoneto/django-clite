@@ -3,6 +3,11 @@ import os
 
 
 class BaseHelper(object):
+    def show_files(self, path):
+        # TODO: Implement show_files()
+        # List all files in the current directory
+        os.listdir(path)
+    # end def
 
     def create(self, *args, **kwargs):
         raise NotImplementedError
@@ -34,7 +39,10 @@ class BaseHelper(object):
             raise FileExistsError
     # end def
 
+    def create_template(self, template, **kwargs):
+        return template.render(**kwargs)
+    # end def
+
     def create_from_template(self, template, **kwargs):
         return template.render(**kwargs)
     # end
-# end

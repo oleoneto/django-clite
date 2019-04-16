@@ -1,4 +1,4 @@
-from .base import *
+from djangocli.cli.commands.base_helper import BaseHelper
 from djangocli.cli.templates.serializer import model_serializer
 
 

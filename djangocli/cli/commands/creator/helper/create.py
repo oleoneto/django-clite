@@ -5,7 +5,7 @@ import subprocess
 from django.core.management.base import CommandError
 from djangocli.cli.templates.docker import docker_compose as ComposeTemplate, dockerfile as DockerfileTemplate
 from djangocli.cli.templates.requirements import requirements as RequirementsTemplate
-from .project import BaseHelper
+from djangocli.cli.commands.base_helper import BaseHelper
 
 
 class CreatorHelper(object):
