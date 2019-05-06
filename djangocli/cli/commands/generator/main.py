@@ -43,6 +43,7 @@ def admin(ctx, name, inline):
 
     # Default helper
     helper = AdminHelper()
+    file = f"{name.lower()}.py"
 
     if inline:
         base_dir = base_dir + 'inlines/'
@@ -56,12 +57,15 @@ def admin(ctx, name, inline):
         log_success(content)
         return
     else:
-        file = f"{name.lower()}.py"
-
         try:
             helper.create_file(path=base_dir, filename=file, file_content=content)
+
+            if inline:
+                log_success(f"Created admin inline model {name.capitalize()} in {file}")
+                helper.add_admin_inline_import_to_init(path=base_dir, name=name)
+                return
             log_success(f"Created admin model {name.capitalize()} in {file}")
-            helper.create_in_init(path=base_dir, name=name)
+            helper.add_admin_import_to_init(path=base_dir, name=name)
         except FileExistsError:
             log_error(f"File {name} already exists")
             return
@@ -96,6 +100,9 @@ def model(ctx, admin, abstract, no_defaults, name, attributes):
     # Parse args and create model
     content = helper.create(name=name, attributes=attributes, no_defaults=no_defaults, abstract=abstract)
 
+    # TODO: handle tests
+    # testfile = helper.create_from_template()
+
     # TODO: handle --admin flag
     # TODO: handle --no_defaults flag
 
@@ -108,6 +115,7 @@ def model(ctx, admin, abstract, no_defaults, name, attributes):
 
         try:
             helper.create_file(path=base_dir, filename=name, file_content=content)
+
             log_success(f"Created model {name}")
         except FileExistsError:
             log_error(f"File {name} already exists")

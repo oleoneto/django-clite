@@ -1,6 +1,6 @@
 import os
 from djangocli.cli.commands.base_helper import BaseHelper
-from djangocli.cli.templates.admin import model_admin, model_import, model_admin_inline
+from djangocli.cli.templates.admin import model_admin, model_import, model_admin_inline, model_inline_import
 
 
 class AdminHelper(BaseHelper):
@@ -13,7 +13,23 @@ class AdminHelper(BaseHelper):
         return model_admin_inline.render(model=kwargs['name'])
     # end def
 
-    def create_in_init(self, **kwargs):
+    def add_admin_inline_import_to_init(self, **kwargs):
+        content = model_inline_import.render(model=kwargs['name'])
+
+        try:
+            os.chdir(kwargs['path'])
+
+            with open('__init__.py', 'a') as file:
+                file.write(content)
+                file.write('\n')
+            file.close()
+        except FileNotFoundError:
+            raise FileNotFoundError
+        return content
+
+    # end def
+
+    def add_admin_import_to_init(self, **kwargs):
         content = model_import.render(model=kwargs['name'])
 
         try:
