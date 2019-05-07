@@ -113,7 +113,6 @@ def model(ctx, register_admin, register_inline, abstract, name, attributes):
         try:
             helper.create_file(path=base_dir, filename=filename, file_content=content)
 
-            # TODO: handle --admin and --admin-inline flags
             if register_admin:
                 ctx.invoke(admin, name=name)
 
