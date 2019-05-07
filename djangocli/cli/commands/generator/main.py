@@ -72,12 +72,13 @@ def admin(ctx, name, inline):
 
 
 @generate.command()
-@click.option('--admin', is_flag=True, help="Register model to admin site")
+@click.option('--register-admin', is_flag=True, help="Register model to admin site")
+@click.option('--register-inline', is_flag=True, help="Register model to admin site as inline")
 @click.option('--abstract', is_flag=True, help="Creates an abstract model type")
 @click.argument("name")
 @click.argument("attributes", nargs=-1, required=False)
 @click.pass_context
-def model(ctx, admin, abstract, name, attributes):
+def model(ctx, register_admin, register_inline, abstract, name, attributes):
     """
     Generates a model under the models directory
     \f
@@ -102,19 +103,24 @@ def model(ctx, admin, abstract, name, attributes):
     # TODO: handle tests
     # testfile = helper.create_from_template()
 
-    # TODO: handle --admin flag
-
     # Handling --dry flag
     if ctx.obj['dry']:
         log_success(content)
         return
     else:
-        name = f"{name.lower()}.py"
+        filename = f"{name.lower()}.py"
 
         try:
-            helper.create_file(path=base_dir, filename=name, file_content=content)
+            helper.create_file(path=base_dir, filename=filename, file_content=content)
 
-            log_success(f"Created model {name}")
+            # TODO: handle --admin and --admin-inline flags
+            if register_admin:
+                ctx.invoke(admin, name=name)
+
+            if register_inline:
+                ctx.invoke(admin, name=name, inline=True)
+
+            log_success(f"Created model {name.capitalize()} in {filename}")
         except FileExistsError:
             log_error(f"File {name} already exists")
             return
