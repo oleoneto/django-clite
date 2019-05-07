@@ -11,4 +11,5 @@ from ..serializers.{{ model.lower() }} import {{ model.capitalize() }}Serializer
 class {{ model.capitalize() }}ViewSet(viewsets.{% if read_only %}ReadOnlyModelViewSet{% else %}ModelViewSet{% endif %}):
     queryset = {{ model.capitalize() }}.objects.all()
     serializer_class = {{ model.capitalize() }}Serializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 """)
