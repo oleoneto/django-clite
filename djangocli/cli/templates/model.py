@@ -61,3 +61,22 @@ class {{ model.capitalize() }}(models.Model):
     def __str__(self):
         return self.{% if descriptor %}{{ descriptor }}{% else %}id{% endif %}
 """)
+
+
+model_test = Template("""from django.test import TestCase
+from ..models.{{ model.lower() }} import {{ model.capitalize() }}
+
+
+class {{ model.capitalize() }}TestCase(TestCase):
+    def setUp(self):
+        # Create objects here...
+        # {{ model.capitalize() }}.objects.create()
+        # {{ model.capitalize() }}.objects.create()
+        pass
+        
+    def test_{{ model.lower() }}_can_do_something(self):
+        # Run assertions here...
+        # self.assertEqual()
+        pass
+
+""")
