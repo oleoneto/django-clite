@@ -38,10 +38,10 @@ class ModelHelper(BaseHelper):
                                                        options=options[0])
                     ATTRIBUTES.append(attribute)
 
-        if kwargs['no_defaults']:
-            return self.parsed_simple_model_template(model=kwargs['name'], attributes=ATTRIBUTES, imports=imports)
-        else:
-            return self.parsed_model_template(model=kwargs['name'], attributes=ATTRIBUTES, imports=imports, abstract=kwargs['abstract'])
+        return self.parsed_model_template(model=kwargs['name'],
+                                          attributes=ATTRIBUTES,
+                                          imports=imports,
+                                          abstract=kwargs['abstract'])
     # end def
 
     def parse_options(self, attr, current_model):

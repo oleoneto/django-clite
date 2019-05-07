@@ -121,7 +121,7 @@ class Album(models.Model):
     artwork = models.ImageField(blank=True, upload_to='uploads')
     compilation = models.BooleanField(default=False)
 
-    # Default fields. Omit with the --no-defaults flag
+    # Default fields. Used for record-keeping.
     created_at = models.DateTimeField(auto_now_add=True, editable=False)
     updated_at = models.DateTimeField(auto_now=True, editable=False)
 
@@ -155,7 +155,7 @@ from .artist import Artist
 class Album(models.Model):
     artist = models.ForeignKey(Artist, related_name='albums', on_delete=models.DO_NOTHING)
 
-    # Default fields. Omit with the --no-defaults flag
+    # Default fields. Used for record-keeping.
     created_at = models.DateTimeField(auto_now_add=True, editable=False)
     updated_at = models.DateTimeField(auto_now=True, editable=False)
 

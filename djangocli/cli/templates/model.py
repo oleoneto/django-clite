@@ -45,7 +45,7 @@ class {{ model.capitalize() }}(models.Model):
     id = models.BigIntegerField(primary_key=True, editable=False)
     {% for attribute in attributes %}{{ attribute }}
     {% endfor %}
-    # Default fields. Omit with the --no-defaults flag
+    # Default fields. Used for record-keeping.
     created_at = models.DateTimeField(auto_now_add=True, editable=False)
     updated_at = models.DateTimeField(auto_now=True, editable=False)
 

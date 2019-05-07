@@ -74,11 +74,10 @@ def admin(ctx, name, inline):
 @generate.command()
 @click.option('--admin', is_flag=True, help="Register model to admin site")
 @click.option('--abstract', is_flag=True, help="Creates an abstract model type")
-@click.option('--no-defaults', is_flag=True, help="Omit class Meta, created_at, updated_at, and __str__")
 @click.argument("name")
 @click.argument("attributes", nargs=-1, required=False)
 @click.pass_context
-def model(ctx, admin, abstract, no_defaults, name, attributes):
+def model(ctx, admin, abstract, name, attributes):
     """
     Generates a model under the models directory
     \f
@@ -98,13 +97,12 @@ def model(ctx, admin, abstract, no_defaults, name, attributes):
     helper = ModelHelper()
 
     # Parse args and create model
-    content = helper.create(name=name, attributes=attributes, no_defaults=no_defaults, abstract=abstract)
+    content = helper.create(name=name, attributes=attributes, abstract=abstract)
 
     # TODO: handle tests
     # testfile = helper.create_from_template()
 
     # TODO: handle --admin flag
-    # TODO: handle --no_defaults flag
 
     # Handling --dry flag
     if ctx.obj['dry']:
