@@ -253,11 +253,11 @@ def template(ctx, name):
         log_success(content)
         return
     else:
-        name = f"{name.lower()}.html"
+        filename = f"{name.lower()}.html"
 
         try:
-            helper.create_file(path=base_dir, filename=name, file_content=content)
-            log_success(f"Created template {name}")
+            helper.create_file(path=base_dir, filename=filename, file_content=content)
+            log_success(f"Created template {filename}")
         except FileExistsError:
-            log_error(f"File {name} already exists")
+            log_error(f"File {filename} already exists")
             return
