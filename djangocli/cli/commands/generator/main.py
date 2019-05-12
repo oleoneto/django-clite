@@ -9,6 +9,9 @@ from .helpers.template import TemplateHelper
 from .helpers.admin import AdminHelper
 from .helpers.view import ViewHelper
 
+# Templates
+from djangocli.cli.templates.viewset import ViewSetImportTemplate
+
 
 def not_an_app_directory_warning(ctx):
     if not ctx.obj['in_app']:
@@ -152,10 +155,11 @@ def viewset(ctx, read_only, name):
         log_success(content)
         return
     else:
-        name = f"{name.lower()}.py"
+        filename = f"{name.lower()}.py"
 
         try:
-            helper.create_file(path=base_dir, filename=name, file_content=content)
+            helper.create_file(path=base_dir, filename=filename, file_content=content)
+            helper.add_import(path=base_dir, template=ViewSetImportTemplate, model=name)
             log_success(f"Created viewset {name}")
         except FileExistsError:
             log_error(f"File {name} already exists")
