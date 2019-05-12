@@ -13,3 +13,5 @@ class {{ model.capitalize() }}ViewSet(viewsets.{% if read_only %}ReadOnlyModelVi
     serializer_class = {{ model.capitalize() }}Serializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 """)
+
+ViewSetImportTemplate = Template("""from .{{ model.lower() }} import {{ model.capitalize() }}ViewSet""")

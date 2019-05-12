@@ -46,3 +46,21 @@ class BaseHelper(object):
     def create_from_template(self, template, **kwargs):
         return template.render(**kwargs)
     # end
+
+    # TODO: Fix __init__ importer
+    def add_import(self, **kwargs):
+        try:
+            content = kwargs['template'].render(model=kwargs['model'])
+        except Exception:
+            raise EnvironmentError
+
+        try:
+            os.chdir(kwargs['path'])
+
+            with open('__init__.py', 'a') as file:
+                file.write(content)
+                file.write('\n')
+            file.close()
+        except FileNotFoundError:
+            raise FileNotFoundError
+        return content
