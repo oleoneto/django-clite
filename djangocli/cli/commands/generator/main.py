@@ -104,9 +104,6 @@ def model(ctx, register_admin, register_inline, abstract, name, attributes):
     # Parse args and create model
     content = helper.create(name=name, attributes=attributes, abstract=abstract)
 
-    # TODO: handle tests
-    # testfile = helper.parse_template()
-
     # Handling --dry flag
     if ctx.obj['dry']:
         log_success(content)
