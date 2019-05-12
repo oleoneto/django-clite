@@ -2,9 +2,8 @@ import inflect
 import json
 import os
 from djangocli.cli.commands.base_helper import BaseHelper
-from djangocli.cli.templates.model import model_attribute
-from djangocli.cli.templates.model import model as mt_
-from djangocli.cli.templates.model import model_simple
+from djangocli.cli.templates.model import modelAttributeTemplate
+from djangocli.cli.templates.model import modelTemplate as mt_
 
 p = inflect.engine()
 __DIR__ = os.path.dirname(os.path.abspath(__file__))
@@ -33,9 +32,9 @@ class ModelHelper(BaseHelper):
                 if attribute:
                     options = self.parse_options(attribute, kwargs['name'])
                     imports.append(options[1])
-                    attribute = model_attribute.render(name=attribute[0],
-                                                       type=attribute[1],
-                                                       options=options[0])
+                    attribute = modelAttributeTemplate.render(name=attribute[0],
+                                                              type=attribute[1],
+                                                              options=options[0])
                     ATTRIBUTES.append(attribute)
 
         return self.parsed_model_template(model=kwargs['name'],
@@ -51,6 +50,7 @@ class ModelHelper(BaseHelper):
         options = 'blank=True'
         imports = None
         special = False
+        # database_name = ''
 
         if attribute_name == "id":
             options = "primary_key=True, editable=False"
@@ -61,7 +61,7 @@ class ModelHelper(BaseHelper):
         elif attribute_type == "SlugField":
             options = "unique=True"
         elif attribute_type == "ImageField" or attribute_type == "FileField":
-            options += ", upload_to='uploads'"
+            options += ", upload_to='uploads/'"
         elif attribute_type == "ForeignKey":
             related_name = p.plural(current_model.lower())
             options = f"{attribute_name.capitalize()}, related_name='{related_name}', on_delete=models.DO_NOTHING"
@@ -99,8 +99,4 @@ class ModelHelper(BaseHelper):
 
     def parsed_model_template(self, *args, **kwargs):
         return mt_.render(**kwargs)
-    # end def
-
-    def parsed_simple_model_template(self, *args, **kwargs):
-        return model_simple.render(**kwargs)
     # end def
