@@ -105,7 +105,7 @@ def model(ctx, register_admin, register_inline, abstract, name, attributes):
     content = helper.create(name=name, attributes=attributes, abstract=abstract)
 
     # TODO: handle tests
-    # testfile = helper.create_from_template()
+    # testfile = helper.parse_template()
 
     # Handling --dry flag
     if ctx.obj['dry']:

@@ -39,15 +39,10 @@ class BaseHelper(object):
             raise FileExistsError
     # end def
 
-    def create_template(self, template, **kwargs):
-        return template.render(**kwargs)
-    # end def
-
-    def create_from_template(self, template, **kwargs):
+    def parse_template(self, template, **kwargs):
         return template.render(**kwargs)
     # end
 
-    # TODO: Fix __init__ importer
     def add_import(self, **kwargs):
         try:
             content = kwargs['template'].render(model=kwargs['model'])
