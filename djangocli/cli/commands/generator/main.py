@@ -7,6 +7,7 @@ from .helpers.serializer import SerializerHelper
 from .helpers.form import FormHelper
 from .helpers.template import TemplateHelper
 from .helpers.admin import AdminHelper
+from .helpers.view import ViewHelper
 
 
 def not_an_app_directory_warning(ctx):
@@ -258,6 +259,41 @@ def template(ctx, name):
         try:
             helper.create_file(path=base_dir, filename=filename, file_content=content)
             log_success(f"Created template {filename}")
+        except FileExistsError:
+            log_error(f"File {filename} already exists")
+            return
+
+
+@generate.command()
+@click.argument("name", required=True)
+@click.option('--list', is_flag=True, help="Create model list view")
+@click.option('--detail', is_flag=True, help="Create model list view")
+@click.pass_context
+def view(ctx, name, list, detail):
+    """
+    Generates a view
+    """
+
+    not_an_app_directory_warning(ctx)
+
+    # Default forms directory
+    base_dir = 'views/'
+
+    # Template Helper
+    helper = ViewHelper()
+
+    # Parse template
+    content = helper.create(name=name, list=list, detail=detail)
+
+    if ctx.obj['dry']:
+        log_success(content)
+        return
+    else:
+        filename = f"{name.lower()}.py"
+
+        try:
+            helper.create_file(path=base_dir, filename=filename, file_content=content)
+            log_success(f"Created view {name} in {filename}")
         except FileExistsError:
             log_error(f"File {filename} already exists")
             return
