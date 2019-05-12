@@ -47,7 +47,7 @@ def admin(ctx, name, inline):
 
     # Default helper
     helper = AdminHelper()
-    file = f"{name.lower()}.py"
+    filename = f"{name.lower()}.py"
 
     if inline:
         base_dir = base_dir + 'inlines/'
@@ -62,13 +62,13 @@ def admin(ctx, name, inline):
         return
     else:
         try:
-            helper.create_file(path=base_dir, filename=file, file_content=content)
+            helper.create_file(path=base_dir, filename=filename, file_content=content)
 
             if inline:
-                log_success(f"Created admin inline model {name.capitalize()} in {file}")
+                log_success(f"Created admin inline model {name.capitalize()} in {filename}")
                 helper.add_admin_inline_import_to_init(path=base_dir, name=name)
                 return
-            log_success(f"Created admin model {name.capitalize()} in {file}")
+            log_success(f"Created admin model {name.capitalize()} in {filename}")
             helper.add_admin_import_to_init(path=base_dir, name=name)
         except FileExistsError:
             log_error(f"File {name} already exists")
@@ -192,10 +192,10 @@ def serializer(ctx, name):
         log_success(content)
         return
     else:
-        name = f"{name.lower()}.py"
+        filename = f"{name.lower()}.py"
 
         try:
-            helper.create_file(path=base_dir, filename=name, file_content=content)
+            helper.create_file(path=base_dir, filename=filename, file_content=content)
             log_success(f"Created serializer {name}")
         except FileExistsError:
             log_error(f"File {name} already exists")
@@ -225,10 +225,10 @@ def form(ctx, name):
         log_success(content)
         return
     else:
-        name = f"{name.lower()}.py"
+        filename = f"{name.lower()}.py"
 
         try:
-            helper.create_file(path=base_dir, filename=name, file_content=content)
+            helper.create_file(path=base_dir, filename=filename, file_content=content)
             log_success(f"Created form {name}")
         except FileExistsError:
             log_error(f"File {name} already exists")
