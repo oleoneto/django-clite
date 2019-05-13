@@ -11,7 +11,7 @@ Start by cloning the repo.
 ```
 git clone https://github.com/oleoneto/Django-CLI.git
 cd Django-CLI
-pip install .
+pip install -e .
 ```
 
 ----
