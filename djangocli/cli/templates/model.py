@@ -37,7 +37,7 @@ class {{ model.capitalize() }}(models.Model):
     updated_at = models.DateTimeField(auto_now=True, editable=False)
 
     class Meta:
-        db_table = '{{ model.lower() }}'
+        db_table = '{{ db_table.lower() }}'
         ordering = ['-created_at']
         {% if abstract %}abstract = True\n{% endif %}
     def save(self, *args, **kwargs):
@@ -65,3 +65,6 @@ class {{ model.capitalize() }}TestCase(TestCase):
         pass
 
 """)
+
+
+modelImportTemplate = Template("""from .{{ model.lower() }} import {{ model.capitalize() }}""")

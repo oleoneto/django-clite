@@ -3,78 +3,96 @@
     {
       "relationships": [
         {
-          "Fk": "ForeignKey"
+          "fk": "ForeignKey"
         },
         {
-          "Many": "ManyToManyField"
+          "foreignkey": "ForeignKey"
         },
         {
-          "One": "OneToOneField"
+          "many": "ManyToManyField"
+        },
+        {
+          "manytomany": "ManyToManyField"
+        },
+        {
+          "one": "OneToOneField"
+        },
+        {
+          "onetoone": "OneToOneField"
+        },
+        {
+          "belongsto": "ForeignKey"
+        },
+        {
+          "has": "OneToOneField"
+        },
+        {
+          "hasmany": "ManyToManyField"
         }
       ]
     },
     {
-      "Char": "CharField"
+      "char": "CharField"
     },
     {
-      "String": "TextField"
+      "string": "TextField"
     },
     {
-      "Slug": "SlugField"
+      "slug": "SlugField"
     },
     {
-      "Text": "TextField"
+      "text": "TextField"
     },
     {
-      "Bool": "BooleanField"
+      "bool": "BooleanField"
     },
     {
-      "Int": "IntegerField"
+      "int": "IntegerField"
     },
     {
-      "Integer": "IntegerField"
+      "integer": "IntegerField"
     },
     { 
-      "Big": "BigIntegerField"
+      "big": "BigIntegerField"
     },
     {
-      "Float": "FloatField"
+      "float": "FloatField"
     },
     {
-      "Decimal": "DecimalField"
+      "decimal": "DecimalField"
     },
     {
-      "Date": "DateField"
+      "date": "DateField"
     },
     {
-      "DateTime": "DateTimeField"
+      "datetime": "DateTimeField"
     },
     {
-      "Duration": "DurationField"
+      "duration": "DurationField"
     },
     {
-      "Time": "TimeField"
+      "time": "TimeField"
     },
     {
-      "File": "FileField"
+      "file": "FileField"
     },
     {
-      "FilePath": "FilePathField"
+      "filepath": "FilePathField"
     },
     {
-      "Image": "ImageField"
+      "image": "ImageField"
     },
     {
-      "Email": "EmailField"
+      "email": "EmailField"
     },
     {
-      "URL": "URLField"
+      "url": "URLField"
     },
     {
-      "IPAddress": "GenericIPAddressField"
+      "ipaddress": "GenericIPAddressField"
     },
     {
-      "UUID": "UUIDField"
+      "uuid": "UUIDField"
     }
   ]
 }

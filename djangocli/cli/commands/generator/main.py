@@ -11,6 +11,7 @@ from .helpers.view import ViewHelper
 
 # Templates
 from djangocli.cli.templates.viewset import ViewSetImportTemplate
+from djangocli.cli.templates.model import modelImportTemplate
 
 
 def not_an_app_directory_warning(ctx):
@@ -102,7 +103,7 @@ def model(ctx, register_admin, register_inline, abstract, name, attributes):
     helper = ModelHelper()
 
     # Parse args and create model
-    content = helper.create(name=name, attributes=attributes, abstract=abstract)
+    content = helper.create(model=name, attributes=attributes, abstract=abstract)
 
     # Handling --dry flag
     if ctx.obj['dry']:
@@ -120,6 +121,8 @@ def model(ctx, register_admin, register_inline, abstract, name, attributes):
             if register_inline:
                 ctx.invoke(admin, name=name, inline=True)
 
+            # Ensure model is imported in __init__
+            helper.add_import(path=base_dir, template=modelImportTemplate, model=name)
             log_success(f"Created model {name.capitalize()} in {filename}")
         except FileExistsError:
             log_error(f"File {name} already exists")
