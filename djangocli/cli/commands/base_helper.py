@@ -1,5 +1,7 @@
 import click
 import os
+import fileinput
+from djangocli.cli import log_error
 
 
 class BaseHelper(object):
@@ -39,15 +41,10 @@ class BaseHelper(object):
             raise FileExistsError
     # end def
 
-    def create_template(self, template, **kwargs):
-        return template.render(**kwargs)
-    # end def
-
-    def create_from_template(self, template, **kwargs):
+    def parse_template(self, template, **kwargs):
         return template.render(**kwargs)
     # end
 
-    # TODO: Fix __init__ importer
     def add_import(self, **kwargs):
         try:
             content = kwargs['template'].render(model=kwargs['model'])
@@ -57,6 +54,14 @@ class BaseHelper(object):
         try:
             os.chdir(kwargs['path'])
 
+            # Prevents duplicate imports
+            for line in fileinput.input('__init__.py'):
+                if content in line:
+                    log_error("Module already imported. Skipping...")
+                    fileinput.close()
+                    return
+            fileinput.close()
+
             with open('__init__.py', 'a') as file:
                 file.write(content)
                 file.write('\n')
@@ -64,3 +69,4 @@ class BaseHelper(object):
         except FileNotFoundError:
             raise FileNotFoundError
         return content
+    # end def

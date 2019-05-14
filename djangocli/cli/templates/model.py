@@ -3,18 +3,16 @@ from jinja2 import Template
 
 IE = inflect.engine()
 
-model_attribute = Template("""{{ name }} = {% if not special %}models.{% endif %}{{ type }}({{ options }})""")
+modelAttributeTemplate = Template("""{{ name }} = {% if not special %}models.{% endif %}{{ type }}({{ options }})""")
 
 
-model_admin = Template(
-    """admin.register({{ model.capitalize() }}
+modelAdminTemplate = Template("""admin.register({{ model.capitalize() }}
 class {{ model.capitalize() }}Admin(admin.ModelAdmin):
     pass
 """)
 
 
-model_form = Template(
-    """from django.forms import forms
+modelFormTemplate = Template("""from django.forms import forms
 from {{ app }}.models.{{ model.lower() }} import {{ model.capitalize() }}
 
 
@@ -25,24 +23,13 @@ class {{ model.capitalize() }}Form(forms.Form):
 """)
 
 
-model_simple = Template(
-    """from django.db import models
-
-
-class {{ model.capitalize() }}(models.Model):
-    {% for attribute in attributes %}{{ attribute }}
-    {% endfor %}
-""")
-
-
-model = Template(
-    """from django.db import models
-from .helpers.identifier import make_identifier
+modelTemplate = Template("""import uuid
+from django.db import models
 {% for model in imports %}{% if model %}from .{{ model.lower() }} import {{ model.capitalize() }}
 {% endif %}{% endfor %}
 
 class {{ model.capitalize() }}(models.Model):
-    id = models.BigIntegerField(primary_key=True, editable=False)
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     {% for attribute in attributes %}{{ attribute }}
     {% endfor %}
     # Default fields. Used for record-keeping.
@@ -50,12 +37,10 @@ class {{ model.capitalize() }}(models.Model):
     updated_at = models.DateTimeField(auto_now=True, editable=False)
 
     class Meta:
-        db_table = '{{ model.lower() }}'
+        db_table = '{{ db_table.lower() }}'
         ordering = ['-created_at']
         {% if abstract %}abstract = True\n{% endif %}
     def save(self, *args, **kwargs):
-        if not self.id:
-            self.id = make_identifier()
         super().save(*args, **kwargs)
     
     def __str__(self):
@@ -63,7 +48,7 @@ class {{ model.capitalize() }}(models.Model):
 """)
 
 
-model_test = Template("""from django.test import TestCase
+modelTestCaseTemplate = Template("""from django.test import TestCase
 from ..models.{{ model.lower() }} import {{ model.capitalize() }}
 
 
@@ -80,3 +65,6 @@ class {{ model.capitalize() }}TestCase(TestCase):
         pass
 
 """)
+
+
+modelImportTemplate = Template("""from .{{ model.lower() }} import {{ model.capitalize() }}""")

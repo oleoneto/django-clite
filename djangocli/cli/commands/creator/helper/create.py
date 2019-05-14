@@ -69,20 +69,20 @@ class CreatorHelper(object):
             # Default helper
             helper = BaseHelper()
 
-            reqs = helper.create_from_template(template=RequirementsTemplate, project=kwargs['project'])
+            reqs = helper.parse_template(template=RequirementsTemplate, project=kwargs['project'])
             helper.create_file(path='.', filename='requirements.txt', file_content=reqs)
 
             if kwargs['docker']:
 
                 # Add content to docker-compose and requirements
-                compose = helper.create_from_template(template=ComposeTemplate, project=kwargs['project'])
+                compose = helper.parse_template(template=ComposeTemplate, project=kwargs['project'])
                 helper.create_file(path='.', filename='docker-compose.yml', file_content=compose)
 
             # Get sub-directory, i.e. Project/Project/
             os.chdir(kwargs['project'])
 
             if kwargs['docker']:
-                docker = helper.create_from_template(template=DockerfileTemplate, project=kwargs['project'])
+                docker = helper.parse_template(template=DockerfileTemplate, project=kwargs['project'])
                 helper.create_file(path='.', filename='Dockerfile', file_content=docker)
 
             # TODO: Add configurations to settings.py

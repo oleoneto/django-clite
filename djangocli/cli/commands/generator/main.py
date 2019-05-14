@@ -11,6 +11,7 @@ from .helpers.view import ViewHelper
 
 # Templates
 from djangocli.cli.templates.viewset import ViewSetImportTemplate
+from djangocli.cli.templates.model import modelImportTemplate
 
 
 def not_an_app_directory_warning(ctx):
@@ -47,7 +48,7 @@ def admin(ctx, name, inline):
 
     # Default helper
     helper = AdminHelper()
-    file = f"{name.lower()}.py"
+    filename = f"{name.lower()}.py"
 
     if inline:
         base_dir = base_dir + 'inlines/'
@@ -62,13 +63,13 @@ def admin(ctx, name, inline):
         return
     else:
         try:
-            helper.create_file(path=base_dir, filename=file, file_content=content)
+            helper.create_file(path=base_dir, filename=filename, file_content=content)
 
             if inline:
-                log_success(f"Created admin inline model {name.capitalize()} in {file}")
+                log_success(f"Created admin inline model {name.capitalize()} in {filename}")
                 helper.add_admin_inline_import_to_init(path=base_dir, name=name)
                 return
-            log_success(f"Created admin model {name.capitalize()} in {file}")
+            log_success(f"Created admin model {name.capitalize()} in {filename}")
             helper.add_admin_import_to_init(path=base_dir, name=name)
         except FileExistsError:
             log_error(f"File {name} already exists")
@@ -102,10 +103,7 @@ def model(ctx, register_admin, register_inline, abstract, name, attributes):
     helper = ModelHelper()
 
     # Parse args and create model
-    content = helper.create(name=name, attributes=attributes, abstract=abstract)
-
-    # TODO: handle tests
-    # testfile = helper.create_from_template()
+    content = helper.create(model=name, attributes=attributes, abstract=abstract)
 
     # Handling --dry flag
     if ctx.obj['dry']:
@@ -123,6 +121,8 @@ def model(ctx, register_admin, register_inline, abstract, name, attributes):
             if register_inline:
                 ctx.invoke(admin, name=name, inline=True)
 
+            # Ensure model is imported in __init__
+            helper.add_import(path=base_dir, template=modelImportTemplate, model=name)
             log_success(f"Created model {name.capitalize()} in {filename}")
         except FileExistsError:
             log_error(f"File {name} already exists")
@@ -192,10 +192,10 @@ def serializer(ctx, name):
         log_success(content)
         return
     else:
-        name = f"{name.lower()}.py"
+        filename = f"{name.lower()}.py"
 
         try:
-            helper.create_file(path=base_dir, filename=name, file_content=content)
+            helper.create_file(path=base_dir, filename=filename, file_content=content)
             log_success(f"Created serializer {name}")
         except FileExistsError:
             log_error(f"File {name} already exists")
@@ -225,10 +225,10 @@ def form(ctx, name):
         log_success(content)
         return
     else:
-        name = f"{name.lower()}.py"
+        filename = f"{name.lower()}.py"
 
         try:
-            helper.create_file(path=base_dir, filename=name, file_content=content)
+            helper.create_file(path=base_dir, filename=filename, file_content=content)
             log_success(f"Created form {name}")
         except FileExistsError:
             log_error(f"File {name} already exists")
