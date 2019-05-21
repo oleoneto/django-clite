@@ -6,7 +6,7 @@ from django.core.management.base import CommandError
 from djangocli.cli.templates.docker import docker_compose as composeTemplate, dockerfile as DockerfileTemplate
 from djangocli.cli.templates.requirements import requirements as requirementsTemplate
 from djangocli.cli.templates.git_repo.readme import readmeTemplate
-from djangocli.cli.templates.git_repo.gitignore import gitignore
+from djangocli.cli.templates.git_repo.gitignore import gitignoreTemplate
 from djangocli.cli.commands.base_helper import BaseHelper
 
 
@@ -104,7 +104,7 @@ class CreatorHelper(object):
             readme_file = helper.parse_template(template=readmeTemplate, project=kwargs['project'])
             helper.create_file(path='.', filename='README.md', file_content=readme_file)
 
-            gitignore_file = helper.parse_template(template=gitignore)
+            gitignore_file = helper.parse_template(template=gitignoreTemplate)
             helper.create_file(path='.', filename='.gitignore', file_content=gitignore_file)
 
             subprocess.call(['git', 'init'])
