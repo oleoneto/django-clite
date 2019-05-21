@@ -1,3 +1,6 @@
+from jinja2 import Template
+
+gitignoreTemplate = Template("""
 .idea/
 .vscode
 *.egg
@@ -6,13 +9,9 @@
 pycache
 *wheel*
 
-# Test project
-A
-django_test*
+# Test directories
 *dummy*
-file*
 ignore*
-_ignore/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -70,14 +69,12 @@ coverage.xml
 # Django stuff:
 *.log
 local_settings.py
-db.sqlite3
-secrets.py
+*.sqlite3
 credentials.py
 
 # Keys + Confidential
 credentials*
 keys*
-secrets*
 *pipelines.yml
 
 # Flask stuff:
@@ -126,3 +123,4 @@ venv.bak/
 
 # mypy
 .mypy_cache/
+""")

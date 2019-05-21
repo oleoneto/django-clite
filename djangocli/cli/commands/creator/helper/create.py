@@ -3,8 +3,10 @@ import os
 import shutil
 import subprocess
 from django.core.management.base import CommandError
-from djangocli.cli.templates.docker import docker_compose as ComposeTemplate, dockerfile as DockerfileTemplate
-from djangocli.cli.templates.requirements import requirements as RequirementsTemplate
+from djangocli.cli.templates.docker import docker_compose as composeTemplate, dockerfile as DockerfileTemplate
+from djangocli.cli.templates.requirements import requirements as requirementsTemplate
+from djangocli.cli.templates.git_repo.readme import readmeTemplate
+from djangocli.cli.templates.git_repo.gitignore import gitignoreTemplate
 from djangocli.cli.commands.base_helper import BaseHelper
 
 
@@ -66,16 +68,18 @@ class CreatorHelper(object):
             # ----------------------------------------
             os.chdir(kwargs['project'])
 
+            # TODO: Create virtual environment
+
             # Default helper
             helper = BaseHelper()
 
-            reqs = helper.parse_template(template=RequirementsTemplate, project=kwargs['project'])
+            reqs = helper.parse_template(template=requirementsTemplate, project=kwargs['project'])
             helper.create_file(path='.', filename='requirements.txt', file_content=reqs)
 
             if kwargs['docker']:
 
                 # Add content to docker-compose and requirements
-                compose = helper.parse_template(template=ComposeTemplate, project=kwargs['project'])
+                compose = helper.parse_template(template=composeTemplate, project=kwargs['project'])
                 helper.create_file(path='.', filename='docker-compose.yml', file_content=compose)
 
             # Get sub-directory, i.e. Project/Project/
@@ -95,7 +99,19 @@ class CreatorHelper(object):
 
             # Leave directory
             os.chdir('..')
+
+            # Initialize repository
+            readme_file = helper.parse_template(template=readmeTemplate, project=kwargs['project'])
+            helper.create_file(path='.', filename='README.md', file_content=readme_file)
+
+            gitignore_file = helper.parse_template(template=gitignoreTemplate)
+            helper.create_file(path='.', filename='.gitignore', file_content=gitignore_file)
+
+            subprocess.call(['git', 'init'])
+            subprocess.call(['git', 'add', '--all'])
+            subprocess.call(['git', 'commit', '-m', 'Initial commit'])
             log_success(f"Created project: {kwargs['project']}")
+
             return
         except KeyError:
             return
