@@ -301,3 +301,23 @@ def view(ctx, name, list, detail):
         except FileExistsError:
             log_error(f"File {filename} already exists")
             return
+
+
+@generate.command()
+@click.argument("name", required=True)
+@click.argument("attributes", nargs=-1, required=False)
+@click.pass_context
+def resource(ctx, name, attributes):
+    """
+    Generates an API resource \f
+    Full implementation includes model, serializer, viewset, and router endpoint
+    """
+    # TODO: Check undesired recursive behaviors
+    # creates admin/admin/inline/model.py
+    # may need to update BaseHelper
+    ctx.invoke(model, name=name, register_admin=True, register_inline=True, attributes=attributes)
+    ctx.invoke(serializer, name=name)
+    ctx.invoke(viewset, name=name)
+    ctx.invoke(form, name=name)
+    ctx.invoke(template, name=name)
+    ctx.invoke(view, name=name, list=True)
