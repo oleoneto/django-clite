@@ -6,21 +6,13 @@
 pycache
 *wheel*
 
-
-credentials*
-keys*
-secrets*
-
-
+# Test project
 A
-file*
-
 django_test*
-dummy*
-*pipelines.yml
+*dummy*
+file*
+ignore*
 _ignore/
-.venv
-app/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -81,6 +73,12 @@ local_settings.py
 db.sqlite3
 secrets.py
 credentials.py
+
+# Keys + Confidential
+credentials*
+keys*
+secrets*
+*pipelines.yml
 
 # Flask stuff:
 instance/
