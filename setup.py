@@ -1,4 +1,5 @@
 from setuptools import find_packages, setup
+import os
 
 
 # Based upon Django's own setup.py
@@ -31,7 +32,7 @@ setup(
     ],
     install_requires=[
         'Click',
-        'django>=2.1.5'
+        'django>=2.2.1'
     ],
     zip_safe=False,
     include_package_data=True,
