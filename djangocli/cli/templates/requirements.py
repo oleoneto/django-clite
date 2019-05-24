@@ -3,7 +3,7 @@ from jinja2 import Template
 requirements = Template("""# Requirements for {{ project }}
 
 # Django
-django>=2.1.5
+django>=2.2.1
 django-environ
 
 
@@ -47,7 +47,7 @@ qrcode
 # REST API Support
 coreapi
 django-rest-swagger
-djangorestframework>=3.7.7
+djangorestframework>=3.9.1
 djangorestframework-httpsignature
 djangorestframework-jsonapi>=2.6.0
 djangorestframework_simplejwt
