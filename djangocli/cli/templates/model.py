@@ -29,10 +29,10 @@ from django.db import models
 {% endif %}{% endfor %}
 
 class {{ model.capitalize() }}(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     {% for attribute in attributes %}{{ attribute }}
     {% endfor %}
     # Default fields. Used for record-keeping.
+    uuid = models.UUIDField(default=uuid.uuid4, editable=False)
     created_at = models.DateTimeField(auto_now_add=True, editable=False)
     updated_at = models.DateTimeField(auto_now=True, editable=False)
 
@@ -42,9 +42,9 @@ class {{ model.capitalize() }}(models.Model):
         {% if abstract %}abstract = True\n{% endif %}
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
-    
+
     def __str__(self):
-        return self.{% if descriptor %}{{ descriptor }}{% else %}id{% endif %}
+        return f'{self.uuid}'
 """)
 
 
@@ -58,7 +58,7 @@ class {{ model.capitalize() }}TestCase(TestCase):
         # {{ model.capitalize() }}.objects.create()
         # {{ model.capitalize() }}.objects.create()
         pass
-        
+
     def test_{{ model.lower() }}_can_do_something(self):
         # Run assertions here...
         # self.assertEqual()
