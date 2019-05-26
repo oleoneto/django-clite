@@ -30,6 +30,7 @@ def generate(ctx, dry):
     ctx.ensure_object(dict)
     ctx.obj['dry'] = dry
     ctx.obj['in_app'] = 'apps.py' in os.listdir('.')
+    ctx.obj['cwd'] = os.getcwd()
 
 
 @generate.command()
@@ -44,7 +45,7 @@ def admin(ctx, name, inline):
     not_an_app_directory_warning(ctx)
 
     # Default admin models directory
-    base_dir = 'admin/'
+    base_dir = f"{ctx.obj['cwd']}/admin/"
 
     # Default helper
     helper = AdminHelper()
@@ -97,7 +98,7 @@ def model(ctx, register_admin, register_inline, abstract, name, attributes):
     not_an_app_directory_warning(ctx)
 
     # Default model directory
-    base_dir = 'models/'
+    base_dir = f"{ctx.obj['cwd']}/models/"
 
     # Default helper
     helper = ModelHelper()
@@ -143,7 +144,7 @@ def viewset(ctx, read_only, name):
     not_an_app_directory_warning(ctx)
 
     # Default viewset directory
-    base_dir = 'viewsets/'
+    base_dir = f"{ctx.obj['cwd']}/viewsets/"
 
     # Default helper
     helper = ViewSetHelper()
@@ -180,7 +181,7 @@ def serializer(ctx, name):
     not_an_app_directory_warning(ctx)
 
     # Default serializer directory
-    base_dir = 'serializers/'
+    base_dir = f"{ctx.obj['cwd']}/serializers/"
 
     # ViewSet Helper
     helper = SerializerHelper()
@@ -213,7 +214,7 @@ def form(ctx, name):
     not_an_app_directory_warning(ctx)
 
     # Default forms directory
-    base_dir = 'forms/'
+    base_dir = f"{ctx.obj['cwd']}/forms/"
 
     # Form Helper
     helper = FormHelper()
@@ -246,7 +247,7 @@ def template(ctx, name):
     not_an_app_directory_warning(ctx)
 
     # Default forms directory
-    base_dir = 'templates/'
+    base_dir = f"{ctx.obj['cwd']}/templates/"
 
     # Template Helper
     helper = TemplateHelper()
@@ -281,7 +282,7 @@ def view(ctx, name, list, detail):
     not_an_app_directory_warning(ctx)
 
     # Default forms directory
-    base_dir = 'views/'
+    base_dir = f"{ctx.obj['cwd']}/views/"
 
     # Template Helper
     helper = ViewHelper()
