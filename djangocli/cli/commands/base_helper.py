@@ -31,7 +31,9 @@ class BaseHelper(object):
             file.close()
             os.chdir(directory)
         except FileExistsError:
-            if click.prompt(f"Override existing {filename} file?"):
+
+            can_override = click.confirm(f"Override existing {filename} file?")
+            if can_override:
                 with open(filename, 'w') as file:
                     file.write(file_content)
                     file.write('\n')
