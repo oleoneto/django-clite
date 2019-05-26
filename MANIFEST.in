@@ -1,0 +1,2 @@
+include README.md
+include djangocli/cli/commands/generator/helpers/*.json

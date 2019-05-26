@@ -1,11 +1,5 @@
 from setuptools import find_packages, setup
-
-
-# Based upon Django's own setup.py
-def read(fname):
-    with open(os.path.join(os.path.dirname(__file__), fname)) as f:
-        return f.read()
-
+import os
 
 setup(
     name="Django CLI",
@@ -14,7 +8,6 @@ setup(
     author_email="leo@ekletik.com",
     url="https://github.com/oleoneto/Django-CLI",
     description="CLI for managing Django projects",
-    long_description=read('README.md'),
     keywords="django automate cli command line tools rails ember python framework devops",
     classifiers=[
         'Environment :: Web Environment',
@@ -36,17 +29,14 @@ setup(
     zip_safe=False,
     include_package_data=True,
     packages=find_packages(),
-    package_data={
-        'djangocli': ['*.json'],
-    },
     project_urls={
         "Documentation": "https://github.com/oleoneto/Django-CLI/",
         "Source Code": "https://github.com/oleoneto/Django-CLI/",
     },
     entry_points={
         'console_scripts': [
-            'djangocli = djangocli.app:main',
+            'djangocli=app:main',
         ]
     },
-    scripts=['djangocli/app.py']
+    scripts=['app.py']
 )
