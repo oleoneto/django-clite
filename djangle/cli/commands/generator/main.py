@@ -1,6 +1,6 @@
 import click
 import os
-from djangocli.cli import log_error, log_success
+from djangle.cli import log_error, log_success
 from .helpers.model import ModelHelper
 from .helpers.viewset import ViewSetHelper
 from .helpers.serializer import SerializerHelper
@@ -10,8 +10,8 @@ from .helpers.admin import AdminHelper
 from .helpers.view import ViewHelper
 
 # Templates
-from djangocli.cli.templates.viewset import ViewSetImportTemplate
-from djangocli.cli.templates.model import modelImportTemplate
+from djangle.cli.templates.viewset import ViewSetImportTemplate
+from djangle.cli.templates.model import modelImportTemplate
 
 
 def not_an_app_directory_warning(ctx):

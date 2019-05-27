@@ -1,5 +1,5 @@
 import os
-from djangocli.cli import log_error, log_success
+from djangle.cli import log_error, log_success
 
 
 class BaseHelper(object):

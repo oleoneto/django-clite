@@ -1,5 +1,5 @@
-from djangocli.cli.commands.base_helper import BaseHelper
-from djangocli.cli.templates.serializer import model_serializer
+from djangle.cli.commands.base_helper import BaseHelper
+from djangle.cli.templates.serializer import model_serializer
 
 
 class SerializerHelper(BaseHelper):

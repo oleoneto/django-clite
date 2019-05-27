@@ -1,5 +1,5 @@
-from djangocli.cli.commands.base_helper import BaseHelper
-from djangocli.cli.templates.view import model_list_view, model_detail_view, function_based_view
+from djangle.cli.commands.base_helper import BaseHelper
+from djangle.cli.templates.view import model_list_view, model_detail_view, function_based_view
 
 
 class ViewHelper(BaseHelper):

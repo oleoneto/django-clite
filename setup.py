@@ -1,12 +1,11 @@
 from setuptools import find_packages, setup
-import os
 
 setup(
-    name="Django CLI",
+    name="Djangle CLI",
     version="0.0a4",
     author="Leo Neto",
     author_email="leo@ekletik.com",
-    url="https://github.com/oleoneto/django-cli",
+    url="https://github.com/oleoneto/djangle",
     description="CLI for managing Django projects",
     keywords="django automate cli command line tools rails ember python framework devops",
     classifiers=[
@@ -33,13 +32,13 @@ setup(
     include_package_data=True,
     packages=find_packages(),
     project_urls={
-        "Documentation": "https://github.com/oleoneto/django-cli/",
-        "Source Code": "https://github.com/oleoneto/django-cli/",
+        "Documentation": "https://github.com/oleoneto/djangle/",
+        "Source Code": "https://github.com/oleoneto/djangle/",
     },
     entry_points={
         'console_scripts': [
             'D=app:main',
-            'django-cli=app:main',
+            'djangle=app:main'
             'djungle=app:main'
         ]
     }

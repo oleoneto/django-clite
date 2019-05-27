@@ -1,20 +1,33 @@
-from djangocli.cli import log_error, log_info, log_success
+from djangle.cli import log_error, log_info, log_success
 import os
 import shutil
 import subprocess
-from django.core.management.base import CommandError
-from djangocli.cli.templates.docker import docker_compose as composeTemplate, dockerfile as DockerfileTemplate
-from djangocli.cli.templates.requirements import requirements as requirementsTemplate
-from djangocli.cli.templates.git_repo.readme import readmeTemplate
-from djangocli.cli.templates.git_repo.gitignore import gitignoreTemplate
-from djangocli.cli.commands.base_helper import BaseHelper
+import sys
+from djangle.cli.templates.docker import docker_compose as composeTemplate, dockerfile as DockerfileTemplate
+from djangle.cli.templates.requirements import requirements as requirementsTemplate
+from djangle.cli.templates.git_repo.readme import readmeTemplate
+from djangle.cli.templates.git_repo.gitignore import gitignoreTemplate
+from djangle.cli.commands.base_helper import BaseHelper
+
+DEFAULT_ERROR = {
+                "project": "Unable to create project. Will exit with code: ",
+                "app": "Unable to create app. Skipping...",
+                "clean": "Unable to remove default files. Skipping...",
+                "repo": "Unable to initialize repository. Skipping...",
+                "touch": "Unable to create default files. Skipping...",
+            }
 
 
 class CreatorHelper(object):
     def create(self, **kwargs):
         if 'project' in kwargs.keys():
-            self.__create_project(**kwargs)
-            return
+            try:
+                self.__create_project(**kwargs)
+                return
+            except subprocess.CalledProcessError as error:
+                log_error(DEFAULT_ERROR['project'])
+                log_error(error.output)
+                sys.exit(-1)
         if 'apps' in kwargs.keys():
             self.__create_app(**kwargs)
     # end def
@@ -26,19 +39,28 @@ class CreatorHelper(object):
 
             # Handle creation of each app with django-admin
             try:
-                subprocess.call(['django-admin', 'startapp', app_name])
-            except CommandError:
-                log_error("Error")
+                c = subprocess.check_output(['django-admin', 'startapp', app_name])
+            except subprocess.CalledProcessError as error:
+                log_error(DEFAULT_ERROR['app'])
+                log_error(error.output)
 
             # Run cli-specific configuration
             # ---------------------------------------------------
             os.chdir(app_name)
 
-            # Remove unnecessary files (these will be replaced with packages)
-            subprocess.call(['rm', 'models.py', 'views.py', 'tests.py', 'admin.py'])
+            try:
+                # Remove unnecessary files (these will be replaced with packages)
+                c = subprocess.check_output(['rm', 'models.py', 'views.py', 'tests.py', 'admin.py'])
+            except subprocess.CalledProcessError as error:
+                log_error(error.output)
+                log_error(DEFAULT_ERROR['clean'])
 
-            # Add app-specific urls configuration file
-            subprocess.call(['touch', 'urls.py'])
+            try:
+                # Add app-specific urls configuration file
+                subprocess.check_output(['touch', 'urls.py'])
+            except subprocess.CalledProcessError as error:
+                log_error(error.output)
+                log_error(DEFAULT_ERROR['touch'])
 
             # Create app packages
             self.__create_app_packages(path='admin')
@@ -60,8 +82,13 @@ class CreatorHelper(object):
         try:
             log_info(f"Creating project...")
 
-            # Create project with django-admin
-            subprocess.call(['django-admin', 'startproject', kwargs['project']])
+            try:
+                # Create project with django-admin
+                a = subprocess.check_output(['django-admin', 'startproject', kwargs['project']])
+            except subprocess.CalledProcessError as error:
+                log_error(error.output)
+                log_error(DEFAULT_ERROR['project'])
+                sys.exit(-1)
 
             # Run cli-specific configuration
             # Inside nested directory
@@ -95,7 +122,7 @@ class CreatorHelper(object):
             try:
                 self.__create_app(**kwargs)
             except KeyError:
-                pass
+                log_error(DEFAULT_ERROR['app'])
 
             # Leave directory
             os.chdir('..')
@@ -107,9 +134,12 @@ class CreatorHelper(object):
             gitignore_file = helper.parse_template(template=gitignoreTemplate)
             helper.create_file(path='.', filename='.gitignore', file_content=gitignore_file)
 
-            subprocess.call(['git', 'init'])
-            subprocess.call(['git', 'add', '--all'])
-            subprocess.call(['git', 'commit', '-m', 'Initial commit'])
+            try:
+                c = subprocess.check_output(['git', 'init'])
+                c = subprocess.check_output(['git', 'add', '--all'])
+                c = subprocess.check_output(['git', 'commit', '-m', 'Initial commit'])
+            except:
+                log_error("Unable to proceed")
             log_success(f"Created project: {kwargs['project']}")
 
             return
