@@ -2,7 +2,7 @@ from setuptools import find_packages, setup
 
 setup(
     name="Djangle CLI",
-    version="0.0a4",
+    version="0.0.1",
     author="Leo Neto",
     author_email="leo@ekletik.com",
     url="https://github.com/oleoneto/djangle",
