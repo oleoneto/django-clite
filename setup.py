@@ -38,7 +38,8 @@ setup(
     entry_points={
         'console_scripts': [
             'D=app:main',
-            'django-cli=app:main'
+            'django-cli=app:main',
+            'djungle=app:main'
         ]
     }
 )
