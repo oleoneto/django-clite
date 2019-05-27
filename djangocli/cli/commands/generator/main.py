@@ -306,16 +306,15 @@ def view(ctx, name, list, detail):
 
 @generate.command()
 @click.argument("name", required=True)
-@click.argument("attributes", nargs=-1, required=False)
+@click.argument("attributes", nargs=-1)
 @click.pass_context
 def resource(ctx, name, attributes):
     """
-    Generates an API resource \f
-    Full implementation includes model, serializer, viewset, and router endpoint
+    Fully implements an app resource \b
+
+    Implementation includes: model, serializer, view, viewset, and template.
     """
-    # TODO: Check undesired recursive behaviors
-    # creates admin/admin/inline/model.py
-    # may need to update BaseHelper
+
     ctx.invoke(model, name=name, register_admin=True, register_inline=True, attributes=attributes)
     ctx.invoke(serializer, name=name)
     ctx.invoke(viewset, name=name)
