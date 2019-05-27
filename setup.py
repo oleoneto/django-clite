@@ -3,7 +3,7 @@ import os
 
 setup(
     name="Django CLI",
-    version="0.0a3",
+    version="0.0a4",
     author="Leo Neto",
     author_email="leo@ekletik.com",
     url="https://github.com/oleoneto/django-cli",
