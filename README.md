@@ -1,4 +1,4 @@
-Django CLI [WIP]
+Djangle-CLI [WIP]
 
 CLI that handles creating and managing Django projects
 
@@ -9,13 +9,13 @@ CLI that handles creating and managing Django projects
 #### Installation
 Install via [pip](http://www.pip-installer.org/):
 ```
-pip install djangocli
+pip install djangle
 ```
 
 Install from source:
 ```
-git clone https://github.com/oleoneto/django-cli.git
-cd djangocli
+git clone https://github.com/oleoneto/djangle.git
+cd djangle
 pip install .
 ```
 
@@ -41,7 +41,7 @@ django-admin startapp developers
 django-admin startapp blog
 ```
 
-The equivalent command in the Django-CLI is:
+The equivalent command in the Djangle-CLI is:
 ```
 D new project API developers blog
 ```
@@ -188,7 +188,7 @@ Supported relationship identifiers:
 - **Many**: ManyToManyField
 
 #### Generating Serializers and Viewsets
-If you are working on an API and use the `Django REST Framework` to support your backend, you can also use the Django-CLI to create `serializers` and `viewsets`.
+If you are working on an API and use the `Django REST Framework` to support your backend, you can also use the Djangle-CLI to create `serializers` and `viewsets`.
 
 The commands are much like the ones used to generate a model except you don't specify any model attributes, just the model name:
 ```bash
@@ -261,7 +261,7 @@ D destroy model album
 ----
 
 ### To Do
-[Check open issues.](https://github.com/oleoneto/Django-CLI/issues)
+[Check open issues.](https://github.com/oleoneto/djangle/issues)
 
 ----
 
@@ -271,4 +271,4 @@ This project is a work in progress. Contributions are very much welcome.
 ----
 
 ### LICENSE
-**Django CLI** is [MIT Licensed](LICENSE).
+**Djangle-CLI** is [MIT Licensed](LICENSE).

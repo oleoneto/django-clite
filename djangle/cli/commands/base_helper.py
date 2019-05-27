@@ -1,7 +1,7 @@
 import click
 import os
 import fileinput
-from djangocli.cli import log_error
+from djangle.cli import log_error
 
 
 class BaseHelper(object):

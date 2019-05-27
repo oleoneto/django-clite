@@ -1,6 +1,6 @@
 import os
-from djangocli.cli.commands.base_helper import BaseHelper
-from djangocli.cli.templates.admin import model_admin, model_import, model_admin_inline, model_inline_import
+from djangle.cli.commands.base_helper import BaseHelper
+from djangle.cli.templates.admin import model_admin, model_import, model_admin_inline, model_inline_import
 
 
 class AdminHelper(BaseHelper):

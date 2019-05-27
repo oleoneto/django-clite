@@ -1,5 +1,5 @@
-from djangocli.cli.commands.base_helper import BaseHelper
-from djangocli.cli.templates.form import model_form
+from djangle.cli.commands.base_helper import BaseHelper
+from djangle.cli.templates.form import model_form
 
 
 class FormHelper(BaseHelper):

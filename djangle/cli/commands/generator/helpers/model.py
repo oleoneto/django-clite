@@ -2,9 +2,9 @@ import inflect
 import json
 import os
 import fileinput
-from djangocli.cli.commands.base_helper import BaseHelper
-from djangocli.cli.templates.model import modelAttributeTemplate
-from djangocli.cli.templates.model import modelTemplate
+from djangle.cli.commands.base_helper import BaseHelper
+from djangle.cli.templates.model import modelAttributeTemplate
+from djangle.cli.templates.model import modelTemplate
 
 p = inflect.engine()
 __DIR__ = os.path.dirname(os.path.abspath(__file__))

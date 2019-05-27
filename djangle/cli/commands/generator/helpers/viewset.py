@@ -1,5 +1,5 @@
-from djangocli.cli.commands.base_helper import BaseHelper
-from djangocli.cli.templates.viewset import model_viewset
+from djangle.cli.commands.base_helper import BaseHelper
+from djangle.cli.templates.viewset import model_viewset
 
 
 class ViewSetHelper(BaseHelper):

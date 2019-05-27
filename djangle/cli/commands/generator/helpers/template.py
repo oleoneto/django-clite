@@ -1,5 +1,5 @@
-from djangocli.cli.commands.base_helper import BaseHelper
-from djangocli.cli.templates.template import base_template
+from djangle.cli.commands.base_helper import BaseHelper
+from djangle.cli.templates.template import base_template
 
 
 class TemplateHelper(BaseHelper):
