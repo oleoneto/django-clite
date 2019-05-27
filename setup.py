@@ -1,7 +1,7 @@
 from setuptools import find_packages, setup
 
 setup(
-    name="djangle cli",
+    name="djangle-cli",
     version="0.0.1",
     author="Leo Neto",
     author_email="leo@ekletik.com",
