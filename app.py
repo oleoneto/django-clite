@@ -1,9 +1,6 @@
 """
 Django CLI
 
-Requirements:
-Python3.6, PIP, Django 2.1, and Git
-
 Description:
 A CLI that handles creating and managing Django projects
 """
