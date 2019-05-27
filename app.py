@@ -19,13 +19,15 @@ from djangocli.cli.commands.creator.main import new
 @click.pass_context
 def main(ctx):
     """
-    Django CLI \f Version 0.0.alpha1
+    Django CLI
+
+    One CLI to handle the creation and management of your Django projects.
     """
 
 
 """
 Commands should be added as sub-commands of the main click group.
-This ensures sub-commands can be chained and 
+This ensures sub-commands can be chained and
 run as `django-cli SUB-COMMAND COMMAND`
 """
 main.add_command(destroy)
