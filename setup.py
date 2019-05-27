@@ -3,7 +3,7 @@ import os
 
 setup(
     name="Django CLI",
-    version="0.0a3",
+    version="0.0a4",
     author="Leo Neto",
     author_email="leo@ekletik.com",
     url="https://github.com/oleoneto/django-cli",
@@ -25,6 +25,7 @@ setup(
     license="BSD",
     install_requires=[
         'Click==7.0',
+        'jinja2',
         'inflect==2.1.0',
         'django>=2.2.1'
     ],
