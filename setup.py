@@ -1,5 +1,10 @@
 from setuptools import find_packages, setup
 
+
+with open("README.md", "r") as f:
+    long_description = f.read()
+
+
 setup(
     name="djangle-cli",
     version="0.0.2a",
@@ -7,6 +12,8 @@ setup(
     author_email="leo@ekletik.com",
     url="https://github.com/oleoneto/djangle",
     description="CLI for managing Django projects",
+    long_description=long_description,
+    long_description_content_type='text/markdown',
     keywords="django automate cli command line tools rails ember python framework devops",
     classifiers=[
         'Environment :: Web Environment',
