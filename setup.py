@@ -46,7 +46,7 @@ setup(
         'console_scripts': [
             'D=app:main',
             'djangle=app:main',
-            'djungle=app:main'
+            'djangle-cli=app:main'
         ]
     },
     scripts=['app.py']
