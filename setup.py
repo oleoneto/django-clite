@@ -7,7 +7,7 @@ with open("README.md", "r") as f:
 
 setup(
     name="djangle-cli",
-    version="0.0.2a",
+    version="0.0.alpha3",
     author="Leo Neto",
     author_email="leo@ekletik.com",
     url="https://github.com/oleoneto/djangle",
