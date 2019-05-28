@@ -1,6 +1,6 @@
 import os
 from djangle.cli.commands.base_helper import BaseHelper
-from djangle.cli.templates.admin import model_admin, model_import, model_admin_inline, model_inline_import
+from djangle.cli.templates.admin import model_admin, model_admin_import, model_admin_inline, model_inline_import
 
 
 class AdminHelper(BaseHelper):
@@ -30,7 +30,7 @@ class AdminHelper(BaseHelper):
     # end def
 
     def add_admin_import_to_init(self, **kwargs):
-        content = model_import.render(model=kwargs['name'])
+        content = model_admin_import.render(model=kwargs['name'])
 
         try:
             os.chdir(kwargs['path'])

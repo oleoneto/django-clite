@@ -9,7 +9,7 @@ class {{ model.capitalize() }}Admin(admin.ModelAdmin):
     pass
 """)
 
-model_import = Template("""from .{{ model.lower() }} import {{ model.capitalize() }}Admin""")
+model_admin_import = Template("""from .{{ model.lower() }} import {{ model.capitalize() }}Admin""")
 
 
 model_admin_inline = Template("""from django.contrib import admin

@@ -2,7 +2,7 @@ from setuptools import find_packages, setup
 
 setup(
     name="djangle-cli",
-    version="0.0.1",
+    version="0.0.2a",
     author="Leo Neto",
     author_email="leo@ekletik.com",
     url="https://github.com/oleoneto/djangle",
@@ -38,7 +38,7 @@ setup(
     entry_points={
         'console_scripts': [
             'D=app:main',
-            'djangle=app:main'
+            'djangle=app:main',
             'djungle=app:main'
         ]
     }

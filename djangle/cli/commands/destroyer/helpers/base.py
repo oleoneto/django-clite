@@ -1,29 +1,55 @@
 import os
+import fileinput
 from djangle.cli import log_error, log_success
 
 
-class BaseHelper(object):
+class DestroyHelper(object):
 
-    def delete(self, base_dir, resource):
+    @classmethod
+    def destroy(cls, **kwargs):
+        log_success("Remove import")
+        # cls.remove_import(**kwargs)
 
-        file = resource
+        log_success("Delete type")
+        # cls.delete(**kwargs)
+    # end def
 
-        if not resource.split('.')[-1] == 'py':
-            file = f'{resource}.py'
-
-        resource = resource.split('.')[0]
+    @classmethod
+    def remove_import(cls, **kwargs):
+        init_file = '__init__.py'
+        path = kwargs['path']
+        name = kwargs['model']
 
         try:
-            os.chdir(base_dir)
-            os.remove(file)
-            log_success(f"Removed {file} successfully.")
+            content = kwargs['template'].render(model=kwargs['model'])
+        except Exception:
+            log_error("Wrong arguments passed.")
+            raise EnvironmentError
 
-            if len(os.listdir('.')) == 0:
-                os.chdir('..')
-                cur_dir = base_dir.split('/')[1]
-                os.removedirs(cur_dir)
-                log_success(f'Removed {cur_dir} directory.')
+        try:
+            os.chdir(path)
+
+            for line in fileinput.input(init_file, inplace=True):
+                if content not in line:
+                    print(line, end='')
+            fileinput.close()
+
         except FileNotFoundError:
-            log_error(f"File {file} for {resource.capitalize()} type not found.")
+            log_error(f"__init__ file not found.")
+            raise FileNotFoundError
+    # end def
+
+    @classmethod
+    def delete(cls, **kwargs):
+        path = kwargs['path']
+        name = kwargs['model']
+        filename = f"{name.lower()}.py"
+
+        try:
+            os.chdir(path)
+            os.remove(filename)
+            log_success(f"Successfully removed {filename} for {name.capitalize()}")
+        except FileNotFoundError:
+            log_error(f"File {filename} for {name.capitalize()} type not found.")
     # end def
 # end class

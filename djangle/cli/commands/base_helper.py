@@ -5,17 +5,21 @@ from djangle.cli import log_error
 
 
 class BaseHelper(object):
-    def show_files(self, path):
+
+    @classmethod
+    def show_files(cls, path):
         # TODO: Implement show_files()
         # List all files in the current directory
         os.listdir(path)
     # end def
 
-    def create(self, *args, **kwargs):
+    @classmethod
+    def create(cls, *args, **kwargs):
         raise NotImplementedError
     # end def
 
-    def create_file(self, path, filename, file_content):
+    @classmethod
+    def create_file(cls, path, filename, file_content):
         directory = os.getcwd()
 
         try:
@@ -43,11 +47,13 @@ class BaseHelper(object):
             raise FileExistsError
     # end def
 
-    def parse_template(self, template, **kwargs):
+    @classmethod
+    def parse_template(cls, template, **kwargs):
         return template.render(**kwargs)
-    # end
+    # end def
 
-    def add_import(self, **kwargs):
+    @classmethod
+    def add_import(cls, **kwargs):
         try:
             content = kwargs['template'].render(model=kwargs['model'])
         except Exception:
