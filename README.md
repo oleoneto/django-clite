@@ -1,4 +1,4 @@
-Djangle-CLI [WIP]
+# Djangle-CLI
 
 CLI that handles creating and managing Django projects
 
