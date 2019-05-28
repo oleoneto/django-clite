@@ -9,7 +9,7 @@ CLI that handles creating and managing Django projects
 #### Installation
 Install via [pip](http://www.pip-installer.org/):
 ```
-pip install djangle
+pip install djangle-cli
 ```
 
 Install from source:
