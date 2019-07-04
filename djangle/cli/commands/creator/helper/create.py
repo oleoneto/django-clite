@@ -3,11 +3,20 @@ import os
 import shutil
 import subprocess
 import sys
-from djangle.cli.templates.docker import docker_compose as composeTemplate, dockerfile as DockerfileTemplate
-from djangle.cli.templates.requirements import requirements as requirementsTemplate
-from djangle.cli.templates.git_repo.readme import readmeTemplate
-from djangle.cli.templates.git_repo.gitignore import gitignoreTemplate
 from djangle.cli.commands.base_helper import BaseHelper
+from djangle.cli.templates.requirements import requirements_template
+from djangle.cli.templates.git_repo.readme import readme_template
+from djangle.cli.templates.git_repo.gitignore import git_ignore_template
+from djangle.cli.templates.router import router_template
+from djangle.cli.templates.urls import app_urls_template
+from djangle.cli.templates.docker import docker_compose_template, dockerfile_template
+from djangle.cli.templates.dokku import (
+    app_template,
+    dokku_checks_template,
+    dokku_scale_template,
+    procfile_template
+)
+
 
 DEFAULT_ERROR = {
                 "project": "Unable to create project. Will exit with code: ",
@@ -34,12 +43,14 @@ class CreatorHelper(object):
 
     def __create_app(self, **kwargs):
 
+        helper = BaseHelper()
+
         for app_name in kwargs['apps']:
             log_info(f"Creating application...")
 
             # Handle creation of each app with django-admin
             try:
-                c = subprocess.check_output(['django-admin', 'startapp', app_name])
+                subprocess.check_output(['django-admin', 'startapp', app_name])
             except subprocess.CalledProcessError as error:
                 log_error(DEFAULT_ERROR['app'])
                 log_error(error.output)
@@ -50,27 +61,27 @@ class CreatorHelper(object):
 
             try:
                 # Remove unnecessary files (these will be replaced with packages)
-                c = subprocess.check_output(['rm', 'models.py', 'views.py', 'tests.py', 'admin.py'])
+                subprocess.check_output(['rm', 'models.py', 'views.py', 'tests.py', 'admin.py'])
             except subprocess.CalledProcessError as error:
                 log_error(error.output)
                 log_error(DEFAULT_ERROR['clean'])
 
             try:
-                # Add app-specific urls configuration file
-                subprocess.check_output(['touch', 'urls.py'])
+                urls = helper.parse_template(template=app_urls_template)
+                helper.create_file(path='.', filename='urls.py', file_content=urls)
             except subprocess.CalledProcessError as error:
                 log_error(error.output)
                 log_error(DEFAULT_ERROR['touch'])
 
             # Create app packages
-            self.__create_app_packages(path='admin')
-            self.__create_app_packages(path='forms')
-            self.__create_app_packages(path='serializers')
-            self.__create_app_packages(path='templates')
-            self.__create_app_packages(path='tests')
-            self.__create_app_packages(path='views')
-            self.__create_app_packages(path='viewsets')
-            self.__create_app_packages(path='models')
+            self.__create_app_packages(path='admin', app_name=app_name)
+            self.__create_app_packages(path='forms', app_name=app_name)
+            self.__create_app_packages(path='serializers', app_name=app_name)
+            self.__create_app_packages(path='templates', app_name=app_name)
+            self.__create_app_packages(path='tests', app_name=app_name)
+            self.__create_app_packages(path='views', app_name=app_name)
+            self.__create_app_packages(path='viewsets', app_name=app_name)
+            self.__create_app_packages(path='models', app_name=app_name)
 
             # ---------------------------------------------------
             # Leave directory
@@ -84,7 +95,7 @@ class CreatorHelper(object):
 
             try:
                 # Create project with django-admin
-                a = subprocess.check_output(['django-admin', 'startproject', kwargs['project']])
+                subprocess.check_output(['django-admin', 'startproject', kwargs['project']])
             except subprocess.CalledProcessError as error:
                 log_error(error.output)
                 log_error(DEFAULT_ERROR['project'])
@@ -100,24 +111,49 @@ class CreatorHelper(object):
             # Default helper
             helper = BaseHelper()
 
-            reqs = helper.parse_template(template=requirementsTemplate, project=kwargs['project'])
-            helper.create_file(path='.', filename='requirements.txt', file_content=reqs)
+            reqs = helper.parse_template(template=requirements_template, project=kwargs['project'])
+            helper.create_file(path='.', filename='requirements_template.txt', file_content=reqs)
 
+            # Handle creation of docker-compose and Dockerfile
             if kwargs['docker']:
-
-                # Add content to docker-compose and requirements
-                compose = helper.parse_template(template=composeTemplate, project=kwargs['project'])
+                # Add content to docker-compose and requirements_template
+                compose = helper.parse_template(template=docker_compose_template, project=kwargs['project'])
                 helper.create_file(path='.', filename='docker-compose.yml', file_content=compose)
+
+            # Handle creation of dokku directory and appropriate files
+            if kwargs['dokku']:
+                try:
+                    os.mkdir('dokku')
+                    os.chdir('dokku')
+
+                    app = helper.parse_template(template=app_template)
+                    helper.create_file(path='.', filename='app.json', file_content=app)
+
+                    procfile = helper.parse_template(template=procfile_template, project=kwargs['project'])
+                    helper.create_file(path='.', filename='Procfile', file_content=procfile)
+
+                    checks = helper.parse_template(template=dokku_checks_template, wait=20, timeout=60)
+                    helper.create_file(path='.', filename='CHECKS', file_content=checks)
+                    helper.create_file(path='..', filename='CHECKS', file_content=checks)
+
+                    scale = helper.parse_template(template=dokku_scale_template, web=1)
+                    helper.create_file(path='.', filename='DOKKU_SCALE', file_content=scale)
+
+                    os.chdir('..')
+                except subprocess.CalledProcessError:
+                    sys.exit(-1)
 
             # Get sub-directory, i.e. Project/Project/
             os.chdir(kwargs['project'])
 
             if kwargs['docker']:
-                docker = helper.parse_template(template=DockerfileTemplate, project=kwargs['project'])
+                docker = helper.parse_template(template=dockerfile_template, project=kwargs['project'])
                 helper.create_file(path='.', filename='Dockerfile', file_content=docker)
 
-            # TODO: Add configurations to settings.py
-            # ...
+            if kwargs['core']:
+                self.__create_app(apps=['core'])
+
+                # TODO: Add configurations to settings.py
 
             try:
                 self.__create_app(**kwargs)
@@ -128,10 +164,10 @@ class CreatorHelper(object):
             os.chdir('..')
 
             # Initialize repository
-            readme_file = helper.parse_template(template=readmeTemplate, project=kwargs['project'])
+            readme_file = helper.parse_template(template=readme_template, project=kwargs['project'])
             helper.create_file(path='.', filename='README.md', file_content=readme_file)
 
-            gitignore_file = helper.parse_template(template=gitignoreTemplate)
+            gitignore_file = helper.parse_template(template=git_ignore_template)
             helper.create_file(path='.', filename='.gitignore', file_content=gitignore_file)
 
             try:
@@ -149,7 +185,9 @@ class CreatorHelper(object):
 
     def __create_app_packages(self, **kwargs):
 
+        app_name = kwargs['app_name']
         folder_name = kwargs['path']
+        helper = BaseHelper()
 
         # Get location of this very file...
         __here__ = os.path.dirname(os.path.abspath(__file__))
@@ -174,6 +212,10 @@ class CreatorHelper(object):
                 self.__create_sub_package(path='actions')
                 self.__create_sub_package(path='inlines')
                 self.__create_sub_package(path='permissions')
+
+            if folder_name == 'viewsets':
+                router = helper.parse_template(template=router_template, app_name=app_name)
+                helper.create_file(path='.', filename='router.py', file_content=router)
 
             os.chdir('..')
         except FileExistsError:

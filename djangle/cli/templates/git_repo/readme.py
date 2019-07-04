@@ -1,7 +1,7 @@
 from jinja2 import Template
 
 
-readmeTemplate = Template("""# {{ project }}
+readme_template = Template("""# {{ project }}
 {% if author %}Author: {{ author }} {% endif %}
 
 #### CLI Documentation
@@ -13,13 +13,13 @@ Issues: https://github.com/oleoneto/Django-CLI/issues
 ----
 
 #### Requirements
-[Requirements](requirements.txt)
+[Requirements](requirements_template.txt)
 
 ----
 
-#### Virtual environment + install requirements
+#### Virtual environment + install requirements_template
 ```
-source venv/bin/activate && pip install -r requirements.txt
+source venv/bin/activate && pip install -r requirements_template.txt
 ```
 
 ----

@@ -1,6 +1,6 @@
 from jinja2 import Template
 
-gitignoreTemplate = Template("""
+git_ignore_template = Template("""
 .idea/
 .vscode
 *.egg

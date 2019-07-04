@@ -1,7 +1,7 @@
 from jinja2 import Template
 
 
-dockerfile = Template("""FROM python:3.6.5
+dockerfile_template = Template("""FROM python:3.6.5
 
 # Environment variables
 ENV PYTHONUNBUFFERED 1
@@ -11,21 +11,21 @@ RUN apt-get update
 RUN apt-get install -y swig libssl-dev dpkg-dev netcat
 
 RUN pip install -U pip
-ADD requirements.txt /code/
-RUN pip install -Ur /code/requirements.txt
+ADD requirements_template.txt /code/
+RUN pip install -Ur /code/requirements_template.txt
 
 # Set working directory
 WORKDIR /code/
 
-# Copy requirements to working directory
-COPY ./requirements.txt .
+# Copy requirements_template to working directory
+COPY ./requirements_template.txt .
 
 # Copy project files
 COPY . /code/
 """)
 
 
-docker_compose = Template("""version: '3'
+docker_compose_template = Template("""version: '3'
 
 services:
   web:

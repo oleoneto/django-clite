@@ -10,3 +10,6 @@ inflect
 
 # Configuration
 setuptools
+
+# Tests
+tox
