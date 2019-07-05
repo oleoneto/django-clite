@@ -1,145 +1,227 @@
-import inflect
+import click
+import fileinput
+import inflection
 import json
 import os
-import fileinput
+from djangle.cli import log_success, sanitized_string
 from djangle.cli.commands.base_helper import BaseHelper
-from djangle.cli.templates.model import modelAttributeTemplate
-from djangle.cli.templates.model import modelTemplate
+from djangle.cli.templates.model import (
+    model_field_template,
+    model_import_template,
+    model_template
+)
 
-p = inflect.engine()
-__DIR__ = os.path.dirname(os.path.abspath(__file__))
-file = open(f'{__DIR__}/fields.json')
-data = json.load(file)
-file.close()
 
-supported_fields = []
-types = data['reserved_words']
-relationships = data['reserved_words'][0]['relationships']
+DEFAULT_NOT_IN_SCOPE_WARNING = """Cannot find model {} in {} scope. Want to create model?"""
 
 
 class ModelHelper(BaseHelper):
 
-    # Store import statements
-    extra_imports = []
+    imports_list = []
 
-    # Store attributes
-    attributes_list = []
+    fields_list = []
 
-    def get_token_type(self, token):
-        # Token char:name, float:price
-        token = token.split(":")
-        token_type = token[0].lower()
-        token_name = token[1].lower()
+    @classmethod
+    def append_import(cls, value):
+        if value not in cls.imports_list:
+            cls.imports_list.append(value)
 
-        for i in token:
-            if len(i) <= 1:
-                return None
+    def create(self, **kwargs):
+        model = self.check_noun(kwargs['model'])
 
-        # Checks if type is a relationship field
-        for t in relationships:
-            if token_type in t:
-                return token_name, t.get(token_type)
+        app_name = self.get_app_name()
 
-        # Checks if type is a generic field
-        for t in types:
-            if token_type in t:
-                return token_name, t.get(token_type)
-        return None
-    # end def
+        path = kwargs['path']
 
-    def get_options(self, model_name, attribute_name, attribute_type):
-        options = 'blank=True'
+        filename = f"{model}.py"
 
-        if attribute_type == "BooleanField":
-            options = "default=False"
+        db_table_name = f"{app_name}_{inflection.pluralize(model)}"
 
-        elif attribute_type == "CharField":
-            options = "max_length=30"
+        self.parse_fields(**kwargs)
 
-        elif attribute_type == "ForeignKey":
-            options = f"{attribute_name.capitalize()}, " \
-                f"related_name='{p.plural(model_name.lower())}', " \
-                f"on_delete=models.PROTECT"
-            self.append_import(attribute_name)
+        self.parse_and_create(
+            model=model,
+            abstract=kwargs['abstract'],
+            fields=self.fields_list,
+            imports=self.imports_list,
+            db_table=db_table_name,
+            template=model_template,
+            filename=filename,
+            path=path,
+            dry=kwargs['dry']
+        )
 
-        elif attribute_type == "ImageField" or attribute_type == "FileField":
-            options += ", upload_to='uploads/'"
+        self.add_import(**kwargs, template=model_import_template)
 
-        elif attribute_type == "ManyToManyField":
-            options = f"{attribute_name.capitalize()}, blank=True"
-            self.append_import(attribute_name)
+        log_success("Successfully created model.")
 
-        elif attribute_type == "OneToOneField":
-            options = f"{model_name.capitalize()}, " \
-                f"related_name='{model_name.lower()}', " \
-                f"on_delete=models.CASCADE"
-            self.append_import(attribute_name)
+    @classmethod
+    def find_resource_in_scope(cls, model):
+        """
+        Searches the current directory for the specified model
+        either by filename or import statement in __init__.py
 
-        elif attribute_type == "SlugField":
-            options = "unique=True"
+        If the model is not found in the current scope, a warning is displayed
+        indicating that user input is needed to proceed with the command.
+        """
+        path = f"{os.getcwd()}/models"
 
-        return options
-    # end def
+        init = f"{path}/__init__.py"
 
-    def get_imports(self):
-        return self.extra_imports
-    # end def
+        app_name = cls.get_app_name()
 
-    def get_app_name(self):
-        # print(os.listdir('.'))
-        for line in fileinput.input('apps.py'):
-            if "name = " in line:
+        filename = model.lower()
+
+        if not model.endswith('.py'):
+            filename += '.py'
+
+        if filename in os.listdir(path):
+            return
+
+        for line in fileinput.input(init):
+            if model.capitalize() in line:
                 fileinput.close()
-                return line.split(" = ")[1].lstrip().replace("\n", "")
+                return
         fileinput.close()
+
+        if click.confirm(DEFAULT_NOT_IN_SCOPE_WARNING.format(model.capitalize(), app_name)):
+            # TODO: Create model in question...
+            pass
+
+    @classmethod
+    def get_app_name(cls):
+        """
+        Searches current directory for apps.py in order to
+        retrieve the application name from it.
+        """
+        try:
+            for line in fileinput.input('apps.py'):
+                if "name = " in line:
+                    fileinput.close()
+                    return line.split(" = ")[1].lstrip().replace("\n", "").replace("'", "")
+            fileinput.close()
+        except FileNotFoundError:
+            return "app"
         return "app"
 
-    def append_import(self, value):
-        if value not in self.extra_imports:
-            self.extra_imports.append(value)
-    # end def
+    @classmethod
+    def handle_tokens(cls, field):
+        """
+        Should parse input attribute into individual tokens.
+        Expect input to be of the form (char:name, text:bio, image:artwork)
+        """
 
-    def parse_attributes(self, *args, **kwargs):
-        # Parse and store each attribute
-        if kwargs['attributes']:
-            for attribute in kwargs['attributes']:
+        filepath = f'{os.path.dirname(os.path.abspath(__file__))}/fields.json'
 
-                try:
-                    attribute_name = self.get_token_type(attribute)[0]
-                    attribute_type = self.get_token_type(attribute)[1]
+        file = open(filepath)
 
-                    if attribute_type is not None:
-                        options = self.get_options(model_name=kwargs['model'],
-                                                   attribute_type=attribute_type,
-                                                   attribute_name=attribute_name)
-                        parsed_attribute = self.parse_template(name=attribute_name,
-                                                               options=options,
-                                                               type=attribute_type,
-                                                               template=modelAttributeTemplate)
+        data = json.load(file)
 
-                        self.attributes_list.append(parsed_attribute)
-                except TypeError:
-                    pass
+        file.close()
 
-    # Interface method
-    def create(self, *args, **kwargs):
-        self.parse_attributes(**kwargs)
-        app_name = self.get_app_name().replace("'", "")
-        model_singular_name = kwargs['model']
-        model_plural_name = p.plural(kwargs['model']).lower()
-        db_table_name = f"{app_name}_{model_plural_name}"
+        default_token_types = data['reserved_words']
 
-        return self.parse_template(template=modelTemplate,
-                                   imports=self.get_imports(),
-                                   model=model_singular_name,
-                                   db_table=db_table_name,
-                                   attributes=self.attributes_list,
-                                   abstract=kwargs['abstract'])
-    # end def
+        relationships = default_token_types[0]['relationships']
 
-    # Check model in scope
-    def check_model_in_scope(self, model, scope):
-        # Move to app scope
-        # Look for model in models/{{ model.lower() }}.py
-        pass
-    # end def
+        # i.e char:first_name
+        parsed_token = field.split(":")
+
+        # i.e char
+        parsed_token_type = parsed_token[0]
+
+        # i.e first_name
+        parsed_token_name = parsed_token[1]
+
+        # Ensure token exists and has minimum required length of 2
+        for part in parsed_token:
+            if len(part) < 2:
+                return None
+
+        # Check if parsed_token_type is a relationship field
+        for relationship in relationships:
+            if parsed_token_type in relationship:
+                return sanitized_string(parsed_token_name), relationship.get(parsed_token_type)
+
+        # Check if parsed_token_type is a generic model field
+        for some in default_token_types:
+            if parsed_token_type in some:
+                return sanitized_string(parsed_token_name), some.get(parsed_token_type)
+
+        return None
+
+    @classmethod
+    def handle_field(cls, model, field_name, field_type):
+        """
+        Determines what options are present with each model field.
+        """
+
+        default_model_options = (
+            ('BooleanField', 'default=False'),
+            ('CharField', 'max_length=50'),
+            ('DateField', 'auto_now=True'),
+            ('DateTimeField', 'auto_now=True'),
+            ('FileField', "blank=True, upload_to='uploads/files/'"),
+            ('ForeignKey', "{}, related_name='{}', on_delete=models.PROTECT"),
+            ('ImageField', "blank=True, upload_to='uploads/images/'"),
+            ('ManyToManyField', '{}, blank=True'),
+            ('OneToOneField', "{}, related_name='{}', on_delete=models.CASCADE"),
+            ('SlugField', 'unique=True'),
+            ('TimeField', 'auto_now=True'),
+        )
+
+        for field, options in default_model_options:
+            if field.lower() == field_type.lower():
+                if field == "ForeignKey":
+                    options = options.format(
+                        field_name.capitalize(),
+                        inflection.pluralize(model).lower()
+                    )
+                    cls.find_resource_in_scope(field_name)
+                    cls.append_import(field_name)
+
+                elif field == "ManyToManyField":
+                    options = options.format(
+                        field_name.capitalize()
+                    )
+                    cls.find_resource_in_scope(field_name)
+                    cls.append_import(field_name)
+
+                elif field == "OneToOneField":
+                    options = options.format(
+                        field_name.capitalize(),
+                        inflection.singularize(model)
+                    )
+                    cls.find_resource_in_scope(field_name)
+                    cls.append_import(field_name)
+
+                return model_field_template.render(
+                    name=field_name,
+                    type=field,
+                    options=options
+                )
+
+    @classmethod
+    def parse_fields(cls, **kwargs):
+        """
+        Parses and saves field data in fields_list for future reference
+        """
+        try:
+            fields = kwargs['fields']
+        except KeyError:
+            return
+
+        for field in fields:
+            try:
+                f_name, f_type = cls.handle_tokens(field)
+
+                if f_type is not None and f_name is not None:
+                    field_content = cls.handle_field(
+                        field_type=f_type,
+                        field_name=f_name,
+                        model=kwargs['model']
+                    )
+
+                    cls.fields_list.append(field_content)
+
+            except TypeError:
+                return

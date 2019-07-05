@@ -1,46 +1,43 @@
-import os
+from djangle.cli import log_success
 from djangle.cli.commands.base_helper import BaseHelper
-from djangle.cli.templates.admin import model_admin, model_admin_import, model_admin_inline, model_inline_import
+from djangle.cli.templates.admin import (
+    model_admin_import_template,
+    model_admin_inline_template,
+    model_admin_template,
+    model_inline_import_template
+)
 
 
 class AdminHelper(BaseHelper):
 
-    def create(self, *args, **kwargs):
-        return model_admin.render(model=kwargs['name'])
-    # end def
+    def create(self, **kwargs):
+        model = self.check_noun(kwargs['model'])
 
-    def create_inline(self, *args, **kwargs):
-        return model_admin_inline.render(model=kwargs['name'])
-    # end def
+        path = kwargs['path']
 
-    def add_admin_inline_import_to_init(self, **kwargs):
-        content = model_inline_import.render(model=kwargs['name'])
+        filename = f"{model.lower()}.py"
 
-        try:
-            os.chdir(kwargs['path'])
+        template = model_admin_template
 
-            with open('__init__.py', 'a') as file:
-                file.write(content)
-                file.write('\n')
-            file.close()
-        except FileNotFoundError:
-            raise FileNotFoundError
-        return content
+        template_import = model_admin_import_template
 
-    # end def
+        message = "Successfully created admin model"
 
-    def add_admin_import_to_init(self, **kwargs):
-        content = model_admin_import.render(model=kwargs['name'])
+        if kwargs['inline']:
+            template = model_admin_inline_template
+            template_import = model_inline_import_template
+            message = "Successfully created admin inline"
 
-        try:
-            os.chdir(kwargs['path'])
+        self.parse_and_create(
+            filename=filename,
+            model=model,
+            path=path,
+            template=template,
+            dry=kwargs['dry']
+        )
 
-            with open('__init__.py', 'a') as file:
-                file.write(content)
-                file.write('\n')
-            file.close()
-        except FileNotFoundError:
-            raise FileNotFoundError
-        return content
-    # end def
+        self.add_import(**kwargs, template=template_import)
+
+        log_success(message)
+
 # end class

@@ -3,16 +3,16 @@ from jinja2 import Template
 
 IE = inflect.engine()
 
-modelAttributeTemplate = Template("""{{ name }} = {% if not special %}models.{% endif %}{{ type }}({{ options }})""")
+model_field_template = Template("""{{ name }} = {% if not special %}models.{% endif %}{{ type }}({{ options }})""")
 
 
-modelAdminTemplate = Template("""admin.register({{ model.capitalize() }}
+model_admin_template = Template("""admin.register({{ model.capitalize() }}
 class {{ model.capitalize() }}Admin(admin.ModelAdmin):
     pass
 """)
 
 
-modelFormTemplate = Template("""from django.forms import forms
+model_form_template = Template("""from django.forms import forms
 from {{ app }}.models.{{ model.lower() }} import {{ model.capitalize() }}
 
 
@@ -23,13 +23,13 @@ class {{ model.capitalize() }}Form(forms.Form):
 """)
 
 
-modelTemplate = Template("""import uuid
+model_template = Template("""import uuid
 from django.db import models
 {% for model in imports %}{% if model %}from .{{ model.lower() }} import {{ model.capitalize() }}
 {% endif %}{% endfor %}
 
 class {{ model.capitalize() }}(models.Model):
-    {% for attribute in attributes %}{{ attribute }}
+    {% for field in fields %}{{ field }}
     {% endfor %}
     # Default fields. Used for record-keeping.
     uuid = models.UUIDField(default=uuid.uuid4, editable=False)
@@ -47,24 +47,4 @@ class {{ model.capitalize() }}(models.Model):
         return f'{self.uuid}'
 """)
 
-
-modelTestCaseTemplate = Template("""from django.test import TestCase
-from ..models.{{ model.lower() }} import {{ model.capitalize() }}
-
-
-class {{ model.capitalize() }}TestCase(TestCase):
-    def setUp(self):
-        # Create objects here...
-        # {{ model.capitalize() }}.objects.create()
-        # {{ model.capitalize() }}.objects.create()
-        pass
-
-    def test_{{ model.lower() }}_can_do_something(self):
-        # Run assertions here...
-        # self.assertEqual()
-        pass
-
-""")
-
-
-modelImportTemplate = Template("""from .{{ model.lower() }} import {{ model.capitalize() }}""")
+model_import_template = Template("""from .{{ model.lower() }} import {{ model.capitalize() }}""")

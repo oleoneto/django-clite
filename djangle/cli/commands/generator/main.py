@@ -1,28 +1,27 @@
 import click
 import os
-from djangle.cli import log_error, log_success
-from .helpers.model import ModelHelper
-from .helpers.viewset import ViewSetHelper
-from .helpers.serializer import SerializerHelper
-from .helpers.form import FormHelper
-from .helpers.template import TemplateHelper
-from .helpers.admin import AdminHelper
-from .helpers.view import ViewHelper
-
-# Templates
-from djangle.cli.templates.viewset import ViewSetImportTemplate
-from djangle.cli.templates.model import modelImportTemplate
+from djangle.cli import log_error
+from .helpers import (
+    AdminHelper,
+    FormHelper,
+    ModelHelper,
+    SerializerHelper,
+    TemplateHelper,
+    TestHelper,
+    ViewHelper,
+    ViewSetHelper
+)
 
 
 def not_an_app_directory_warning(ctx):
     if not ctx.obj['in_app']:
         log_error("Not inside an app directory")
-        exit(1)
+        raise click.Abort
 
 
 @click.group()
 @click.pass_context
-@click.option('--dry', is_flag=True, help="Display output without creating files")
+@click.option('--dry', is_flag=True, help="Display output without creating files.")
 def generate(ctx, dry):
     """
     Adds models, routes, and other resources
@@ -31,176 +30,37 @@ def generate(ctx, dry):
     ctx.obj['dry'] = dry
     ctx.obj['in_app'] = 'apps.py' in os.listdir('.')
     ctx.obj['cwd'] = os.getcwd()
+    ctx.obj['admin'] = f"{os.getcwd()}/admin/"
+    ctx.obj['admin_inlines'] = f"{os.getcwd()}/admin/inlines/"
+    ctx.obj['forms'] = f"{os.getcwd()}/forms/"
+    ctx.obj['models'] = f"{os.getcwd()}/models/"
+    ctx.obj['serializers'] = f"{os.getcwd()}/serializers/"
+    ctx.obj['tests'] = f"{os.getcwd()}/tests/"
+    ctx.obj['templates'] = f"{os.getcwd()}/templates/"
+    ctx.obj['views'] = f"{os.getcwd()}/views/"
+    ctx.obj['viewsets'] = f"{os.getcwd()}/viewsets/"
 
 
 @generate.command()
 @click.argument('name')
-@click.option('--inline', is_flag=True, help='Register admin model as inline')
+@click.option('--inline', is_flag=True, help='Register admin model as inline.')
 @click.pass_context
 def admin(ctx, name, inline):
     """
-    Generates an admin model within the admin directory.
+    Generates an admin model within the admin package.
     """
 
     not_an_app_directory_warning(ctx)
-
-    # Default admin models directory
-    base_dir = f"{ctx.obj['cwd']}/admin/"
 
     # Default helper
     helper = AdminHelper()
-    filename = f"{name.lower()}.py"
+
+    path = ctx.obj['admin']
 
     if inline:
-        base_dir = base_dir + 'inlines/'
-        content = helper.create_inline(name=name)
-    else:
-        # Create content for file
-        content = helper.create(name=name)
+        path = ctx.obj['admin_inlines']
 
-    # Handling --dry flag
-    if ctx.obj['dry']:
-        log_success(content)
-        return
-    else:
-        try:
-            helper.create_file(path=base_dir, filename=filename, file_content=content)
-
-            if inline:
-                log_success(f"Created admin inline model {name.capitalize()} in {filename}")
-                helper.add_admin_inline_import_to_init(path=base_dir, name=name)
-                return
-            log_success(f"Created admin model {name.capitalize()} in {filename}")
-            helper.add_admin_import_to_init(path=base_dir, name=name)
-        except FileExistsError:
-            log_error(f"File {name} already exists")
-            return
-
-
-@generate.command()
-@click.option('--register-admin', is_flag=True, help="Register model to admin site")
-@click.option('--register-inline', is_flag=True, help="Register model to admin site as inline")
-@click.option('--abstract', is_flag=True, help="Creates an abstract model type")
-@click.argument("name")
-@click.argument("attributes", nargs=-1, required=False)
-@click.pass_context
-def model(ctx, register_admin, register_inline, abstract, name, attributes):
-    """
-    Generates a model under the models directory
-    \f
-    One can specify multiple attributes after the model's name, like so:
-    \b
-    User char:name date:birthday float:height email:email image:photo
-
-    If the model is to be added to admin.site one can optionally opt in by specifying the --admin flag.
-    """
-
-    not_an_app_directory_warning(ctx)
-
-    # Default model directory
-    base_dir = f"{ctx.obj['cwd']}/models/"
-
-    # Default helper
-    helper = ModelHelper()
-
-    # Parse args and create model
-    content = helper.create(model=name, attributes=attributes, abstract=abstract)
-
-    # Handling --dry flag
-    if ctx.obj['dry']:
-        log_success(content)
-        return
-    else:
-        filename = f"{name.lower()}.py"
-
-        try:
-            helper.create_file(path=base_dir, filename=filename, file_content=content)
-
-            if register_admin:
-                ctx.invoke(admin, name=name)
-
-            if register_inline:
-                ctx.invoke(admin, name=name, inline=True)
-
-            # Ensure model is imported in __init__
-            helper.add_import(path=base_dir, template=modelImportTemplate, model=name)
-            log_success(f"Created model {name.capitalize()} in {filename}")
-        except FileExistsError:
-            log_error(f"File {name} already exists")
-            return
-
-
-@generate.command()
-@click.option('--read-only', is_flag=True, help="For a read-only resource api endpoint")
-@click.argument("name", required=True)
-@click.pass_context
-def viewset(ctx, read_only, name):
-    """
-    Generates a viewset for a serializable model
-    \f
-    Places the viewset under the viewset directory
-    """
-
-    not_an_app_directory_warning(ctx)
-
-    # Default viewset directory
-    base_dir = f"{ctx.obj['cwd']}/viewsets/"
-
-    # Default helper
-    helper = ViewSetHelper()
-
-    # Parse template
-    content = helper.create(name=name, read_only=read_only)
-
-    if ctx.obj['dry']:
-        log_success(content)
-        return
-    else:
-        filename = f"{name.lower()}.py"
-
-        try:
-            helper.create_file(path=base_dir, filename=filename, file_content=content)
-            helper.add_import(path=base_dir, template=ViewSetImportTemplate, model=name)
-            log_success(f"Created viewset {name}")
-        except FileExistsError:
-            log_error(f"File {name} already exists")
-            return
-
-
-@generate.command()
-@click.argument("name", required=True)
-@click.pass_context
-def serializer(ctx, name):
-    """
-    Generates a serializer for a given model
-    \f
-    Checks for the existence of the specified model in models.py
-    before attempting to create a serializer for it. Aborts if model is not found.
-    """
-
-    not_an_app_directory_warning(ctx)
-
-    # Default serializer directory
-    base_dir = f"{ctx.obj['cwd']}/serializers/"
-
-    # ViewSet Helper
-    helper = SerializerHelper()
-
-    # Parse template
-    content = helper.create(name=name)
-
-    if ctx.obj['dry']:
-        log_success(content)
-        return
-    else:
-        filename = f"{name.lower()}.py"
-
-        try:
-            helper.create_file(path=base_dir, filename=filename, file_content=content)
-            log_success(f"Created serializer {name}")
-        except FileExistsError:
-            log_error(f"File {name} already exists")
-            return
+    helper.create(model=name, inline=inline, path=path, dry=ctx.obj['dry'])
 
 
 @generate.command()
@@ -208,32 +68,119 @@ def serializer(ctx, name):
 @click.pass_context
 def form(ctx, name):
     """
-    Generates a model form
+    Generates a model form within the forms package.
     """
 
     not_an_app_directory_warning(ctx)
 
-    # Default forms directory
-    base_dir = f"{ctx.obj['cwd']}/forms/"
-
-    # Form Helper
+    # Default helper
     helper = FormHelper()
 
-    # Parse template
-    content = helper.create(name=name)
+    path = ctx.obj['forms']
 
-    if ctx.obj['dry']:
-        log_success(content)
-        return
-    else:
-        filename = f"{name.lower()}.py"
+    helper.create(model=name, path=path, dry=ctx.obj['dry'])
 
-        try:
-            helper.create_file(path=base_dir, filename=filename, file_content=content)
-            log_success(f"Created form {name}")
-        except FileExistsError:
-            log_error(f"File {name} already exists")
-            return
+
+@generate.command()
+@click.argument("name", required=True)
+@click.argument("fields", nargs=-1, required=False)
+@click.option('--abstract', is_flag=True, help="Creates an abstract model type.")
+@click.option('--register-admin', is_flag=True, help="Register model to admin site.")
+@click.option('--register-inline', is_flag=True, help="Register model to admin site as inline.")
+@click.option('--test-case', is_flag=True, help="Creates a TestCase for model.")
+@click.option('--full', is_flag=True, help="Adds admin, inline, and TestCase")
+@click.pass_context
+def model(ctx, name, full, abstract, fields, register_admin, register_inline, test_case):
+    """
+    Generates a model under the models directory.
+    One can specify multiple attributes after the model's name, like so:
+
+        D g model track int:number char:title fk:album bool:is_favorite
+
+    This will generate a Track model and add a foreign key of Album.
+    If the model is to be added to admin.site one can optionally opt in by specifying the --register-admin flag.
+    """
+
+    not_an_app_directory_warning(ctx)
+
+    # Default helper
+    helper = ModelHelper()
+
+    path = ctx.obj['models']
+
+    helper.create(
+        model=name,
+        abstract=abstract,
+        fields=fields,
+        path=path,
+        dry=ctx.obj['dry']
+    )
+
+    if register_admin or full:
+        ctx.invoke(admin, name=name)
+
+    if register_inline or full:
+        ctx.invoke(admin, name=name, inline=True)
+
+    if test_case or full:
+        ctx.invoke(test, model=name)
+
+
+@generate.command()
+@click.argument("name", required=True)
+@click.argument("fields", nargs=-1)
+@click.pass_context
+def resource(ctx, name, fields):
+    """
+    Fully implements an app resource.
+
+    This is ideal to add a model along with admin, serializer, view, viewset, template, and tests.
+    You can invoke this command the same way you would the model command:
+
+        D g resource track int:number char:title fk:album bool:is_featured
+
+    This will generate a model with the specified attributes and all the related modules specified above.
+    """
+
+    ctx.invoke(
+        model,
+        name=name,
+        register_admin=True,
+        register_inline=True,
+        fields=fields,
+        test_case=True
+    )
+
+    ctx.invoke(serializer, name=name)
+
+    ctx.invoke(viewset, name=name)
+
+    ctx.invoke(form, name=name)
+
+    ctx.invoke(template, name=name)
+
+    ctx.invoke(view, name=name, list=True)
+
+
+@generate.command()
+@click.argument("name", required=True)
+@click.pass_context
+def serializer(ctx, name):
+    """
+    Generates a serializer for a given model.
+
+    Checks for the existence of the specified model in models.py
+    before attempting to create a serializer for it. Aborts if model is not found.
+    """
+
+    not_an_app_directory_warning(ctx)
+
+    # Default helper
+    helper = SerializerHelper()
+
+    path = ctx.obj['serializers']
+
+    helper.create(model=name, path=path, dry=ctx.obj['dry'])
 
 
 @generate.command()
@@ -241,83 +188,82 @@ def form(ctx, name):
 @click.pass_context
 def template(ctx, name):
     """
-    Generates an html template
+    Generates an html template.
     """
 
     not_an_app_directory_warning(ctx)
 
-    # Default forms directory
-    base_dir = f"{ctx.obj['cwd']}/templates/"
-
-    # Template Helper
+    # Default helper
     helper = TemplateHelper()
 
-    # Parse template
-    content = helper.create(name=name)
+    path = ctx.obj['templates']
 
-    if ctx.obj['dry']:
-        log_success(content)
-        return
-    else:
-        filename = f"{name.lower()}.html"
+    helper.create(name=name, path=path, dry=ctx.obj['dry'])
 
-        try:
-            helper.create_file(path=base_dir, filename=filename, file_content=content)
-            log_success(f"Created template {filename}")
-        except FileExistsError:
-            log_error(f"File {filename} already exists")
-            return
+
+@generate.command()
+@click.argument("model", required=True)
+@click.pass_context
+def test(ctx, model):
+    """
+    Generates a new TestCase.
+    """
+    # TODO: Implement command
+
+    not_an_app_directory_warning(ctx)
+
+    # Default helper
+    helper = TestHelper()
+
+    path = ctx.obj['tests']
+
+    helper.create(
+        model=model,
+        path=path,
+        dry=ctx.obj['dry']
+    )
 
 
 @generate.command()
 @click.argument("name", required=True)
-@click.option('--list', is_flag=True, help="Create model list view")
-@click.option('--detail', is_flag=True, help="Create model list view")
+@click.option('--list', is_flag=True, help="Create model list view.")
+@click.option('--detail', is_flag=True, help="Create model detail view.")
 @click.pass_context
 def view(ctx, name, list, detail):
     """
-    Generates a view
+    Generates a view function or class.
     """
 
     not_an_app_directory_warning(ctx)
 
-    # Default forms directory
-    base_dir = f"{ctx.obj['cwd']}/views/"
-
-    # Template Helper
+    # Default helper
     helper = ViewHelper()
 
-    # Parse template
-    content = helper.create(name=name, list=list, detail=detail)
+    path = ctx.obj['views']
 
-    if ctx.obj['dry']:
-        log_success(content)
-        return
-    else:
-        filename = f"{name.lower()}.py"
-
-        try:
-            helper.create_file(path=base_dir, filename=filename, file_content=content)
-            log_success(f"Created view {name} in {filename}")
-        except FileExistsError:
-            log_error(f"File {filename} already exists")
-            return
+    helper.create(
+        detail=detail,
+        list=list,
+        name=name,
+        path=path,
+        dry=ctx.obj['dry']
+    )
 
 
 @generate.command()
+@click.option('--read-only', is_flag=True, help="Create a read-only viewset.")
 @click.argument("name", required=True)
-@click.argument("attributes", nargs=-1)
 @click.pass_context
-def resource(ctx, name, attributes):
+def viewset(ctx, read_only, name):
     """
-    Fully implements an app resource \b
-
-    Implementation includes: model, serializer, view, viewset, and template.
+    Generates a viewset for a serializable model.
     """
 
-    ctx.invoke(model, name=name, register_admin=True, register_inline=True, attributes=attributes)
-    ctx.invoke(serializer, name=name)
-    ctx.invoke(viewset, name=name)
-    ctx.invoke(form, name=name)
-    ctx.invoke(template, name=name)
-    ctx.invoke(view, name=name, list=True)
+    not_an_app_directory_warning(ctx)
+
+    # Default helper
+    helper = ViewSetHelper()
+
+    path = ctx.obj['viewsets']
+
+    helper.create(model=name, path=path, read_only=read_only, dry=ctx.obj['dry'])

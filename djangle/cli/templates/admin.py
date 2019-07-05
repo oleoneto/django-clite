@@ -1,6 +1,6 @@
 from jinja2 import Template
 
-model_admin = Template("""from django.contrib import admin
+model_admin_template = Template("""from django.contrib import admin
 from ..models.{{ model.lower() }} import {{ model.capitalize() }}
 
 
@@ -9,10 +9,10 @@ class {{ model.capitalize() }}Admin(admin.ModelAdmin):
     pass
 """)
 
-model_admin_import = Template("""from .{{ model.lower() }} import {{ model.capitalize() }}Admin""")
+model_admin_import_template = Template("""from .{{ model.lower() }} import {{ model.capitalize() }}Admin""")
 
 
-model_admin_inline = Template("""from django.contrib import admin
+model_admin_inline_template = Template("""from django.contrib import admin
 from ...models.{{ model.lower() }} import {{ model.capitalize() }}
 
 
@@ -21,4 +21,4 @@ class {{ model.capitalize() }}Inline(admin.StackedInline):
     extra = 1
 """)
 
-model_inline_import = Template("""from .{{ model.lower() }} import {{ model.capitalize() }}Inline""")
+model_inline_import_template = Template("""from .{{ model.lower() }} import {{ model.capitalize() }}Inline""")

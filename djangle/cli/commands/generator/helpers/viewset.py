@@ -1,15 +1,40 @@
+import inflection
+from djangle.cli import log_success
 from djangle.cli.commands.base_helper import BaseHelper
-from djangle.cli.templates.viewset import model_viewset
-from inflect import engine as inflection_engine
+from djangle.cli.templates.viewset import (
+    viewset_template,
+    viewset_import_template
+)
 
 
 class ViewSetHelper(BaseHelper):
 
-    def create(self, *args, **kwargs):
+    def create(self, **kwargs):
+        model = self.check_noun(kwargs['model'])
 
-        engine = inflection_engine()
+        path = kwargs['path']
 
-        model_plural_name = engine.plural(kwargs['name'])
-        return model_viewset.render(model=kwargs['name'], route=model_plural_name, read_only=kwargs['read_only'])
-    # end def
+        filename = f"{model.lower()}.py"
+
+        # TODO: Ensure serializer already exists
+
+        self.parse_and_create(
+            filename=filename,
+            model=model,
+            template=viewset_template,
+            read_only=kwargs['read_only'],
+            route=inflection.pluralize(model),
+            path=path,
+            dry=kwargs['dry']
+        )
+
+        self.add_import(
+            model=model,
+            template=viewset_import_template,
+            path=path,
+            dry=kwargs['dry']
+        )
+
+        log_success("Successfully created viewset.")
+
 # end class

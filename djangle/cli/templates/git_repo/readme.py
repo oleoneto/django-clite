@@ -13,13 +13,13 @@ Issues: https://github.com/oleoneto/Django-CLI/issues
 ----
 
 #### Requirements
-[Requirements](requirements_template.txt)
+[Requirements](requirements.txt)
 
 ----
 
-#### Virtual environment + install requirements_template
+#### Pipenv and dependencies
 ```
-source venv/bin/activate && pip install -r requirements_template.txt
+pipenv sync
 ```
 
 ----
@@ -27,13 +27,13 @@ source venv/bin/activate && pip install -r requirements_template.txt
 **IMPORTANT:** authentication is overridden in favor of `core.User`. This setting is present in [settings.py]({{ project }}/settings.py) as `AUTH_USER_MODEL`.
 When running migrations for the project for the first time, remember to follow the following workflow:
 ```
-./manage.py makemigrations core && \
-./manage.py migrate core && \
+./manage.py makemigrations authentication && \
+./manage.py migrate authentication && \
 ./manage.py makemigrations && \
 ./manage.py migrate
 ```
 
-This ensures the default authentication user is set to `core.User`, as defined in `AUTH_USER_MODEL`. 
+This ensures the default authentication user is set to `authentication.User`, as defined in `AUTH_USER_MODEL`. 
 It is important to follow the order above because of how django sets up the database.
 
 
@@ -45,11 +45,8 @@ It is important to follow the order above because of how django sets up the data
 ----
 
 ### Environment variables
-For safety and privacy reasons, use environment variables instead of hard-coding some values:
-```
-DEBUG = os.environ.get("DEBUG") == "True"
-SECRET_KEY = os.environ.get("SECRET_KEY", "Replace SECRET_KEY with environment variable")
-```
+For safety reasons, prefer to use environment variables instead of hard-coding sensitive values. One option is to use 
+`django-environ`, another is to use an environment file `.env`. Here's an [example environment file](.env.example).
 
 ----
 

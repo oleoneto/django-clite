@@ -1,15 +1,12 @@
 from jinja2 import Template
-from inflect import engine
-
-pl = engine()
 
 
-model_viewset = Template(
+viewset_template = Template(
     """from rest_framework import viewsets
 from rest_framework import permissions
 from .router import router
-from ..models.{{ model.lower() }} import {{ model.capitalize() }}
-from ..serializers.{{ model.lower() }} import {{ model.capitalize() }}Serializer
+from ..models import {{ model.capitalize() }}
+from ..serializers import {{ model.capitalize() }}Serializer
 
 
 class {{ model.capitalize() }}ViewSet(viewsets.{% if read_only %}ReadOnlyModelViewSet{% else %}ModelViewSet{% endif %}):
@@ -21,4 +18,4 @@ class {{ model.capitalize() }}ViewSet(viewsets.{% if read_only %}ReadOnlyModelVi
 router.register('{{ route.lower() }}', {{ model.capitalize() }}ViewSet)
 """)
 
-ViewSetImportTemplate = Template("""from .{{ model.lower() }} import {{ model.capitalize() }}ViewSet""")
+viewset_import_template = Template("""from .{{ model.lower() }} import {{ model.capitalize() }}ViewSet""")

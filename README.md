@@ -1,12 +1,11 @@
-Djangle-CLI [WIP]
-
+## Djangle-CLI [WIP]
 CLI that handles creating and managing Django projects
 
-#### Requirements
+### Requirements
 [Requirements](requirements.txt)
 
 
-#### Installation
+### Installation
 Install via [pip](http://www.pip-installer.org/):
 ```
 pip install djangle-cli
@@ -19,9 +18,17 @@ cd djangle
 pip install .
 ```
 
+After installation, the CLI will expose the binary with three names, any of which can be used in place of another:
+```
+D
+djangle
+djangle-cli
+```
+
+
 ----
 
-#### Commands
+### Commands
 ```
 destroy   Removes models, serializers, and other...
 generate  Adds models, routes, and other resources
@@ -30,32 +37,32 @@ new       Creates projects and apps
 
 ----
 
-## New
+### New
 The `new` command (abbreviated `n`) can be used to start new projects as well as new applications. The command tries to simplify how a project is created as well as the applications contained in it. Here's an example of such simplification:
 
 Suppose you want to start a new project and want to create two apps within it:
 ```
-django-admin startproject API
-cd API/API/
-django-admin startapp developers
+django-admin startproject mywebsite
+cd mywebsite/mywebsite/
 django-admin startapp blog
+django-admin startapp radio
 ```
 
-The equivalent command in the Djangle-CLI is:
+The equivalent command in the `djangle-cli` is:
 ```
-D new project API developers blog
+D new project mywebsite blog radio
 ```
-Specifying an `app` when creating a project is optional, but you're likely to need to create one inside of your project directory, so the CLI can handle the creation of all of your apps as arguments after your project name.
+Specifying `apps` when creating a project is optional, but you're likely to need to create one inside of your project directory, so the CLI can handle the creation of all of your apps if you pass them as arguments after your project name.
 
-#### Project structure
+##### Project structure
 This CLI makes some assumptions about the structure of your Django project.
 1. It assumes that your apps are one level below the root of your project directory, one level below where `manage.py` is. For example:
 ```
-PROJECT
+mywebsite
 ├── PROJECT
 │   ├── __init__.py
-│   ├── My_Application_1
-│   ├── My_Application_2
+│   ├── blog
+│   ├── radio
 │   ├── settings.py
 │   ├── urls.py
 │   └── wsgi.py
@@ -64,7 +71,7 @@ PROJECT
 ```
 2. It assumes that your app resources are grouped together by type in packages. For example:
 ```
-My_Application_1
+radio
 ├── __init__.py
 ├── admin
 ├── apps.py
@@ -82,8 +89,8 @@ My_Application_1
 ```
 models/
 ├── album.py
-├── book.py
-└── person.py
+├── artist.py
+└── track.py
 ```
 
 This is done in order to aid the CLI with the creation and deletion of files
@@ -91,24 +98,23 @@ in the project as we'll see under the [`generate`](#generator) and [`destroy`](#
 
 ----
 
-## Generator
+### Generator
 
 The generator is accessible through the `generate` command (abbreviated `g`).
 It can be used to create the following:
+- **admin**
 - **form**
 - **model**
 - **serializer**
+- **template**
+- **test**
 - **view**
 - **viewset**
-- **template**
 
 If you need all of the above, you can use the **resource** sub-command instead of running the individual sub-commands listed above.
 
-The generator supports `--dry-run`, meaning it can provide you with the console log
-of the desired command without creating any files in your directory structure.
+The generator supports `--dry`, meaning it can provide you with the output of the desired command without creating any files in your directory structure.
 This is useful if you want to see what a command accomplishes before fully committing to it.
-
-**Note**: no current support for `--dry-run` when scaffolding a **resource**.
 
 #### Generating Models
 In order to generate a model, specify the type identifier and then the name of the attribute field. Type identifiers are abbreviated to a more generic name that omits the word `Field`. The input here is case-insensitive, but the fields will be properly CamelCased in the corresponding Python file as in the example below:
@@ -134,7 +140,7 @@ class Album(models.Model):
     updated_at = models.DateTimeField(auto_now=True, editable=False)
 
     class Meta:
-        db_table = 'app_name_albums'
+        db_table = 'radio_albums'
         ordering = ['-created_at']
 
     def save(self, *args, **kwargs):
@@ -143,6 +149,8 @@ class Album(models.Model):
     def __str__(self):
         return f'{self.uuid}
 ```
+As in the example above, the database table name is derived from both the app name (`radio`) and the model name (`album`).
+
 **Defaults**
 
 As one can see, `class Meta` and `_str_` are added to a model by default along with `uuid`, `created_at` and `updated_at` fields.
@@ -198,21 +206,10 @@ D generate serializer album
 Which outputs:
 ```python
 from rest_framework import serializers
-from ..models.album import Album
+from .models import Album
 
 
 class AlbumSerializer(serializers.ModelSerializer):
-
-    # Add related fields below:
-    # Example relation fields are:
-    # -- HyperlinkedIdentityField
-    # -- HyperlinkedRelatedField
-    # -- PrimaryKeyRelatedField
-    # -- SlugRelatedField
-    # -- StringRelatedField
-
-    # You can also create a custom serializer, like so:
-    # likes = LikeSerializer(many=True)
 
     class Meta:
         model = Album
@@ -229,14 +226,17 @@ Which in turn would generate the following `viewset`:
 ```python
 from rest_framework import viewsets
 from rest_framework import permissions
-from ..models.album import Album
-from ..serializers.album import AlbumSerializer
+from .router import router
+from ..models import Album
+from ..serializers import AlbumSerializer
 
 
 class AlbumViewSet(viewsets.ModelViewSet):
     queryset = Album.objects.all()
     serializer_class = AlbumSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+   
+router.register('albums', AlbumViewSet)
 ```
 
 ----
@@ -253,10 +253,11 @@ D destroy model album
 - **form**
 - **model**
 - **resource**
-- **view**
-- **viewset**
 - **serializer**
 - **template**
+- **test**
+- **view**
+- **viewset**
 
 ----
 

@@ -1,9 +1,9 @@
 import click
 from djangle.cli import log_error
 from .helpers.base import DestroyHelper
-from djangle.cli.templates.admin import model_admin_import
-from djangle.cli.templates.model import modelImportTemplate
-from djangle.cli.templates.viewset import ViewSetImportTemplate
+from djangle.cli.templates.admin import model_admin_import_template
+from djangle.cli.templates.model import model_import_template
+from djangle.cli.templates.viewset import viewset_import_template
 
 
 def not_an_app_directory_warning(ctx):
@@ -47,7 +47,7 @@ def admin(ctx, name, inline):
     helper = DestroyHelper()
 
     if confirm_delete():
-        helper.destroy(path=base_dir, model=name, template=model_admin_import)
+        helper.destroy(path=base_dir, model=name, template=model_admin_import_template)
 
 
 @destroy.command()
@@ -68,7 +68,7 @@ def model(ctx, name):
 
     # TODO: handle models registered in admin.site
     if confirm_delete():
-        helper.destroy(path=base_dir, model=name, template=modelImportTemplate)
+        helper.destroy(path=base_dir, model=name, template=model_import_template)
 
 
 @destroy.command()
@@ -88,7 +88,7 @@ def viewset(ctx, name):
     helper = DestroyHelper()
 
     if confirm_delete():
-        helper.destroy(path=base_dir, model=name, template=ViewSetImportTemplate)
+        helper.destroy(path=base_dir, model=name, template=viewset_import_template)
 
 
 @destroy.command()

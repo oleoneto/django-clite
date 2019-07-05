@@ -7,9 +7,9 @@ A CLI that handles creating and managing Django projects
 
 import click
 from djangle.cli import AliasedGroup
+from djangle.cli.commands.creator.main import new
 from djangle.cli.commands.destroyer.main import destroy
 from djangle.cli.commands.generator.main import generate
-from djangle.cli.commands.creator.main import new
 
 
 @click.command(cls=AliasedGroup)
@@ -18,7 +18,7 @@ def main(ctx):
     """
     Djangle-CLI
 
-    One CLI to handle the creation and management of your Django projects.
+    A CLI to handle the creation and management of your Django projects.
     """
 
 
