@@ -1,5 +1,6 @@
-## Djangle-CLI [WIP]
-CLI that handles creating and managing Django projects
+# Djangle-CLI
+
+A CLI tool that handles creating and managing Django projects
 
 ### Requirements
 [Requirements](requirements.txt)
