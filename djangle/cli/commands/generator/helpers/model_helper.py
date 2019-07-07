@@ -6,9 +6,10 @@ import os
 from djangle.cli import log_success, sanitized_string
 from djangle.cli.commands.base_helper import BaseHelper
 from djangle.cli.templates.model import (
+    auth_user_model_template,
     model_field_template,
     model_import_template,
-    model_template
+    model_template,
 )
 
 
@@ -52,6 +53,27 @@ class ModelHelper(BaseHelper):
         )
 
         self.add_import(**kwargs, template=model_import_template)
+
+        log_success("Successfully created model.")
+
+    @classmethod
+    def create_auth_user(cls, **kwargs):
+
+        kwargs['model'] = 'User'
+
+        kwargs['filename'] = 'user.py'
+
+        kwargs['path'] = f"{kwargs['path']}/models/"
+
+        cls.parse_and_create(
+            model=kwargs['model'],
+            filename=kwargs['filename'],
+            project_name=kwargs['project'],
+            template=auth_user_model_template,
+            path=kwargs['path']
+        )
+
+        cls.add_import(**kwargs, template=model_import_template)
 
         log_success("Successfully created model.")
 

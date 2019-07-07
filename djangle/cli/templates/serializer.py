@@ -1,7 +1,7 @@
 from jinja2 import Template
 
 
-model_serializer_template = Template(
+serializer_template = Template(
     """from rest_framework import serializers
 {% if model %}from ..models import {{ model.capitalize() }}
 {% endif %}
@@ -24,6 +24,19 @@ class {{ model.capitalize() }}Serializer(serializers.ModelSerializer):
         fields = "__all__"
 """)
 
-model_serializer_import_template = Template(
+serializer_auth_user_template = Template(
+    """from rest_framework import serializers
+from ..models import User
+
+
+class UserSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = User
+        exclude = ('date_joined', 'updated_at', 'last_login',
+                   'is_superuser', 'is_staff', 'user_permissions', 'password')
+""")
+
+serializer_import_template = Template(
     """from .{{ model.lower() }} import {{ model.capitalize() }}Serializer"""
 )

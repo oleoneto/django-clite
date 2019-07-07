@@ -55,4 +55,8 @@ class ViewHelper(BaseHelper):
 
         log_success(f"Successfully created {view_name}")
 
+    @classmethod
+    def create_auth_user(cls, **kwargs):
+        # TODO: Implement method
+        pass
 # end class

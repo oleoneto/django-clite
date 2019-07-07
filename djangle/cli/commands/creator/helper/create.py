@@ -3,6 +3,13 @@ import subprocess
 import sys
 from djangle.cli import log_error, log_info, log_success, sanitized_string
 from djangle.cli.commands.base_helper import BaseHelper
+from djangle.cli.commands.generator.helpers import (
+    AdminHelper,
+    ModelHelper,
+    TestHelper,
+    SerializerHelper,
+    ViewSetHelper,
+)
 from djangle.cli.templates.git_repo.readme import readme_template
 from djangle.cli.templates.git_repo.gitignore import git_ignore_template
 from djangle.cli.templates.router import router_template
@@ -92,6 +99,12 @@ class CreatorHelper(object):
             cls.create_app_package(package_name=package, app_name=app_name)
             os.chdir(DEFAULT_PREVIOUS_WD)
 
+        try:
+            if kwargs['custom_auth']:
+                cls.handle_custom_auth(**kwargs)
+        except KeyError:
+            pass
+
         os.chdir(DEFAULT_PREVIOUS_WD)
         log_success(f'Successfully created application: {app_name}')
 
@@ -169,9 +182,6 @@ class CreatorHelper(object):
         # Inside project/project/
         os.chdir(project_name)
 
-        if kwargs['custom_auth']:
-            cls.handle_custom_auth(**kwargs)
-
         if kwargs['apps']:
             for app in kwargs['apps']:
                 cls.create_app(app_name=app, **kwargs)
@@ -184,15 +194,27 @@ class CreatorHelper(object):
         except subprocess.CalledProcessError:
             log_error(DEFAULT_ERRORS['repo'])
 
-        log_success(f"Created project: {kwargs['project']}")
+        log_success(f"Created project: {project_name}")
 
     @classmethod
     def handle_custom_auth(cls, **kwargs):
-        app_name = 'authentication'
-        cls.create_app(app_name=app_name, project=kwargs['project'])
-        os.chdir(app_name)
+        # Terra Nullius...
+
+        kwargs['project'] = sanitized_string(kwargs['project'])
+
+        kwargs['path'] = os.getcwd()
+
+        ModelHelper().create_auth_user(**kwargs)
+
+        AdminHelper().create_auth_user(**kwargs)
+
+        SerializerHelper().create_auth_user(**kwargs)
+
+        ViewSetHelper().create_auth_user(**kwargs)
+
+        TestHelper().create_auth_user(**kwargs)
+
         # TODO: Add configurations to settings.py
-        os.chdir(DEFAULT_PREVIOUS_WD)
         log_success('Created authentication app for custom auth')
 
     @classmethod
