@@ -27,3 +27,23 @@ class TestHelper(BaseHelper):
         )
 
         log_success("Successfully created TestCase.")
+
+    @classmethod
+    def create_auth_user(cls, **kwargs):
+        kwargs['model'] = 'User'
+
+        kwargs['filename'] = 'user.py'
+
+        kwargs['path'] = f"{kwargs['path']}/tests/"
+
+        cls.parse_and_create(
+            model=kwargs['model'],
+            filename=kwargs['filename'],
+            project_name=kwargs['project'],
+            template=test_case_template,
+            path=kwargs['path']
+        )
+
+        cls.add_import(**kwargs, template=test_case_import_template)
+
+        log_success("Successfully created TestCase.")

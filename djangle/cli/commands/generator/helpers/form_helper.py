@@ -6,6 +6,7 @@ from djangle.cli.templates.form import (
 
 
 class FormHelper(BaseHelper):
+
     def create(self, **kwargs):
 
         model = self.check_noun(kwargs['model'])
@@ -28,4 +29,14 @@ class FormHelper(BaseHelper):
             dry=kwargs['dry']
         )
 
+    @classmethod
+    def create_auth_user(cls, **kwargs):
+        cls.parse_and_create(
+            filename=kwargs['filename'],
+            model=kwargs['model'],
+            path=kwargs['path'],
+            template=model_form_template
+        )
+
+        cls.add_import(**kwargs, template=model_form_import_template)
 # end class

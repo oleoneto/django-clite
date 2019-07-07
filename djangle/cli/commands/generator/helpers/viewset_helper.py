@@ -37,4 +37,25 @@ class ViewSetHelper(BaseHelper):
 
         log_success("Successfully created viewset.")
 
+    @classmethod
+    def create_auth_user(cls, **kwargs):
+        kwargs['model'] = 'User'
+
+        kwargs['filename'] = 'user.py'
+
+        kwargs['path'] = f"{kwargs['path']}/viewsets/"
+
+        kwargs['route'] = inflection.pluralize(f"{kwargs['model']}")
+
+        cls.parse_and_create(
+            model=kwargs['model'],
+            route=kwargs['route'],
+            filename=kwargs['filename'],
+            project_name=kwargs['project'],
+            template=viewset_template,
+            path=kwargs['path']
+        )
+
+        cls.add_import(**kwargs, template=viewset_import_template)
+
 # end class

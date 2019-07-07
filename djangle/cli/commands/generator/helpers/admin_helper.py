@@ -1,10 +1,11 @@
 from djangle.cli import log_success
 from djangle.cli.commands.base_helper import BaseHelper
 from djangle.cli.templates.admin import (
+    admin_user_auth_template,
     model_admin_import_template,
     model_admin_inline_template,
     model_admin_template,
-    model_inline_import_template
+    model_inline_import_template,
 )
 
 
@@ -40,4 +41,21 @@ class AdminHelper(BaseHelper):
 
         log_success(message)
 
+    @classmethod
+    def create_auth_user(cls, **kwargs):
+        kwargs['model'] = 'User'
+
+        kwargs['filename'] = 'user.py'
+
+        kwargs['path'] = f"{kwargs['path']}/admin/"
+
+        cls.parse_and_create(
+            model=kwargs['model'],
+            filename=kwargs['filename'],
+            project_name=kwargs['project'],
+            template=admin_user_auth_template,
+            path=kwargs['path']
+        )
+
+        cls.add_import(**kwargs, template=model_admin_import_template)
 # end class
