@@ -1,12 +1,13 @@
 import os
 import subprocess
 import sys
-from djangle.cli import log_error, log_success, sanitized_string
+from djangle.cli import log_error, log_info, log_success, sanitized_string
 from djangle.cli.commands.base_helper import BaseHelper
 from djangle.cli.templates.git_repo.readme import readme_template
 from djangle.cli.templates.git_repo.gitignore import git_ignore_template
 from djangle.cli.templates.router import router_template
 from djangle.cli.templates.urls import app_urls_template
+from djangle.cli.templates.env import env_template
 from djangle.cli.templates.requirements import (
     requirements_template,
     pipenv_template
@@ -308,6 +309,19 @@ class CreatorHelper(object):
             project=project_name,
             filename='.gitignore',
             path=DEFAULT_CWD
+        )
+
+        # Environment files
+        cls.helper.parse_and_create(
+            path=DEFAULT_CWD,
+            filename='.env',
+            template=env_template
+        )
+
+        cls.helper.parse_and_create(
+            path=DEFAULT_CWD,
+            filename='.env-example',
+            template=env_template
         )
 
     @classmethod
