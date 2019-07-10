@@ -133,6 +133,7 @@ class ModelHelper(BaseHelper):
         Expect input to be of the form (char:name, text:bio, image:artwork)
         """
 
+        # TODO: Fix implementation to prevent issue-69
         filepath = f'{os.path.dirname(os.path.abspath(__file__))}/fields.json'
 
         file = open(filepath)
@@ -188,9 +189,11 @@ class ModelHelper(BaseHelper):
             ('ManyToManyField', '{}, blank=True'),
             ('OneToOneField', "{}, related_name='{}', on_delete=models.CASCADE"),
             ('SlugField', 'unique=True'),
+            ('TextField', 'blank=True'),  # <-- Added to address issue-69
             ('TimeField', 'auto_now=True'),
         )
 
+        # TODO: Fix implementation to prevent issue-69
         for field, options in default_model_options:
             if field.lower() == field_type.lower():
                 if field == "ForeignKey":

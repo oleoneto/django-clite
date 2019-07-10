@@ -104,6 +104,22 @@ class BaseHelper(object):
             raise click.Abort
 
     @classmethod
+    def destroy(cls, path, filename, **kwargs):
+        try:
+            is_dry = kwargs['dry']
+        except KeyError:
+            is_dry = False
+
+        if is_dry:
+            pass
+        else:
+            try:
+                os.chdir(path)
+                os.remove(filename)
+            except FileNotFoundError:
+                log_error("File does not exist.")
+
+    @classmethod
     def find_management_file(cls, cwd):
 
         code = 0
@@ -164,6 +180,42 @@ class BaseHelper(object):
                 filename=kwargs['filename'],
                 file_content=content
             )
+
+    @classmethod
+    def remove_import(cls, **kwargs):
+        try:
+            is_dry = kwargs['dry']
+        except KeyError:
+            is_dry = False
+
+        if not is_dry:
+            filename = '__init__.py'
+
+            path = kwargs['path']
+
+            template = kwargs['template']
+
+            try:
+                content = template.render(**kwargs)
+            except Exception:
+                raise EnvironmentError
+
+            try:
+                os.chdir(path)
+
+                # Find import line to delete
+                s = open(filename).read()
+                s = s.replace(content, '')
+                f = open(filename, 'w')
+                f.write(s)
+                f.close()
+
+                for line in fileinput.FileInput(filename, inplace=1):
+                    if line.rstrip():
+                        print(line, end='')
+
+            except FileNotFoundError:
+                raise click.Abort
 
     @classmethod
     def show_files(cls, path):
