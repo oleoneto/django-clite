@@ -242,9 +242,9 @@ router.register('albums', AlbumViewSet)
 
 ----
 
-## Destroyer [WIP]
+## Destroyer
 This command can be used to undo all that a generator can generate.
-So, following our example `Album` model, one can remove it from the project simply by running:
+So, following our example `Album` model, one can remove it from the project by simply running:
 
 ```bash
 D destroy model album
