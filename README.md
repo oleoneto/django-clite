@@ -60,7 +60,7 @@ This CLI makes some assumptions about the structure of your Django project.
 1. It assumes that your apps are one level below the root of your project directory, one level below where `manage.py` is. For example:
 ```
 mywebsite
-├── PROJECT
+├── mywebsite
 │   ├── __init__.py
 │   ├── blog
 │   ├── radio
@@ -273,4 +273,4 @@ This project is a work in progress. Contributions are very much welcome.
 ----
 
 ### LICENSE
-**Djangle-CLI** is [MIT Licensed](LICENSE).
+**Djangle-CLI** is [BSD Licensed](LICENSE.txt).
