@@ -13,8 +13,8 @@ from .helpers import (
 )
 
 
-def not_an_app_directory_warning(ctx):
-    if not ctx.obj['in_app']:
+def not_an_app_directory_warning():
+    if not ('apps.py' in os.listdir('.')):
         log_error("Not inside an app directory")
         raise click.Abort
 
@@ -26,6 +26,8 @@ def generate(ctx, dry):
     """
     Adds models, routes, and other resources
     """
+    not_an_app_directory_warning()
+
     ctx.ensure_object(dict)
     ctx.obj['dry'] = dry
     ctx.obj['in_app'] = 'apps.py' in os.listdir('.')
@@ -50,8 +52,6 @@ def admin(ctx, name, inline):
     Generates an admin model within the admin package.
     """
 
-    not_an_app_directory_warning(ctx)
-
     # Default helper
     helper = AdminHelper()
 
@@ -70,8 +70,6 @@ def form(ctx, name):
     """
     Generates a model form within the forms package.
     """
-
-    not_an_app_directory_warning(ctx)
 
     # Default helper
     helper = FormHelper()
@@ -100,8 +98,6 @@ def model(ctx, name, full, abstract, fields, register_admin, register_inline, te
     This will generate a Track model and add a foreign key of Album.
     If the model is to be added to admin.site one can optionally opt in by specifying the --register-admin flag.
     """
-
-    not_an_app_directory_warning(ctx)
 
     # Default helper
     helper = ModelHelper()
@@ -173,8 +169,6 @@ def serializer(ctx, name):
     before attempting to create a serializer for it. Aborts if model is not found.
     """
 
-    not_an_app_directory_warning(ctx)
-
     # Default helper
     helper = SerializerHelper()
 
@@ -191,8 +185,6 @@ def template(ctx, name):
     Generates an html template.
     """
 
-    not_an_app_directory_warning(ctx)
-
     # Default helper
     helper = TemplateHelper()
 
@@ -208,9 +200,6 @@ def test(ctx, model):
     """
     Generates a new TestCase.
     """
-    # TODO: Implement command
-
-    not_an_app_directory_warning(ctx)
 
     # Default helper
     helper = TestHelper()
@@ -233,8 +222,6 @@ def view(ctx, name, list, detail):
     """
     Generates a view function or class.
     """
-
-    not_an_app_directory_warning(ctx)
 
     # Default helper
     helper = ViewHelper()
@@ -259,8 +246,6 @@ def viewset(ctx, read_only, name):
     """
     Generates a viewset for a serializable model.
     """
-
-    not_an_app_directory_warning(ctx)
 
     # Default helper
     helper = ViewSetHelper()
