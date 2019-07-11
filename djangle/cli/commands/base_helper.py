@@ -15,6 +15,8 @@ DEFAULT_NOUN_NUMBER_OPTION = "Change resource name from {} to {}?"
 
 DEFAULT_PARSED_CONTENT_LOG = """Filename: {}\nFilepath: {}\n\n---- Begin content ----\n{}\n---- End content ----"""
 
+DEFAULT_DESTROY_LOG = """Will delete...\nFilename: {}\nFilepath: {}\n\nWill also remove imports in __init__.py"""
+
 
 class BaseHelper(object):
 
@@ -104,6 +106,26 @@ class BaseHelper(object):
             raise click.Abort
 
     @classmethod
+    def destroy(cls, path, filename, **kwargs):
+        try:
+            is_dry = kwargs['dry']
+        except KeyError:
+            is_dry = False
+
+        if is_dry:
+            kwargs['filename'] = filename
+            click.echo(DEFAULT_DESTROY_LOG.format(filename, path))
+            return False
+        else:
+            try:
+                os.chdir(path)
+                os.remove(filename)
+            except FileNotFoundError:
+                log_error("File does not exist.")
+                return False
+        return True
+
+    @classmethod
     def find_management_file(cls, cwd):
 
         code = 0
@@ -164,6 +186,42 @@ class BaseHelper(object):
                 filename=kwargs['filename'],
                 file_content=content
             )
+
+    @classmethod
+    def remove_import(cls, **kwargs):
+        try:
+            is_dry = kwargs['dry']
+        except KeyError:
+            is_dry = False
+
+        if not is_dry:
+            filename = '__init__.py'
+
+            path = kwargs['path']
+
+            template = kwargs['template']
+
+            try:
+                content = template.render(**kwargs)
+            except Exception:
+                raise EnvironmentError
+
+            try:
+                os.chdir(path)
+
+                # Find import line to delete
+                s = open(filename).read()
+                s = s.replace(content, '')
+                f = open(filename, 'w')
+                f.write(s)
+                f.close()
+
+                for line in fileinput.FileInput(filename, inplace=1):
+                    if line.rstrip():
+                        print(line, end='')
+
+            except FileNotFoundError:
+                raise click.Abort
 
     @classmethod
     def show_files(cls, path):

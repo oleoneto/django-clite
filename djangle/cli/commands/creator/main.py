@@ -4,7 +4,8 @@ from .helper import CreatorHelper
 from djangle.cli import (
     log_error,
     log_info,
-    find_management_file
+    find_management_file,
+    sanitized_string
 )
 
 DEFAULT_MANAGEMENT_ERROR = """The CLI could not decipher your django project.
@@ -68,14 +69,19 @@ def project(ctx, name, docker, dokku, custom_auth, apps):
             apps=apps,
             docker=docker,
             dokku=dokku,
-            custom_auth=custom_auth
+            dry=ctx.obj['dry']
         )
+        if custom_auth:
+            os.chdir(sanitized_string(name))
+            ctx.obj['path'] = os.getcwd()
+            ctx.invoke(app, apps=['authentication'], custom_auth=True)
 
 
 @new.command()
 @click.argument('apps', nargs=-1)
+@click.option('--custom-auth', is_flag=True, help="Add User for custom authentication.")
 @click.pass_context
-def app(ctx, apps):
+def app(ctx, apps, custom_auth):
     """
     Creates new django apps.
 
@@ -115,5 +121,7 @@ def app(ctx, apps):
             for app_name in apps:
                 helper.create_app(
                     app_name=app_name,
-                    project=project_name
+                    project=project_name,
+                    dry=ctx.obj['dry'],
+                    custom_auth=custom_auth
                 )

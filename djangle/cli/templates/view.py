@@ -1,7 +1,7 @@
 from jinja2 import Template
 
 
-function_view_template = Template(
+default_function_view_template = Template(
     """from django.shortcuts import HttpResponse
 import datetime
 
@@ -12,22 +12,35 @@ def {{ name.lower() }}_view(request):
     return HttpResponse(html)
 """)
 
-view_template = Template("""from django.utils import timezone
-from django.views.generic.{{ generic_view_type }} import {{ view_type }}
+default_class_view_template = Template("""from django.utils import timezone{% if list %}
+from django.view.generic.list import ListView
 from ..models.{{ model.lower() }} import {{ model.capitalize() }}
 
 
-class {{ view_name }}({{ view_type }}):
-    
+class {{ model.capitalize() }}(ListView):
+{% else %}
+from django.view.generic.detail import DetailView
+from ..models.{{ model.lower() }} import {{ model.capitalize() }}
+
+
+class {{ model.capitalize() }}(DetailView):
+{% endif %}
     model = {{ model.capitalize() }}
-    {% if generic_view_type == 'list' %}paginate_by = 20\n{% endif %}
+    {% if list %}paginate_by = 20\n{% endif %}
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['now'] = timezone.now()
         return context
 """)
 
+function_view_import_template = Template(
+    """from .{{ model.lower() }} import {{ model.lower() }}"""
+)
 
-view_import_template = Template(
-    """from .{{ view_file.lower() }} import {{ view_name }}"""
+default_function_view_import_template = Template(
+    """from .{{ name.lower() }} import {{ name.lower() }}_view"""
+)
+
+default_class_view_import_template = Template(
+    """from .{{ model.lower() }} import {{ model.capitalize() }}{% if list %}ListView{% elif detail %}DetailView{% endif %}"""
 )

@@ -37,4 +37,38 @@ class ViewSetHelper(BaseHelper):
 
         log_success("Successfully created viewset.")
 
+    def delete(self, **kwargs):
+        model = self.check_noun(kwargs['model'])
+
+        filename = f"{model.lower()}.py"
+
+        template = viewset_import_template
+
+        if self.destroy(filename=filename, **kwargs):
+
+            self.remove_import(template=template, **kwargs)
+
+            log_success('Successfully deleted viewset.')
+
+    @classmethod
+    def create_auth_user(cls, **kwargs):
+        kwargs['model'] = 'User'
+
+        kwargs['filename'] = 'user.py'
+
+        kwargs['path'] = f"{kwargs['path']}/viewsets/"
+
+        kwargs['route'] = inflection.pluralize(f"{kwargs['model']}")
+
+        cls.parse_and_create(
+            model=kwargs['model'],
+            route=kwargs['route'],
+            filename=kwargs['filename'],
+            project_name=kwargs['project'],
+            template=viewset_template,
+            path=kwargs['path']
+        )
+
+        cls.add_import(**kwargs, template=viewset_import_template)
+
 # end class
