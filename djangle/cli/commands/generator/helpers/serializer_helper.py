@@ -32,6 +32,19 @@ class SerializerHelper(BaseHelper):
 
         log_success("Successfully created serializer class.")
 
+    def delete(self, **kwargs):
+        model = self.check_noun(kwargs['model'])
+
+        filename = f"{model.lower()}.py"
+
+        template = serializer_import_template
+
+        if self.destroy(filename=filename, **kwargs):
+
+            self.remove_import(template=template, **kwargs)
+
+            log_success('Successfully deleted serializer.')
+
     @classmethod
     def create_auth_user(cls, **kwargs):
         kwargs['model'] = 'User'

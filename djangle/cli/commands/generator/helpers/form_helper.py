@@ -1,3 +1,4 @@
+from djangle.cli import log_success
 from djangle.cli.commands.base_helper import BaseHelper
 from djangle.cli.templates.form import (
     model_form_template,
@@ -29,6 +30,21 @@ class FormHelper(BaseHelper):
             dry=kwargs['dry']
         )
 
+        log_success('Successfully created form.')
+
+    def delete(self, **kwargs):
+        model = self.check_noun(kwargs['model'])
+
+        filename = f"{model.lower()}.py"
+
+        template = model_form_import_template
+
+        if self.destroy(filename=filename, **kwargs):
+
+            self.remove_import(template=template, **kwargs)
+
+            log_success('Successfully deleted form.')
+
     @classmethod
     def create_auth_user(cls, **kwargs):
         cls.parse_and_create(
@@ -39,4 +55,5 @@ class FormHelper(BaseHelper):
         )
 
         cls.add_import(**kwargs, template=model_form_import_template)
+
 # end class

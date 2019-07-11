@@ -77,6 +77,19 @@ class ModelHelper(BaseHelper):
 
         log_success("Successfully created model.")
 
+    def delete(self, **kwargs):
+        model = self.check_noun(kwargs['model'])
+
+        filename = f"{model.lower()}.py"
+
+        template = model_import_template
+
+        if self.destroy(filename=filename, **kwargs):
+
+            self.remove_import(template=template, **kwargs)
+
+            log_success('Successfully deleted model.')
+
     @classmethod
     def find_resource_in_scope(cls, model):
         """

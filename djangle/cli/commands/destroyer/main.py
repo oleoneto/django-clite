@@ -20,7 +20,9 @@ def not_an_app_directory_warning(ctx):
 
 
 def confirm_delete():
-    return click.confirm("Are you sure you want to delete this file?", show_default=True, default=False)
+    if not click.confirm("Are you sure you want to delete this file?", show_default=True, default=False):
+        raise click.Abort()
+    return True
 
 
 @click.group()
@@ -43,6 +45,7 @@ def destroy(ctx, dry):
     ctx.obj['templates'] = f"{os.getcwd()}/templates/"
     ctx.obj['views'] = f"{os.getcwd()}/views/"
     ctx.obj['viewsets'] = f"{os.getcwd()}/viewsets/"
+    ctx.obj['confirm'] = confirm_delete()
 
 
 @destroy.command()
@@ -51,7 +54,7 @@ def destroy(ctx, dry):
 @click.pass_context
 def admin(ctx, name, inline):
     """
-    Destroys an admin model or inline
+    Destroys an admin model or inline.
     """
 
     not_an_app_directory_warning(ctx)
@@ -64,8 +67,13 @@ def admin(ctx, name, inline):
     if inline:
         path = ctx.obj['admin_inlines']
 
-    if confirm_delete():
-        helper.delete(model=name, path=path, inline=inline, dry=ctx.obj['dry'])
+    if ctx.obj['confirm']:
+        helper.delete(
+            model=name,
+            path=path,
+            inline=inline,
+            dry=ctx.obj['dry']
+        )
 
 
 @destroy.command()
@@ -73,20 +81,22 @@ def admin(ctx, name, inline):
 @click.pass_context
 def form(ctx, name):
     """
-    Destroys a form
+    Destroys a form.
     """
 
     not_an_app_directory_warning(ctx)
 
-    # Default forms directory
     path = ctx.obj['forms']
 
     # Default helper
     helper = FormHelper()
 
-    # TODO: fix deletion
-    if confirm_delete():
-        helper.delete(path=path, model=name)
+    if ctx.obj['confirm']:
+        helper.delete(
+            path=path,
+            model=name,
+            dry=ctx.obj['dry']
+        )
 
 
 @destroy.command()
@@ -98,19 +108,17 @@ def form(ctx, name):
 @click.pass_context
 def model(ctx, name, full, unregister_admin, unregister_inline, test_case):
     """
-    Destroys a model
+    Destroys a model.
     """
 
     not_an_app_directory_warning(ctx)
 
-    # Default models directory
     path = ctx.obj['models']
 
     # Default helper
     helper = ModelHelper()
 
-    # TODO: handle models registered in admin.site
-    if confirm_delete():
+    if ctx.obj['confirm']:
         helper.delete(
             model=name,
             path=path,
@@ -124,7 +132,14 @@ def model(ctx, name, full, unregister_admin, unregister_inline, test_case):
             ctx.invoke(admin, name=name, inline=True)
 
         if test_case or full:
-            ctx.invoke(test, model=name)
+            ctx.invoke(test, name=name)
+
+        if full:
+            ctx.invoke(form, name=name)
+            ctx.invoke(serializer, name=name)
+            ctx.invoke(template, name=name)
+            ctx.invoke(view, name=name)
+            ctx.invoke(viewset, name=name)
 
 
 @destroy.command()
@@ -132,7 +147,7 @@ def model(ctx, name, full, unregister_admin, unregister_inline, test_case):
 @click.pass_context
 def resource(ctx, name):
     """
-    Destroys resource
+    Destroys a resource.
     """
 
     ctx.invoke(
@@ -159,21 +174,22 @@ def resource(ctx, name):
 @click.pass_context
 def serializer(ctx, name):
     """
-    Destroys a serializer
+    Destroys a serializer.
     """
 
     not_an_app_directory_warning(ctx)
 
-    # Default serializer directory
     path = ctx.obj['serializers']
 
     # Default helper
     helper = SerializerHelper()
 
-    # TODO: fix deletion
-    # TODO: handle viewsets that depend on this serializer
-    # if confirm_delete():
-    #     helper.delete(path=path, model=name)
+    if ctx.obj['confirm']:
+        helper.delete(
+            path=path,
+            model=name,
+            dry=ctx.obj['dry']
+        )
 
 
 @destroy.command()
@@ -183,22 +199,21 @@ def serializer(ctx, name):
 @click.pass_context
 def view(ctx, name, list, detail):
     """
-    Destroys a view
+    Destroys a view.
     """
 
     not_an_app_directory_warning(ctx)
 
-    # Default forms directory
     path = ctx.obj['views']
 
     # Default helper
     helper = ViewHelper()
 
-    # TODO: fix deletion
-    if confirm_delete():
+    if ctx.obj['confirm']:
         helper.delete(
             path=path,
             model=name,
+            name=name,
             list=list,
             detail=detail,
             dry=ctx.obj['dry']
@@ -210,19 +225,22 @@ def view(ctx, name, list, detail):
 @click.pass_context
 def viewset(ctx, name):
     """
-    Destroys a viewset
+    Destroys a viewset.
     """
 
     not_an_app_directory_warning(ctx)
 
-    # Default viewsets directory
     path = ctx.obj['viewsets']
 
     # Default helper
     helper = ViewSetHelper()
 
-    # if confirm_delete():
-    #     helper.delete(path=path, model=name)
+    if ctx.obj['confirm']:
+        helper.delete(
+            path=path,
+            model=name,
+            dry=ctx.obj['dry']
+        )
 
 
 @destroy.command()
@@ -230,26 +248,28 @@ def viewset(ctx, name):
 @click.pass_context
 def template(ctx, name):
     """
-    Destroys a form under /templates
+    Destroys a template.
     """
 
     not_an_app_directory_warning(ctx)
 
-    # Default forms directory
     path = ctx.obj['templates']
 
     # Default helper
     helper = TemplateHelper()
 
-    # TODO: fix deletion
-    # if confirm_delete():
-    #     helper.delete(path=path, model=name)
+    if ctx.obj['confirm']:
+        helper.delete(
+            path=path,
+            model=name,
+            dry=ctx.obj['dry']
+        )
 
 
 @destroy.command()
-@click.argument('model')
+@click.argument('name')
 @click.pass_context
-def test(ctx, model):
+def test(ctx, name):
     """
     Destroys a TestCase.
     """
@@ -261,8 +281,9 @@ def test(ctx, model):
 
     path = ctx.obj['tests']
 
-    helper.delete(
-        model=model,
-        path=path,
-        dry=ctx.obj['dry']
-    )
+    if ctx.obj['confirm']:
+        helper.delete(
+            model=name,
+            path=path,
+            dry=ctx.obj['dry']
+        )

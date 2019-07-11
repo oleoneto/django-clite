@@ -15,6 +15,8 @@ DEFAULT_NOUN_NUMBER_OPTION = "Change resource name from {} to {}?"
 
 DEFAULT_PARSED_CONTENT_LOG = """Filename: {}\nFilepath: {}\n\n---- Begin content ----\n{}\n---- End content ----"""
 
+DEFAULT_DESTROY_LOG = """Will delete...\nFilename: {}\nFilepath: {}\n\nWill also remove imports in __init__.py"""
+
 
 class BaseHelper(object):
 
@@ -111,13 +113,17 @@ class BaseHelper(object):
             is_dry = False
 
         if is_dry:
-            pass
+            kwargs['filename'] = filename
+            click.echo(DEFAULT_DESTROY_LOG.format(filename, path))
+            return False
         else:
             try:
                 os.chdir(path)
                 os.remove(filename)
             except FileNotFoundError:
                 log_error("File does not exist.")
+                return False
+        return True
 
     @classmethod
     def find_management_file(cls, cwd):
