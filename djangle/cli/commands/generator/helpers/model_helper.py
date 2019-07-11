@@ -1,7 +1,6 @@
 import click
 import fileinput
 import inflection
-import json
 import os
 from djangle.cli import log_success, sanitized_string
 from djangle.cli.commands.base_helper import BaseHelper
@@ -14,6 +13,70 @@ from djangle.cli.templates.model import (
 
 
 DEFAULT_NOT_IN_SCOPE_WARNING = """Cannot find model {} in {} scope. Want to create model?"""
+
+# Abbreviation, field name, default value
+DEFAULT_MODEL_FIELDS = {
+    'belongsto': "ForeignKey",
+    'big': 'BigIntegerField',
+    'bigint': 'BigIntegerField',
+    'bool': 'BooleanField',
+    'boolean': 'BooleanField',
+    'char': 'CharField',
+    'date': 'DateField',
+    'datetime': 'DateTimeField',
+    'dec': 'DecimalField',
+    'decimal': 'DecimalField',
+    'duration': 'DurationField',
+    'email': 'EmailField',
+    'file': "FileField",
+    'filepath': 'FilePathField',
+    'fk': "ForeignKey",
+    'foreignkey': "ForeignKey",
+    'float': 'FloatField',
+    'hasone': "OneToOneField",
+    'hasmany': 'ManyToManyField',
+    'image': "ImageField",
+    'int': 'IntegerField',
+    'integer': 'IntegerField',
+    'ipaddress': 'GenericIPAddressField',
+    'many': 'ManyToManyField',
+    'manytomany': 'ManyToManyField',
+    'one': "OneToOneField",
+    'onetoone': "OneToOneField",
+    'photo': "ImageField",
+    'slug': 'SlugField',
+    'string': 'TextField',
+    'text': 'TextField',
+    'time': 'TimeField',
+    'url': 'URLField',
+    'uuid': 'UUIDField',
+}
+
+# Abbreviation, field name, default value
+DEFAULT_MODEL_OPTIONS = {
+    'BigIntegerField': '',
+    'BooleanField': 'default=False',
+    'CharField': 'max_length=100',
+    'DateField': 'auto_now=True',
+    'DateTimeField': 'auto_now=True',
+    'DecimalField': '',
+    'DurationField': '',
+    'EmailField': '',
+    'GenericIPAddressField': '',
+    'FileField': "blank=True, upload_to='uploads/{}/'",
+    'FilePathField': '',
+    'FloatField': '',
+    'ForeignKey': "{}, related_name='{}', on_delete=models.PROTECT",
+    'ImageField': "blank=True, upload_to='uploads/{}/'",
+    'IntegerField': '',
+    'ManyToManyField': '{}, blank=True',
+    'OneToOneField': "{}, related_name='{}', on_delete=models.CASCADE",
+    'SlugField': 'unique=True',
+    'TextField': 'blank=True',
+    'TimeField': 'auto_now=True',
+    'URLlField': '',
+    'UUIDField': 'default=uuid.uuid4, editable=False',
+}
 
 
 class ModelHelper(BaseHelper):
@@ -146,19 +209,6 @@ class ModelHelper(BaseHelper):
         Expect input to be of the form (char:name, text:bio, image:artwork)
         """
 
-        # TODO: Fix implementation to prevent issue-69
-        filepath = f'{os.path.dirname(os.path.abspath(__file__))}/fields.json'
-
-        file = open(filepath)
-
-        data = json.load(file)
-
-        file.close()
-
-        default_token_types = data['reserved_words']
-
-        relationships = default_token_types[0]['relationships']
-
         # i.e char:first_name
         parsed_token = field.split(":")
 
@@ -174,14 +224,9 @@ class ModelHelper(BaseHelper):
                 return None
 
         # Check if parsed_token_type is a relationship field
-        for relationship in relationships:
-            if parsed_token_type in relationship:
-                return sanitized_string(parsed_token_name), relationship.get(parsed_token_type)
-
-        # Check if parsed_token_type is a generic model field
-        for some in default_token_types:
-            if parsed_token_type in some:
-                return sanitized_string(parsed_token_name), some.get(parsed_token_type)
+        for abbreviation, field in DEFAULT_MODEL_FIELDS.items():
+            if parsed_token_type.lower() == abbreviation.lower():
+                return sanitized_string(parsed_token_name), DEFAULT_MODEL_FIELDS[abbreviation]
 
         return None
 
@@ -191,52 +236,41 @@ class ModelHelper(BaseHelper):
         Determines what options are present with each model field.
         """
 
-        default_model_options = (
-            ('BooleanField', 'default=False'),
-            ('CharField', 'max_length=50'),
-            ('DateField', 'auto_now=True'),
-            ('DateTimeField', 'auto_now=True'),
-            ('FileField', "blank=True, upload_to='uploads/files/'"),
-            ('ForeignKey', "{}, related_name='{}', on_delete=models.PROTECT"),
-            ('ImageField', "blank=True, upload_to='uploads/images/'"),
-            ('ManyToManyField', '{}, blank=True'),
-            ('OneToOneField', "{}, related_name='{}', on_delete=models.CASCADE"),
-            ('SlugField', 'unique=True'),
-            ('TextField', 'blank=True'),  # <-- Added to address issue-69
-            ('TimeField', 'auto_now=True'),
-        )
-
-        # TODO: Fix implementation to prevent issue-69
-        for field, options in default_model_options:
-            if field.lower() == field_type.lower():
-                if field == "ForeignKey":
-                    options = options.format(
-                        field_name.capitalize(),
-                        inflection.pluralize(model).lower()
-                    )
-                    cls.find_resource_in_scope(field_name)
-                    cls.append_import(field_name)
-
-                elif field == "ManyToManyField":
-                    options = options.format(
-                        field_name.capitalize()
-                    )
-                    cls.find_resource_in_scope(field_name)
-                    cls.append_import(field_name)
-
-                elif field == "OneToOneField":
-                    options = options.format(
-                        field_name.capitalize(),
-                        inflection.singularize(model)
-                    )
-                    cls.find_resource_in_scope(field_name)
-                    cls.append_import(field_name)
-
-                return model_field_template.render(
-                    name=field_name,
-                    type=field,
-                    options=options
+        if DEFAULT_MODEL_OPTIONS[field_type] is not None:
+            if field_type == "ForeignKey":
+                options = DEFAULT_MODEL_OPTIONS[field_type].format(
+                    field_name.capitalize(),
+                    inflection.pluralize(model.lower())
                 )
+                cls.find_resource_in_scope(field_name)
+                cls.append_import(field_name)
+
+            elif field_type == "OneToOneField":
+                options = DEFAULT_MODEL_OPTIONS[field_type].format(
+                      field_name.capitalize(),
+                      inflection.singularize(model)
+                  )
+                cls.find_resource_in_scope(field_name)
+                cls.append_import(field_name)
+
+            elif field_type == "ManyToManyField":
+                options = DEFAULT_MODEL_OPTIONS[field_type].format(
+                        field_name.capitalize()
+                )
+                cls.find_resource_in_scope(field_name)
+                cls.append_import(field_name)
+
+            elif field_type == "FileField" or "ImageField":
+                options = DEFAULT_MODEL_OPTIONS[field_type].format(inflection.pluralize(field_name))
+
+            else:
+                options = DEFAULT_MODEL_OPTIONS[field_type]
+
+            return model_field_template.render(
+                name=field_name,
+                type=field_type,
+                options=options
+            )
 
     @classmethod
     def parse_fields(cls, **kwargs):
@@ -250,12 +284,12 @@ class ModelHelper(BaseHelper):
 
         for field in fields:
             try:
-                f_name, f_type = cls.handle_tokens(field)
+                field_name, field_type = cls.handle_tokens(field)
 
-                if f_type is not None and f_name is not None:
+                if field_type is not None and field_name is not None:
                     field_content = cls.handle_field(
-                        field_type=f_type,
-                        field_name=f_name,
+                        field_type=field_type,
+                        field_name=field_name,
                         model=kwargs['model']
                     )
 
