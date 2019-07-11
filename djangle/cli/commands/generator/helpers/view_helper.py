@@ -1,62 +1,72 @@
 from djangle.cli import log_success
 from djangle.cli.commands.base_helper import BaseHelper
 from djangle.cli.templates.view import (
-    function_view_template,
-    view_import_template,
-    view_template,
+    default_function_view_template,
+    default_function_view_import_template,
+    default_class_view_template,
+    default_class_view_import_template
 )
 
 
 class ViewHelper(BaseHelper):
 
     def create(self, **kwargs):
-        model = kwargs['name']
+        model = self.check_noun(kwargs['model'])
 
-        path = kwargs['path']
+        kwargs['model'] = model
 
-        template = view_template
+        kwargs['name'] = model
 
-        if kwargs['detail']:
-            generic_view_type = 'detail'
-            model = self.check_noun(model)
-            view_type = 'DetailView'
-            view_name = f"{model.capitalize()}{view_type}"
-            filename = f"{model.lower()}.py"
-        elif kwargs['list']:
-            generic_view_type = 'list'
-            model = self.check_noun(model)
-            view_type = 'ListView'
-            view_name = f"{model.capitalize()}{view_type}"
-            filename = f"{model.lower()}.py"
-        else:
-            generic_view_type = None
-            view_type = '_view'
-            view_name = f"{kwargs['name'].lower()}{view_type}"
-            template = function_view_template
-            filename = f"{model.lower()}.py"
+        template = default_class_view_template
+
+        template_import = default_class_view_import_template
+
+        filename = f"{model.lower()}.py"
+
+        if not kwargs['detail'] and not kwargs['list']:
+            template = default_function_view_template
+            template_import = default_function_view_import_template
 
         self.parse_and_create(
             filename=filename,
-            model=model,
-            path=path,
             template=template,
-            generic_view_type=generic_view_type,
-            view_type=view_type,
-            view_name=view_name,
-            dry=kwargs['dry']
+            **kwargs
         )
 
         self.add_import(
             **kwargs,
-            view_file=kwargs['name'],
-            view_name=view_name,
-            template=view_import_template,
+            template=template_import,
         )
 
-        log_success(f"Successfully created {view_name}")
+        log_success(f"Successfully created view.")
 
-    @classmethod
-    def create_auth_user(cls, **kwargs):
-        # TODO: Implement method
-        pass
+    def delete(self, **kwargs):
+        model = self.check_noun(kwargs['model'])
+
+        kwargs['model'] = model
+
+        kwargs['name'] = model
+
+        filename = f"{model.lower()}.py"
+
+        if self.destroy(filename=filename, **kwargs):
+
+            self.remove_import(
+                template=default_class_view_import_template,
+                model=model,
+                list=True,
+                path=kwargs['path']
+            )
+
+            self.remove_import(
+                template=default_class_view_import_template,
+                model=model,
+                detail=True,
+                path=kwargs['path']
+            )
+
+            self.remove_import(template=default_function_view_import_template, **kwargs)
+
+            log_success(f'Successfully deleted view.')
+
 # end class

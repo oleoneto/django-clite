@@ -41,6 +41,23 @@ class AdminHelper(BaseHelper):
 
         log_success(message)
 
+    def delete(self, **kwargs):
+        model = self.check_noun(kwargs['model'])
+
+        filename = f"{model.lower()}.py"
+
+        template = model_admin_import_template
+
+        message = "Successfully deleted admin model"
+
+        if kwargs['inline']:
+            template = model_inline_import_template
+            message = "Successfully deleted admin inline"
+
+        if self.destroy(filename=filename, **kwargs):
+            self.remove_import(template=template, **kwargs)
+            log_success(message)
+
     @classmethod
     def create_auth_user(cls, **kwargs):
         kwargs['model'] = 'User'

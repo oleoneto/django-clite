@@ -20,6 +20,15 @@ class TemplateHelper(BaseHelper):
             dry=kwargs['dry']
         )
 
-        log_success("Successfully created HTML template")
+        log_success("Successfully created HTML template.")
+
+    def delete(self, **kwargs):
+        model = self.check_noun(kwargs['model'])
+
+        filename = f"{model.lower()}.html"
+
+        if self.destroy(filename=filename, **kwargs):
+
+            log_success('Successfully deleted HTML template.')
 
 # end class

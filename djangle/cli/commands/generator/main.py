@@ -20,8 +20,8 @@ def not_an_app_directory_warning(ctx):
 
 
 @click.group()
-@click.pass_context
 @click.option('--dry', is_flag=True, help="Display output without creating files.")
+@click.pass_context
 def generate(ctx, dry):
     """
     Adds models, routes, and other resources
@@ -242,9 +242,10 @@ def view(ctx, name, list, detail):
     path = ctx.obj['views']
 
     helper.create(
+        model=name,
+        name=name,
         detail=detail,
         list=list,
-        name=name,
         path=path,
         dry=ctx.obj['dry']
     )

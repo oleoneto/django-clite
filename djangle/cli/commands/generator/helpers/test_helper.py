@@ -28,6 +28,19 @@ class TestHelper(BaseHelper):
 
         log_success("Successfully created TestCase.")
 
+    def delete(self, **kwargs):
+        model = self.check_noun(kwargs['model'])
+
+        filename = f"{model.lower()}.py"
+
+        template = test_case_import_template
+
+        if self.destroy(filename=filename, **kwargs):
+
+            self.remove_import(template=template, **kwargs)
+
+            log_success('Successfully deleted TestCase.')
+
     @classmethod
     def create_auth_user(cls, **kwargs):
         kwargs['model'] = 'User'
