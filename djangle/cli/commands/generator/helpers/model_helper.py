@@ -2,7 +2,7 @@ import click
 import fileinput
 import inflection
 import os
-from djangle.cli import log_success, sanitized_string
+from djangle.cli import log_success, sanitized_string, log_info
 from djangle.cli.commands.base_helper import BaseHelper
 from djangle.cli.templates.model import (
     auth_user_model_template,
@@ -81,9 +81,14 @@ DEFAULT_MODEL_OPTIONS = {
 
 class ModelHelper(BaseHelper):
 
-    imports_list = []
-
+    # List of fields to be rendered in model template
     fields_list = []
+
+    # List models referred to in ForeignKey, OneToOne, or ManyToMany fields.
+    dependencies_list = []
+
+    # List of imports to be rendered in model template
+    imports_list = []
 
     @classmethod
     def append_import(cls, value):
@@ -101,7 +106,8 @@ class ModelHelper(BaseHelper):
 
         db_table_name = f"{app_name}_{inflection.pluralize(model)}"
 
-        self.parse_fields(**kwargs)
+        if kwargs['fields'] is not None:
+            self.parse_fields(**kwargs)
 
         self.parse_and_create(
             model=model,
@@ -118,6 +124,11 @@ class ModelHelper(BaseHelper):
         self.add_import(**kwargs, template=model_import_template)
 
         log_success("Successfully created model.")
+
+        # Ensure related models are created
+        self.handle_dependencies(**kwargs, app_name=app_name)
+
+        return
 
     @classmethod
     def create_auth_user(cls, **kwargs):
@@ -160,7 +171,7 @@ class ModelHelper(BaseHelper):
         either by filename or import statement in __init__.py
 
         If the model is not found in the current scope, a warning is displayed
-        indicating that user input is needed to proceed with the command.
+        asking the user whether the model should be created.
         """
         path = f"{os.getcwd()}/models"
 
@@ -183,8 +194,8 @@ class ModelHelper(BaseHelper):
         fileinput.close()
 
         if click.confirm(DEFAULT_NOT_IN_SCOPE_WARNING.format(model.capitalize(), app_name)):
-            # TODO: Create model in question...
-            pass
+            cls.dependencies_list.append(model.capitalize())
+            log_info(f'Will create model {model.capitalize()}')
 
     @classmethod
     def get_app_name(cls):
@@ -201,6 +212,38 @@ class ModelHelper(BaseHelper):
         except FileNotFoundError:
             return "app"
         return "app"
+
+    def handle_dependencies(self, **kwargs):
+
+        if len(self.dependencies_list) < 1:
+            return False
+
+        for model in self.dependencies_list:
+            app_name = kwargs['app_name']
+
+            filename = f'{model.lower()}.py'
+
+            db_table_name = f"{app_name}_{inflection.pluralize(model)}"
+
+            self.parse_and_create(
+                model=model,
+                abstract=False,
+                fields=[],
+                imports=[],
+                db_table=db_table_name,
+                template=model_template,
+                filename=filename,
+                path=kwargs['path'],
+                dry=kwargs['dry']
+            )
+
+            self.add_import(
+                template=model_import_template,
+                model=model,
+                path=kwargs['path']
+            )
+
+        return True
 
     @classmethod
     def handle_tokens(cls, field):
