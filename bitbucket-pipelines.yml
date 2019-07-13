@@ -1,18 +1,19 @@
 image: python:3.7.3
 
 pipelines:
-  default:
-    - step:
-        caches:
-          - pip
-        script: # Modify the commands below to build your repository.
-          - pip install -r requirements.txt
-          - tox test
-          - pipe: atlassian/pypi-publish:0.2.7
-            variables:
-              PYPI_USERNAME: $PYPI_PRIVATE_USER
-              PYPI_PASSWORD: $PYPI_PRIVATE_PASS
-              # REPOSITORY: '<string>' # Optional.
-              # DISTRIBUTIONS: '<string>' # Optional.
-              # FOLDER: '<string>' # Optional.
-              # DEBUG: '<boolean>' # Optional.
+  branches:
+    master:
+      - step:
+          caches:
+            - pip
+          script: # Modify the commands below to build your repository.
+            - pip install -r requirements.txt
+            - tox test
+            - pipe: atlassian/pypi-publish:0.2.7
+              variables:
+                PYPI_USERNAME: $PYPI_PRIVATE_USER
+                PYPI_PASSWORD: $PYPI_PRIVATE_PASS
+                # REPOSITORY: '<string>' # Optional.
+                # DISTRIBUTIONS: '<string>' # Optional.
+                # FOLDER: '<string>' # Optional.
+                # DEBUG: '<boolean>' # Optional.
