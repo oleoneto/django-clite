@@ -1,16 +1,16 @@
 """
-django-dj
+django-clite
 
 Description:
 A CLI that handles creating and managing Django projects
 """
 
 import click
-from dj import AliasedGroup
-from dj.cli.commands import destroy
-from dj.cli.commands import generate
-from dj.cli.commands import new
-from dj.cli.commands import run
+from django_clite import AliasedGroup
+from django_clite.cli.commands import destroy
+from django_clite.cli.commands import generate
+from django_clite.cli.commands import new
+from django_clite.cli.commands import run
 
 
 CONTEXT_SETTINGS = dict(token_normalize_func=lambda x: x.lower())
@@ -20,7 +20,7 @@ CONTEXT_SETTINGS = dict(token_normalize_func=lambda x: x.lower())
 @click.pass_context
 def main(ctx):
     """
-    django-dj
+    django-clite
 
     A CLI to handle the creation and management of your Django projects.
     The CLI has some options about how your project should be structured in order for it to maximize the
@@ -32,7 +32,7 @@ def main(ctx):
 """
 Commands should be added as sub-commands of the main click group.
 This ensures sub-commands can be chained and
-run as `django-dj SUB-COMMAND COMMAND`
+run as `django-clite SUB-COMMAND COMMAND`
 """
 main.add_command(destroy)
 main.add_command(generate)

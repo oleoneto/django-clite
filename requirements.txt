@@ -6,7 +6,6 @@ Click
 
 # Templating
 jinja2
-inflect
 inflection
 
 # Configuration

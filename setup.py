@@ -6,11 +6,11 @@ with open("README.md", "r") as f:
 
 
 setup(
-    name="django-dj",
-    version="0.0.9-beta.1",
+    name="django-clite",
+    version="0.0.9-beta.2",
     author="Leo Neto",
     author_email="leo@ekletik.com",
-    url="https://bitbucket.org/oleoneto/django-dj",
+    url="https://bitbucket.org/oleoneto/django-clite",
     description="CLI for managing Django projects",
     long_description=long_description,
     long_description_content_type='text/markdown',
@@ -40,14 +40,13 @@ setup(
     include_package_data=True,
     packages=find_packages(),
     project_urls={
-        "Documentation": "https://bitbucket.org/oleoneto/django-dj/",
-        "Source Code": "https://bitbucket.org/oleoneto/django-dj/",
+        "Documentation": "https://bitbucket.org/oleoneto/django-clite/",
+        "Source Code": "https://bitbucket.org/oleoneto/django-clite/",
     },
     entry_points={
         'console_scripts': [
             'D=app:main',
-            'dj=app:main',
-            'django-dj=app:main',
+            'django-clite=app:main',
         ]
     },
     scripts=['app.py']
