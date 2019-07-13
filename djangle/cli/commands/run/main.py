@@ -3,7 +3,7 @@ import os
 from djangle.cli import find_management_file, log_error
 
 
-def not_an_app_directory_warning(ctx):
+def not_an_app_directory_warning():
     if not ('apps.py' in os.listdir('.')):
         log_error("Not inside an app directory")
         raise click.Abort
@@ -15,7 +15,7 @@ def run(ctx):
     """
     Run maintenance, development, and deployment scripts.
     """
-    not_an_app_directory_warning(ctx)
+    not_an_app_directory_warning()
 
     ctx.ensure_object(dict)
     ctx.obj['path'] = find_management_file(os.getcwd())
