@@ -1,12 +1,6 @@
-<<<<<<< HEAD:django_clite/cli/commands/generator/helpers/view_helper.py
 from django_clite.cli import log_success
 from django_clite.cli.commands.base_helper import BaseHelper
 from django_clite.cli.templates.view import (
-=======
-from dj.cli import log_success
-from dj.cli.commands.base_helper import BaseHelper
-from dj.cli.templates.view import (
->>>>>>> cdd5ae1b06170474ce89ba48faaf0c847c938c34:dj/cli/commands/generator/helpers/view_helper.py
     default_function_view_template,
     default_function_view_import_template,
     default_class_view_template,

@@ -1,10 +1,6 @@
 import click
 import os
-<<<<<<< HEAD:django_clite/cli/commands/generator/main.py
 from django_clite.cli import log_error
-=======
-from dj.cli import log_error
->>>>>>> cdd5ae1b06170474ce89ba48faaf0c847c938c34:dj/cli/commands/generator/main.py
 from .helpers import (
     AdminHelper,
     FormHelper,

@@ -1,12 +1,7 @@
 import click
 import os
-<<<<<<< HEAD:django_clite/cli/commands/destroyer/main.py
 from django_clite.cli import log_error
 from django_clite.cli.commands.generator.helpers import (
-=======
-from dj.cli import log_error
-from dj.cli.commands.generator.helpers import (
->>>>>>> cdd5ae1b06170474ce89ba48faaf0c847c938c34:dj/cli/commands/destroyer/main.py
     AdminHelper,
     FormHelper,
     ModelHelper,

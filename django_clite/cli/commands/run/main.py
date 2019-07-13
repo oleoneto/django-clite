@@ -1,6 +1,6 @@
 import click
 import os
-from djangle.cli import find_management_file, log_error
+from django_clite.cli import find_management_file, log_error
 
 
 def not_an_app_directory_warning():

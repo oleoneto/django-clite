@@ -1,12 +1,6 @@
-<<<<<<< HEAD:django_clite/cli/commands/generator/helpers/form_helper.py
 from django_clite.cli import log_success
 from django_clite.cli.commands.base_helper import BaseHelper
 from django_clite.cli.templates.form import (
-=======
-from dj.cli import log_success
-from dj.cli.commands.base_helper import BaseHelper
-from dj.cli.templates.form import (
->>>>>>> cdd5ae1b06170474ce89ba48faaf0c847c938c34:dj/cli/commands/generator/helpers/form_helper.py
     model_form_template,
     model_form_import_template
 )
