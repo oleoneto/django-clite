@@ -1,12 +1,6 @@
-<<<<<<< HEAD:django_clite/cli/commands/generator/helpers/test_helper.py
 from django_clite.cli import log_success
 from django_clite.cli.commands.base_helper import BaseHelper
 from django_clite.cli.templates.test import test_case_template, test_case_import_template
-=======
-from dj.cli import log_success
-from dj.cli.commands.base_helper import BaseHelper
-from dj.cli.templates.test import test_case_template, test_case_import_template
->>>>>>> cdd5ae1b06170474ce89ba48faaf0c847c938c34:dj/cli/commands/generator/helpers/test_helper.py
 
 
 class TestHelper(BaseHelper):

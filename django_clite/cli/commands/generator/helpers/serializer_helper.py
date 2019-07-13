@@ -1,12 +1,6 @@
-<<<<<<< HEAD:django_clite/cli/commands/generator/helpers/serializer_helper.py
 from django_clite.cli import log_success
 from django_clite.cli.commands.base_helper import BaseHelper
 from django_clite.cli.templates.serializer import (
-=======
-from dj.cli import log_success
-from dj.cli.commands.base_helper import BaseHelper
-from dj.cli.templates.serializer import (
->>>>>>> cdd5ae1b06170474ce89ba48faaf0c847c938c34:dj/cli/commands/generator/helpers/serializer_helper.py
     serializer_template,
     serializer_import_template,
     serializer_auth_user_template

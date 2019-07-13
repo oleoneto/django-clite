@@ -2,7 +2,7 @@ image: python:3.7.3
 
 pipelines:
   branches:
-    master:
+    development:
       - step:
           caches:
             - pip
@@ -13,7 +13,3 @@ pipelines:
               variables:
                 PYPI_USERNAME: $PYPI_PRIVATE_USER
                 PYPI_PASSWORD: $PYPI_PRIVATE_PASS
-                # REPOSITORY: '<string>' # Optional.
-                # DISTRIBUTIONS: '<string>' # Optional.
-                # FOLDER: '<string>' # Optional.
-                # DEBUG: '<boolean>' # Optional.

@@ -2,11 +2,7 @@ import click
 import fileinput
 import inflection
 import os
-<<<<<<< HEAD:django_clite/cli/commands/base_helper.py
 from django_clite.cli import log_error, log_info
-=======
-from dj.cli import log_error, log_info
->>>>>>> cdd5ae1b06170474ce89ba48faaf0c847c938c34:dj/cli/commands/base_helper.py
 
 
 DEFAULT_IMPORT_WARNING = "Module already imported. Skipping..."

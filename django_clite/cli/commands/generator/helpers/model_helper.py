@@ -2,15 +2,9 @@ import click
 import fileinput
 import inflection
 import os
-<<<<<<< HEAD:django_clite/cli/commands/generator/helpers/model_helper.py
 from django_clite.cli import log_success, sanitized_string, log_info
 from django_clite.cli.commands.base_helper import BaseHelper
 from django_clite.cli.templates.model import (
-=======
-from dj.cli import log_success, sanitized_string, log_info
-from dj.cli.commands.base_helper import BaseHelper
-from dj.cli.templates.model import (
->>>>>>> cdd5ae1b06170474ce89ba48faaf0c847c938c34:dj/cli/commands/generator/helpers/model_helper.py
     auth_user_model_template,
     model_field_template,
     model_import_template,
