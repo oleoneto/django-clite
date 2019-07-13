@@ -1,4 +1,4 @@
-# Djangle-CLI
+# django-dj
 
 A CLI tool that handles creating and managing Django projects
 
@@ -9,21 +9,21 @@ A CLI tool that handles creating and managing Django projects
 ### Installation
 Install via [pip](http://www.pip-installer.org/):
 ```
-pip install djangle-cli
+pip install django-dj
 ```
 
 Install from source:
 ```
-git clone https://github.com/oleoneto/djangle.git
-cd djangle
+git clone https://bitbucket.org/oleoneto/django-dj.git
+cd django-dj
 pip install .
 ```
 
 After installation, the CLI will expose the binary with three names, any of which can be used in place of another:
 ```
 D
-djangle
-djangle-cli
+dj
+django-dj
 ```
 
 
@@ -49,7 +49,7 @@ django-admin startapp blog
 django-admin startapp radio
 ```
 
-The equivalent command in the `djangle-cli` is:
+The equivalent command in the `django-dj` is:
 ```
 D new project mywebsite blog radio
 ```
@@ -197,7 +197,7 @@ Supported relationship identifiers:
 - **Many**: ManyToManyField
 
 #### Generating Serializers and Viewsets
-If you are working on an API and use the `Django REST Framework` to support your backend, you can also use the Djangle-CLI to create `serializers` and `viewsets`.
+If you are working on an API and use the `Django REST Framework` to support your backend, you can also use the django-dj to create `serializers` and `viewsets`.
 
 The commands are much like the ones used to generate a model except you don't specify any model attributes, just the model name:
 ```bash
@@ -263,7 +263,7 @@ D destroy model album
 ----
 
 ### To Do
-[Check open issues.](https://github.com/oleoneto/djangle/issues)
+[Check open issues.](https://bitbucket.org/oleoneto/django-dj/issues)
 
 ----
 
@@ -273,4 +273,4 @@ This project is a work in progress. Contributions are very much welcome.
 ----
 
 ### LICENSE
-**Djangle-CLI** is [BSD Licensed](LICENSE.txt).
+**django-dj** is [BSD Licensed](LICENSE.txt).

@@ -1,3 +1,4 @@
+# django-cj
 import click
 import inflection
 import os

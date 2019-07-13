@@ -1,5 +1,5 @@
 """
-Djangle-CLI
+django-dj
 
 Description:
 A CLI that handles creating and managing Django projects
@@ -25,7 +25,7 @@ def main(ctx):
 """
 Commands should be added as sub-commands of the main click group.
 This ensures sub-commands can be chained and
-run as `djangle SUB-COMMAND COMMAND`
+run as `django-dj SUB-COMMAND COMMAND`
 """
 main.add_command(destroy)
 main.add_command(generate)
