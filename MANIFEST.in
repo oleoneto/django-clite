@@ -1,4 +1,4 @@
 include README.md
 include .gitignore
-recursive-include djangle *.json
+recursive-include djangle
 recursive-include tests *.json *.py *.txt

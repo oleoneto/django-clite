@@ -6,15 +6,15 @@ with open("README.md", "r") as f:
 
 
 setup(
-    name="djangle-cli",
-    version="0.0.2",
+    name="django-dj",
+    version="0.0.9-beta.1",
     author="Leo Neto",
     author_email="leo@ekletik.com",
-    url="https://github.com/oleoneto/djangle",
+    url="https://bitbucket.org/oleoneto/django-dj",
     description="CLI for managing Django projects",
     long_description=long_description,
     long_description_content_type='text/markdown',
-    keywords="django automate cli command line tools rails ember python framework devops",
+    keywords="django automate cli command line tools rails ember python framework",
     classifiers=[
         'Environment :: Web Environment',
         'Framework :: Django',
@@ -32,21 +32,22 @@ setup(
     install_requires=[
         'Click==7.0',
         'jinja2',
-        'inflect==2.1.0',
-        'django>=2.2.1'
+        'inflection',
+        'django>=2.2.1',
+        'tox'
     ],
     zip_safe=False,
     include_package_data=True,
     packages=find_packages(),
     project_urls={
-        "Documentation": "https://github.com/oleoneto/djangle/",
-        "Source Code": "https://github.com/oleoneto/djangle/",
+        "Documentation": "https://bitbucket.org/oleoneto/django-dj/",
+        "Source Code": "https://bitbucket.org/oleoneto/django-dj/",
     },
     entry_points={
         'console_scripts': [
             'D=app:main',
-            'djangle=app:main',
-            'djangle-cli=app:main'
+            'dj=app:main',
+            'django-dj=app:main',
         ]
     },
     scripts=['app.py']
