@@ -26,7 +26,8 @@ def generate(ctx, dry):
     """
     Adds models, routes, and other resources
     """
-    not_an_app_directory_warning()
+    if not dry:
+        not_an_app_directory_warning()
 
     ctx.ensure_object(dict)
     ctx.obj['dry'] = dry
@@ -86,7 +87,7 @@ def form(ctx, name):
 @click.option('--register-admin', is_flag=True, help="Register model to admin site.")
 @click.option('--register-inline', is_flag=True, help="Register model to admin site as inline.")
 @click.option('--test-case', is_flag=True, help="Creates a TestCase for model.")
-@click.option('--full', is_flag=True, help="Adds admin, inline, and TestCase")
+@click.option('--full', is_flag=True, help="Adds all related resources and TestCase")
 @click.pass_context
 def model(ctx, name, full, abstract, fields, register_admin, register_inline, test_case):
     """
@@ -120,6 +121,14 @@ def model(ctx, name, full, abstract, fields, register_admin, register_inline, te
 
     if test_case or full:
         ctx.invoke(test, model=name)
+
+    if full:
+        ctx.invoke(form, name=name)
+        ctx.invoke(serializer, name=name)
+        ctx.invoke(template, name=name)
+        ctx.invoke(view, name=name, list=True)
+        ctx.invoke(view, name=name, detail=True)
+        ctx.invoke(viewset, name=name)
 
 
 @generate.command()

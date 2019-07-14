@@ -1,6 +1,7 @@
 import click
 import os
 from django_clite.cli import find_management_file, log_error
+from .helpers import RunnerHelper
 
 
 def not_an_app_directory_warning():
@@ -15,10 +16,10 @@ def run(ctx):
     """
     Run maintenance, development, and deployment scripts.
     """
-    not_an_app_directory_warning()
 
     ctx.ensure_object(dict)
-    ctx.obj['path'] = find_management_file(os.getcwd())
+    ctx.obj['path'], b = find_management_file(os.getcwd())
+    print(ctx.obj['path'])
 
 
 @run.command()
@@ -37,13 +38,13 @@ def deploy(ctx):
     Supported deployment upstreams:
     - Dokku
 
-        \b
+    \b
         Define your upstream as DOKKU and add a DOKKU_HOST in your upstream configuration.
         The host needs to be an IP or fully qualified domain name (FQDN) for your upstream server.
 
     - Bitbucket, Github, and Gitlab
 
-        \b
+    \b
         Define your upstream as GIT and if your .git repository has an `origin` remote,
         the CLI will push your code to that server.
     """
@@ -54,26 +55,46 @@ def deploy(ctx):
 @click.pass_context
 def docker(ctx):
     """
-    Initialize and run a Docker container.
+    Run project from within a Docker container.
     """
     pass
 
 
 @run.command()
+@click.argument('app-name')
 @click.pass_context
-def migrations(ctx):
+def migrations(ctx, app_name):
     """
     Run database migrations.
 
-    This is combines both `makemigrations` and `migrate` commands into one.
+    This is combines both `makemigrations` and `migrate` commands into one. For example:
+
+        D run migrations blog
+    
+    will accomplish the same as the following two commands:
+
+    \b
+        ./manage.py makemigrations blog && \\
+        ./manage.py migrate blog
+
+    Another thing this command seeks to accomplish is to bypass the need to navigate to
+    the top of the directory in order to have access to the `manage.py` module. As long
+    as the command is ran from within of the three scopes, the command will work as intended:
+
+    \b
+        /project
+        /project/project
+        /project/project/app
+
     """
     pass
 
 
 @run.command()
+@click.option('-w', '')
 @click.pass_context
 def server(ctx):
     """
-    Runs the default Django server for your project.
+    Runs the default Django server for your project or another one of choice.
     """
     pass
