@@ -30,9 +30,10 @@ django-clite
 
 ### Commands
 ```
-destroy   Removes models, serializers, and other...
+destroy   Deletes models, serializers, and other resources
 generate  Adds models, routes, and other resources
 new       Creates projects and apps
+run       Run maintenance, development, and deployment scripts.
 ```
 
 ----
