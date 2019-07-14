@@ -11,14 +11,14 @@ RUN apt-get update
 RUN apt-get install -y swig libssl-dev dpkg-dev netcat
 
 RUN pip install -U pip
-ADD requirements_template.txt /code/
-RUN pip install -Ur /code/requirements_template.txt
+ADD requirements.txt /code/
+RUN pip install -Ur /code/requirements.txt
 
 # Set working directory
 WORKDIR /code/
 
-# Copy requirements_template to working directory
-COPY ./requirements_template.txt .
+# Copy requirements to working directory
+COPY ./requirements.txt .
 
 # Copy project files
 COPY . /code/
@@ -31,7 +31,7 @@ services:
   web:
     container_name: "{{ project.lower() }}-web"
     labels:
-        com.{{ project.lower() }}.web.description = "Web Application"
+        com.{{ project.lower() }}.web.description = "{{ project }}: Web Application"
     build: ./application
     volumes:
         - ./application/:code/
@@ -47,11 +47,10 @@ services:
         - db
     command: gunicorn {{ project }}.wsgi:application --bind 0.0.0.0:8000 --workers 3
   
-  
   db:
     image: postgres:10.5-alpine
     labels:
-        com.{{ project.lower() }}.db.description: "Database service"
+        com.{{ project.lower() }}.db.description: "{{ project.lower() }}: Database service"
     volumes:
       - postgres_data:/var/lib/postgresql/data/
     networks:
@@ -61,7 +60,7 @@ services:
   nginx:
     container_name: "{{ project.lower() }}-nginx"
     labels:
-        com.{{ project.lower() }}.nginx.description: "Proxy Server"
+        com.{{ project.lower() }}.nginx.description: "{{ project.lower() }}: Proxy Server"
     image: nginx:1.15.0-alpine
     volumes:
       - static_volume:/var/www/staticfiles
@@ -70,7 +69,13 @@ services:
       - 1337:80
     depends_on:
       - web
-      
+  
+  redis:
+    restart: always
+    image: redis:latest
+    expose:
+      - "6379"
+
 volumes:
   postgres_data:
   static_volume:

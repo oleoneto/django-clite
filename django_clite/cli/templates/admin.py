@@ -2,7 +2,7 @@ from jinja2 import Template
 
 model_admin_template = Template(
     """from django.contrib import admin
-from ..models.{{ model.lower() }} import {{ model.capitalize() }}
+from ..models import {{ model.capitalize() }}
 
 
 @admin.register({{ model.capitalize() }})
@@ -48,7 +48,7 @@ model_admin_import_template = Template("""from .{{ model.lower() }} import {{ mo
 
 model_admin_inline_template = Template(
     """from django.contrib import admin
-from ...models.{{ model.lower() }} import {{ model.capitalize() }}
+from ...models import {{ model.capitalize() }}
 
 
 class {{ model.capitalize() }}Inline(admin.StackedInline):
