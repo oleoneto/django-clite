@@ -126,30 +126,6 @@ class BaseHelper(object):
         return True
 
     @classmethod
-    def find_management_file(cls, cwd):
-
-        code = 0
-        path = None
-
-        levels = (
-            ('manage.py', 1),    # <-- project
-            ('settings.py', 2),  # <-- project/project
-            ('wsgi.py', 2),      # <-- project/project
-            ('apps.py', 3),      # <-- project/project/app
-        )
-
-        for filename, c in levels:
-            if filename in os.listdir(cwd):
-                code = c
-                path = os.getcwd()
-
-        if code == 1:
-            path = f"{path}/{path.split('/')[-1]}"
-        elif code == 3:
-            path = f"{path.rsplit('/', 1)[0]}"
-        return path
-
-    @classmethod
     def log_dry(cls, **kwargs):
         """
         Responsible for logging commands to the console.

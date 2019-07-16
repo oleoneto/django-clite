@@ -34,7 +34,7 @@ def new(ctx, dry):
     ctx.ensure_object(dict)
     ctx.obj['dry'] = dry
     ctx.obj['cwd'] = os.getcwd()
-    ctx.obj['path'], ctx.obj['code'] = find_management_file(ctx.obj['cwd'])
+    ctx.obj['path'], ctx.obj['management'], ctx.obj['code'] = find_management_file(os.getcwd())
 
 
 @new.command()

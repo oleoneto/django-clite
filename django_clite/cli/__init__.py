@@ -21,6 +21,7 @@ def find_management_file(cwd):
     """
     code = 0
     path = None
+    management = None
 
     levels = (
         ('manage.py', 1),    # <-- project
@@ -35,10 +36,14 @@ def find_management_file(cwd):
             path = os.getcwd()
 
     if code == 1:
+        management = path
         path = f"{path}/{path.split('/')[-1]}"
+    elif code == 2:
+        management = path.rsplit('/', 1)[0]
     elif code == 3:
-        path = f"{path.rsplit('/', 1)[0]}"
-    return path, code
+        management = path.rsplit('/', 2)[0]
+        path = path.rsplit('/', 1)[0]
+    return path, management, code
 
 
 def log_info(message):
