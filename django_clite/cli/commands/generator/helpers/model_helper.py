@@ -240,7 +240,8 @@ class ModelHelper(BaseHelper):
             self.add_import(
                 template=model_import_template,
                 model=model,
-                path=kwargs['path']
+                path=kwargs['path'],
+                dry=kwargs['dry']
             )
 
         return True

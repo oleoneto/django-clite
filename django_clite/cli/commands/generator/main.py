@@ -20,7 +20,7 @@ def not_an_app_directory_warning():
 
 
 @click.group()
-@click.option('--dry', is_flag=True, help="Display output without creating files.")
+@click.option('--dry', '--dry-run', is_flag=True, help="Display output without creating files.")
 @click.pass_context
 def generate(ctx, dry):
     """
@@ -88,8 +88,9 @@ def form(ctx, name):
 @click.option('--register-inline', is_flag=True, help="Register model to admin site as inline.")
 @click.option('--test-case', is_flag=True, help="Creates a TestCase for model.")
 @click.option('--full', is_flag=True, help="Adds all related resources and TestCase")
+@click.option('-i', '--inherits', type=str, required=False, help="Add type inheritance.")
 @click.pass_context
-def model(ctx, name, full, abstract, fields, register_admin, register_inline, test_case):
+def model(ctx, name, full, abstract, fields, register_admin, register_inline, test_case, inherits):
     """
     Generates a model under the models directory.
     One can specify multiple attributes after the model's name, like so:
