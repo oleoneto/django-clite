@@ -40,7 +40,7 @@ DEFAULT_ERRORS = {
 }
 
 DEFAULT_APP_PACKAGES = {
-    'admin', 'forms', 'middleware', 'models', 'serializers',
+    'admin', 'fixtures', 'forms', 'middleware', 'models', 'serializers',
     'templates', 'tests', 'views', 'viewsets'
 }
 
