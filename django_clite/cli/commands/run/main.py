@@ -1,7 +1,10 @@
 import click
 import os
 from django_clite.cli import find_management_file, log_error
-from .helpers import RunnerHelper
+from .helpers import (
+    MigrationHelper,
+    ServerHelper
+)
 
 
 def not_an_app_directory_warning():
@@ -18,8 +21,16 @@ def run(ctx):
     """
 
     ctx.ensure_object(dict)
-    ctx.obj['path'], b = find_management_file(os.getcwd())
-    print(ctx.obj['path'])
+    ctx.obj['path'], ctx.obj['management'], ctx.obj['code'] = find_management_file(os.getcwd())
+
+
+@run.command()
+@click.pass_context
+def build(ctx):
+    """
+    Install dependencies, run migrations, and collect static files.
+    """
+    pass
 
 
 @run.command()
@@ -61,9 +72,11 @@ def docker(ctx):
 
 
 @run.command()
-@click.argument('app-name')
+@click.option('-a', '--app', type=str, required=False)
+@click.option('--up/--down', default=True, help='Make or undo migrations.')
+@click.option('-s', '--show', is_flag=True, help='Show current migrations.')
 @click.pass_context
-def migrations(ctx, app_name):
+def migrations(ctx, app, up, show):
     """
     Run database migrations.
 
@@ -87,14 +100,21 @@ def migrations(ctx, app_name):
         /project/project/app
 
     """
-    pass
+
+    path = ctx.obj['management']
+
+    MigrationHelper.run(path, app, up, show)
 
 
 @run.command()
-@click.option('-w', '')
+@click.option('-p', '--port', type=int, required=False, help='The port the server will listen on.')
+@click.option('--fg/--bg', default=True, help='Run in foreground or background.')
 @click.pass_context
-def server(ctx):
+def server(ctx, port, fg):
     """
-    Runs the default Django server for your project or another one of choice.
+    Runs the development server or another one of choice.
     """
-    pass
+
+    path = ctx.obj['management']
+
+    ServerHelper.start(path, port, fg)
