@@ -70,9 +70,10 @@ The `--docker` flag will create a `Dockerfile` as well as a `docker-compose.yml`
 The `--dokku` flag will add dokku-specific configuration to your project within the `dokku` directory. The default configuration will allow you to push to your dokku-enabled remote server and deploy your Django project in an instant.
 
 The `--custom-auth` flag is used to provide a simple override of the `AUTH_USER_MODEL`. This creates a `User` model under `authentication.models.user`. One can simply specify the override in `settings.py` by setting:
+
 ```python
 AUTH_USER_MODEL = 'authentication.User'
-````
+```
 
 ##### Project structure
 This CLI makes some assumptions about the structure of your Django project.
