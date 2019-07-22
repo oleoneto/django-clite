@@ -78,6 +78,13 @@ DEFAULT_MODEL_OPTIONS = {
     'UUIDField': 'default=uuid.uuid4, editable=False',
 }
 
+DEFAULT_SPECIAL_INHERITABLE_TYPES = {
+    'abstract-user': 'django.contrib.auth.models',
+    'abstract-base-user': 'django.contrib.auth.models',
+    'base-user': 'django.contrib.auth.models',
+    'user': 'django.contrib.auth.models',
+}
+
 
 class ModelHelper(BaseHelper):
 
@@ -90,13 +97,37 @@ class ModelHelper(BaseHelper):
     # List of imports to be rendered in model template
     imports_list = []
 
+    # List of special imports to be rendered in model template
+    special_import = []
+
     @classmethod
     def append_import(cls, value):
         if value not in cls.imports_list:
             cls.imports_list.append(value)
 
+    @classmethod
+    def append_special_import(cls, value):
+        if value in DEFAULT_SPECIAL_INHERITABLE_TYPES:
+            statement = DEFAULT_SPECIAL_INHERITABLE_TYPES[value]
+            value = inflection.camelize(inflection.underscore(value))
+            cls.special_import = (statement, value)
+            return True
+        else:
+            model = inflection.camelize(inflection.underscore(value))
+            value = inflection.underscore(value)
+            cls.special_import = (f'.{value}', model)
+        return False
+
     def create(self, **kwargs):
         model = self.check_noun(kwargs['model'])
+
+        base_model = self.check_noun(kwargs['inherits']) if kwargs['inherits'] else None
+
+        # Check if model is in the `special` category before
+        # attempting to create a module for it if one is not found.
+        if base_model is not None:
+            if not self.append_special_import(base_model):
+                self.find_resource_in_scope(base_model)
 
         app_name = self.get_app_name()
 
@@ -112,6 +143,7 @@ class ModelHelper(BaseHelper):
         self.parse_and_create(
             model=model,
             abstract=kwargs['abstract'],
+            base=self.special_import,
             fields=self.fields_list,
             imports=self.imports_list,
             db_table=db_table_name,
@@ -195,7 +227,6 @@ class ModelHelper(BaseHelper):
 
         if click.confirm(DEFAULT_NOT_IN_SCOPE_WARNING.format(model.capitalize(), app_name)):
             cls.dependencies_list.append(model.capitalize())
-            log_info(f'Will create model {model.capitalize()}')
 
     @classmethod
     def get_app_name(cls):
@@ -240,7 +271,8 @@ class ModelHelper(BaseHelper):
             self.add_import(
                 template=model_import_template,
                 model=model,
-                path=kwargs['path']
+                path=kwargs['path'],
+                dry=kwargs['dry']
             )
 
         return True

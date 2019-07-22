@@ -34,14 +34,14 @@ def new(ctx, dry):
     ctx.ensure_object(dict)
     ctx.obj['dry'] = dry
     ctx.obj['cwd'] = os.getcwd()
-    ctx.obj['path'], ctx.obj['code'] = find_management_file(ctx.obj['cwd'])
+    ctx.obj['path'], ctx.obj['management'], ctx.obj['code'] = find_management_file(os.getcwd())
 
 
 @new.command()
 @click.argument('name')
 @click.option('--docker', is_flag=True, help="Add support for Docker.")
 @click.option('--dokku', is_flag=True, help="Add support for Dokku.")
-@click.option('--custom-auth', is_flag=True, help="Add support for custom AUTH_USER_MODEL.")
+@click.option('-a', '--custom-auth', is_flag=True, help="Add support for custom AUTH_USER_MODEL.")
 @click.argument('apps', nargs=-1)
 @click.pass_context
 def project(ctx, name, docker, dokku, custom_auth, apps):

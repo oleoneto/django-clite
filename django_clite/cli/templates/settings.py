@@ -78,7 +78,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django_otp.middleware.OTPMiddleware',
     'debug_toolbar.middleware.DebugToolbarMiddleware',
-    'corsheaders.middleware.DebugToolbarMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     
     {% for middleware in middlewares %}
     '{{ middleware }}',

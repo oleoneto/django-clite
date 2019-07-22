@@ -25,10 +25,10 @@ class {{ model.capitalize() }}Form(forms.Form):
 
 model_template = Template("""import uuid
 from django.db import models
-{% for model in imports %}{% if model %}from .{{ model.lower() }} import {{ model.capitalize() }}
-{% endif %}{% endfor %}
-
-class {{ model.capitalize() }}(models.Model):
+{% for model in imports %}{% if model %}from .{{ model.lower() }} import {{ model.capitalize() }}{% endif %}
+{% endfor %}
+{% if base %}from {{ base[0] }} import {{ base[1] }}\n\n{% endif %}
+class {{ model.capitalize() }}({% if base %}{{ base[1] }}{% else %}models.Model{% endif %}):
     {% for field in fields %}{{ field }}
     {% endfor %}
     # Default fields. Used for record-keeping.
@@ -47,7 +47,8 @@ class {{ model.capitalize() }}(models.Model):
         return f'{self.uuid}'
 """)
 
-auth_user_model_template = Template("""from django.db import models
+auth_user_model_template = Template("""import uuid
+from django.db import models
 from django.contrib.auth.models import AbstractUser
 from rest_framework.authtoken.models import Token
 

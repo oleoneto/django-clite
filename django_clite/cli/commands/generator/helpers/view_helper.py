@@ -27,6 +27,11 @@ class ViewHelper(BaseHelper):
             template = default_function_view_template
             template_import = default_function_view_import_template
 
+        if kwargs['list']:
+            filename = f"{model.lower()}_list.py"
+        elif kwargs['detail']:
+            filename = f"{model.lower()}_detail.py"
+
         self.parse_and_create(
             filename=filename,
             template=template,
@@ -49,23 +54,23 @@ class ViewHelper(BaseHelper):
 
         filename = f"{model.lower()}.py"
 
+        if kwargs['list']:
+            filename = f"{model.lower()}_list.py"
+        elif kwargs['detail']:
+            filename = f"{model.lower()}_detail.py"
+
         if self.destroy(filename=filename, **kwargs):
 
-            self.remove_import(
-                template=default_class_view_import_template,
-                model=model,
-                list=True,
-                path=kwargs['path']
-            )
-
-            self.remove_import(
-                template=default_class_view_import_template,
-                model=model,
-                detail=True,
-                path=kwargs['path']
-            )
-
-            self.remove_import(template=default_function_view_import_template, **kwargs)
+            if kwargs['list'] or kwargs['detail']:
+                self.remove_import(
+                    template=default_class_view_import_template,
+                    model=model,
+                    list=kwargs['list'],
+                    detail=kwargs['detail'],
+                    path=kwargs['path']
+                )
+            else:
+                self.remove_import(template=default_function_view_import_template, **kwargs)
 
             log_success(f'Successfully deleted view.')
 

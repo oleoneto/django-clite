@@ -20,7 +20,7 @@ def not_an_app_directory_warning():
 
 
 @click.group()
-@click.option('--dry', is_flag=True, help="Display output without creating files.")
+@click.option('--dry', '--dry-run', is_flag=True, help="Display output without creating files.")
 @click.pass_context
 def generate(ctx, dry):
     """
@@ -82,13 +82,14 @@ def form(ctx, name):
 @generate.command()
 @click.argument("name", required=True)
 @click.argument("fields", nargs=-1, required=False)
-@click.option('--abstract', is_flag=True, help="Creates an abstract model type.")
+@click.option('-a', '--abstract', is_flag=True, help="Creates an abstract model type.")
 @click.option('--register-admin', is_flag=True, help="Register model to admin site.")
 @click.option('--register-inline', is_flag=True, help="Register model to admin site as inline.")
-@click.option('--test-case', is_flag=True, help="Creates a TestCase for model.")
-@click.option('--full', is_flag=True, help="Adds admin, inline, and TestCase")
+@click.option('-t', '--test-case', is_flag=True, help="Creates a TestCase for model.")
+@click.option('-f', '--full', is_flag=True, help="Adds all related resources and TestCase")
+@click.option('-i', '--inherits', required=False, help="Add model inheritance.")
 @click.pass_context
-def model(ctx, name, full, abstract, fields, register_admin, register_inline, test_case):
+def model(ctx, name, full, abstract, fields, register_admin, register_inline, test_case, inherits):
     """
     Generates a model under the models directory.
     One can specify multiple attributes after the model's name, like so:
@@ -109,7 +110,8 @@ def model(ctx, name, full, abstract, fields, register_admin, register_inline, te
         abstract=abstract,
         fields=fields,
         path=path,
-        dry=ctx.obj['dry']
+        dry=ctx.obj['dry'],
+        inherits=inherits
     )
 
     if register_admin or full:
@@ -121,12 +123,21 @@ def model(ctx, name, full, abstract, fields, register_admin, register_inline, te
     if test_case or full:
         ctx.invoke(test, model=name)
 
+    if full:
+        ctx.invoke(form, name=name)
+        ctx.invoke(serializer, name=name)
+        ctx.invoke(template, name=name)
+        ctx.invoke(view, name=name, list=True)
+        ctx.invoke(view, name=name, detail=True)
+        ctx.invoke(viewset, name=name)
+
 
 @generate.command()
 @click.argument("name", required=True)
 @click.argument("fields", nargs=-1)
+@click.option('-i', '--inherits', required=False, help="Add model inheritance.")
 @click.pass_context
-def resource(ctx, name, fields):
+def resource(ctx, name, fields, inherits):
     """
     Fully implements an app resource.
 
@@ -144,7 +155,8 @@ def resource(ctx, name, fields):
         register_admin=True,
         register_inline=True,
         fields=fields,
-        test_case=True
+        test_case=True,
+        inherits=inherits
     )
 
     ctx.invoke(serializer, name=name)

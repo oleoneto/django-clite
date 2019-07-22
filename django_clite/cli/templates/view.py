@@ -14,16 +14,16 @@ def {{ name.lower() }}_view(request):
 
 default_class_view_template = Template("""from django.utils import timezone{% if list %}
 from django.view.generic.list import ListView
-from ..models.{{ model.lower() }} import {{ model.capitalize() }}
+from ..models import {{ model.capitalize() }}
 
 
-class {{ model.capitalize() }}(ListView):
+class {{ model.capitalize() }}ListView(ListView):
 {% else %}
 from django.view.generic.detail import DetailView
-from ..models.{{ model.lower() }} import {{ model.capitalize() }}
+from ..models import {{ model.capitalize() }}
 
 
-class {{ model.capitalize() }}(DetailView):
+class {{ model.capitalize() }}DetailView(DetailView):
 {% endif %}
     model = {{ model.capitalize() }}
     {% if list %}paginate_by = 20\n{% endif %}

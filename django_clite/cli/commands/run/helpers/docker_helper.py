@@ -1,5 +1,4 @@
-from . import RunnerHelper
 
 
-class DockerHelper(RunnerHelper):
+class DockerHelper(object):
     pass

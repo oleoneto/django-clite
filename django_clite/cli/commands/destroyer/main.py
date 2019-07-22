@@ -13,8 +13,8 @@ from django_clite.cli.commands.generator.helpers import (
 )
 
 
-def not_an_app_directory_warning(ctx):
-    if not ctx.obj['in_app']:
+def not_an_app_directory_warning():
+    if not ('apps.py' in os.listdir('.')):
         log_error("Not inside an app directory")
         raise click.Abort
 
@@ -32,6 +32,9 @@ def destroy(ctx, dry):
     """
     Removes models, serializers, and other resources
     """
+    if not dry:
+        not_an_app_directory_warning()
+
     ctx.ensure_object(dict)
     ctx.obj['dry'] = dry
     ctx.obj['in_app'] = 'apps.py' in os.listdir('.')
@@ -56,8 +59,6 @@ def admin(ctx, name, inline):
     """
     Destroys an admin model or inline.
     """
-
-    not_an_app_directory_warning(ctx)
 
     # Default helper
     helper = AdminHelper()
@@ -84,8 +85,6 @@ def form(ctx, name):
     Destroys a form.
     """
 
-    not_an_app_directory_warning(ctx)
-
     path = ctx.obj['forms']
 
     # Default helper
@@ -110,8 +109,6 @@ def model(ctx, name, full, unregister_admin, unregister_inline, test_case):
     """
     Destroys a model.
     """
-
-    not_an_app_directory_warning(ctx)
 
     path = ctx.obj['models']
 
@@ -138,7 +135,8 @@ def model(ctx, name, full, unregister_admin, unregister_inline, test_case):
             ctx.invoke(form, name=name)
             ctx.invoke(serializer, name=name)
             ctx.invoke(template, name=name)
-            ctx.invoke(view, name=name)
+            ctx.invoke(view, name=name, list=True)
+            ctx.invoke(view, name=name, detail=True)
             ctx.invoke(viewset, name=name)
 
 
@@ -177,8 +175,6 @@ def serializer(ctx, name):
     Destroys a serializer.
     """
 
-    not_an_app_directory_warning(ctx)
-
     path = ctx.obj['serializers']
 
     # Default helper
@@ -201,8 +197,6 @@ def view(ctx, name, list, detail):
     """
     Destroys a view.
     """
-
-    not_an_app_directory_warning(ctx)
 
     path = ctx.obj['views']
 
@@ -228,8 +222,6 @@ def viewset(ctx, name):
     Destroys a viewset.
     """
 
-    not_an_app_directory_warning(ctx)
-
     path = ctx.obj['viewsets']
 
     # Default helper
@@ -251,8 +243,6 @@ def template(ctx, name):
     Destroys a template.
     """
 
-    not_an_app_directory_warning(ctx)
-
     path = ctx.obj['templates']
 
     # Default helper
@@ -273,8 +263,6 @@ def test(ctx, name):
     """
     Destroys a TestCase.
     """
-
-    not_an_app_directory_warning(ctx)
 
     # Default helper
     helper = TestHelper()
