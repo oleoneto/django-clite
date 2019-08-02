@@ -16,9 +16,12 @@ setup(
     long_description_content_type='text/markdown',
     keywords="django automate cli command line tools rails ember python framework",
     classifiers=[
+        'Development Status :: 3 - Alpha',
         'Environment :: Web Environment',
-        'Framework :: Django',
+        'Framework :: Django :: 2.2',
         'Intended Audience :: Developers',
+        'License :: OSI Approved :: BSD License',
+        'Natural Language :: English',
         'Operating System :: OS Independent',
         'Programming Language :: Python',
         'Programming Language :: Python :: 3',
