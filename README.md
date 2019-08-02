@@ -382,12 +382,14 @@ This will generate a model with the specified attributes and all the related cla
 
 
 #### Destroyer
-This command can be used to undo all that a generator can generate.
+This command can be used to undo all that the generator can create.
 So, following our example `Album` model, one can remove it from the project by simply running:
 
 ```bash
 D destroy model album --full
 ```
+
+The `--full` flag will ensure all related modules (forms, serializers... etc) are also removed along with the specified model.
 
 **Supports:**
 - **admin**
@@ -407,7 +409,7 @@ D destroy model album --full
 
 
 ### Pull requests
-This project is a work in progress. Contributions are very much welcome.
+Found a bug? Have an idea for new command? Contributions are very much welcome.
 
 
 ### LICENSE
