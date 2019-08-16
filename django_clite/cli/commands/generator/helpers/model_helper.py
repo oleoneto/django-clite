@@ -9,6 +9,7 @@ from django_clite.cli.templates.model import (
     model_field_template,
     model_import_template,
     model_template,
+    sql_view_template
 )
 
 
@@ -137,8 +138,13 @@ class ModelHelper(BaseHelper):
 
         db_table_name = f"{app_name}_{inflection.pluralize(model)}"
 
+        template = model_template
+
         if kwargs['fields'] is not None:
             self.parse_fields(**kwargs)
+
+        if kwargs['view']:
+            template = sql_view_template
 
         self.parse_and_create(
             model=model,
@@ -147,7 +153,7 @@ class ModelHelper(BaseHelper):
             fields=self.fields_list,
             imports=self.imports_list,
             db_table=db_table_name,
-            template=model_template,
+            template=template,
             filename=filename,
             path=path,
             dry=kwargs['dry']

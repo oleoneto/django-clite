@@ -108,13 +108,12 @@ def migrations(ctx, app, up, show):
 
 @run.command()
 @click.option('-p', '--port', type=int, required=False, help='The port the server will listen on.')
-@click.option('--fg/--bg', default=True, help='Run in foreground or background.')
 @click.pass_context
-def server(ctx, port, fg):
+def server(ctx, port):
     """
     Runs the development server or another one of choice.
     """
 
     path = ctx.obj['management']
 
-    ServerHelper.start(path, port, fg)
+    ServerHelper.start(path, port)

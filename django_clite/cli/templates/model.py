@@ -47,6 +47,19 @@ class {{ model.capitalize() }}({% if base %}{{ base[1] }}{% else %}models.Model{
         return f'{self.uuid}'
 """)
 
+sql_view_template = Template("""import uuid
+from django.db import models
+{% for model in imports %}{% if model %}from .{{ model.lower() }} import {{ model.capitalize() }}{% endif %}
+{% endfor %}
+{% if base %}from {{ base[0] }} import {{ base[1] }}\n\n{% endif %}
+class {{ model.capitalize() }}({% if base %}{{ base[1] }}{% else %}models.Model{% endif %}):
+    {% for field in fields %}{{ field }}
+    {% endfor %}
+    class Meta:
+        db_table = '{{ db_table.lower() }}'
+        managed = False
+""")
+
 auth_user_model_template = Template("""import uuid
 from django.db import models
 from django.contrib.auth.models import AbstractUser

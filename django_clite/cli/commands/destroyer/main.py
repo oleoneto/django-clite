@@ -26,7 +26,7 @@ def confirm_delete():
 
 
 @click.group()
-@click.option('--dry', is_flag=True, help="Display output without deleting files")
+@click.option('--dry', '--dry-run', is_flag=True, help="Display output without deleting files")
 @click.pass_context
 def destroy(ctx, dry):
     """
