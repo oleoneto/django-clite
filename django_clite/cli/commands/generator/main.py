@@ -80,16 +80,17 @@ def form(ctx, name):
 
 
 @generate.command()
-@click.argument("name", required=True)
-@click.argument("fields", nargs=-1, required=False)
 @click.option('-a', '--abstract', is_flag=True, help="Creates an abstract model type.")
+@click.option('-t', '--test-case', is_flag=True, help="Creates a TestCase for model.")
+@click.option('-v', '--view', is_flag=True, help="Make model an SQL view.")
+@click.option('-f', '--full', is_flag=True, help="Adds all related resources and TestCase")
 @click.option('--register-admin', is_flag=True, help="Register model to admin site.")
 @click.option('--register-inline', is_flag=True, help="Register model to admin site as inline.")
-@click.option('-t', '--test-case', is_flag=True, help="Creates a TestCase for model.")
-@click.option('-f', '--full', is_flag=True, help="Adds all related resources and TestCase")
 @click.option('-i', '--inherits', required=False, help="Add model inheritance.")
+@click.argument("name", required=True)
+@click.argument("fields", nargs=-1, required=False)
 @click.pass_context
-def model(ctx, name, full, abstract, fields, register_admin, register_inline, test_case, inherits):
+def model(ctx, name, full, abstract, fields, register_admin, register_inline, test_case, inherits, view):
     """
     Generates a model under the models directory.
     One can specify multiple attributes after the model's name, like so:
@@ -111,7 +112,8 @@ def model(ctx, name, full, abstract, fields, register_admin, register_inline, te
         fields=fields,
         path=path,
         dry=ctx.obj['dry'],
-        inherits=inherits
+        inherits=inherits,
+        view=view
     )
 
     if register_admin or full:
@@ -139,7 +141,7 @@ def model(ctx, name, full, abstract, fields, register_admin, register_inline, te
 @click.pass_context
 def resource(ctx, name, fields, inherits):
     """
-    Fully implements an app resource.
+    Generates an app resource.
 
     This is ideal to add a model along with admin, serializer, view, viewset, template, and tests.
     You can invoke this command the same way you would the model command:

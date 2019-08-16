@@ -12,7 +12,7 @@ DEFAULT_PROCESS_SUBGROUP = 'django-run-server-group-soliloquy'
 class ServerHelper(object):
 
     @classmethod
-    def start(cls, path, port, foreground_mode):
+    def start(cls, path, port):
         """
         Starts the default Django development server.
         """
@@ -20,13 +20,5 @@ class ServerHelper(object):
 
         if port is not None:
             DEFAULT_RUNSERVER_COMMAND[-1] = str(port)
-
-        if not foreground_mode:
-            if click.confirm('This is an experimental feature. Are you sure you want to try?'):
-                DEFAULT_RUNSERVER_COMMAND.append('&')
-                subprocess.Popen(DEFAULT_RUNSERVER_COMMAND)
-                return
-            else:
-                pass
 
         subprocess.call(DEFAULT_RUNSERVER_COMMAND)

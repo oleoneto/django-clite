@@ -8,12 +8,31 @@ A CLI tool that handles creating and managing Django projects
 ![Bitbucket Pipelines](https://img.shields.io/bitbucket/pipelines/oleoneto/django-clite/development?style=flat-square)
 ![PyPI - Downloads](https://img.shields.io/pypi/dm/django-clite?style=flat-square)
 
-### Requirements
-[Requirements](requirements.txt)
+- [Requirements](#requirements)
+- [Installation](#installation)
+- [Commands](#commands)
+    - [New](#new)
+        - [Creating new projects](#creating-new-projects)
+        - [Project structure](#project-structure)
+    - [Generator](#generator)
+        - [Models](#generating-models)
+        - [Serializers and viewsets](#generating-serializers-and-viewsets)
+        - [Admin models](#generating-admin-models)
+        - [Views](#generating-views)
+        - [Templates](#generating-templates)
+        - [Resources](#generating-complete-resources)
+    - [Destroyer](#destroyer)
+    - [Run](#run)
+        - [Running the default Django server](#running-the-django-server)
+- [To Do](#to-do)
+- [Contributions](#pull-requests)
+- [License](#license)
 
+## Requirements
+Check out [requirements.txt](requirements.txt) for all requirements.
 
-### Installation
-Install via [pip](http://www.pip-installer.org/):
+## Installation
+Install via [pip](https://pypi.org/project/django-clite/):
 ```bash
 pip install django-clite
 ```
@@ -25,7 +44,7 @@ cd django-clite
 pip install .
 ```
 
-After installation, the CLI will expose the binary with two names, any of which can be used in place of another:
+After installation, the CLI will expose the binary with two names, any of which can be used in place of the another:
 ```
 D
 django-clite
@@ -34,7 +53,7 @@ django-clite
 
 ----
 
-### Commands
+## Commands
 ```
 destroy   Deletes models, serializers, and other resources
 generate  Adds models, routes, and other resources
@@ -42,7 +61,13 @@ new       Creates projects and apps
 run       Run maintenance, development, and deployment scripts.
 ```
 
-#### New
+### New
+Create project and applications.
+```
+Commands:
+  app      Creates new django apps.
+  project  Creates a new django project.
+```
 The `new` command (abbreviated `n`) can be used to start new projects as well as new applications. The command tries to simplify how a project is created as well as the applications contained in it. Here's an example of such simplification:
 
 Suppose you want to start a new project and want to create two apps within it:
@@ -60,10 +85,10 @@ D new project mywebsite blog radio
 
 Specifying `apps` when creating a project is optional, but you're likely to need to create one inside of your project directory, so the CLI can handle the creation of all of your apps if you pass them as arguments after your project name.
 
-##### Creating new projects
+#### Creating new projects
 To create a new project, simply run `D new project project_name`. This command supports the following flags:
 
-**Flags:**
+**--flags:**
 
 ```
 --docker       Add support for Docker
@@ -81,7 +106,7 @@ The `--custom-auth` flag is used to provide a simple override of the `AUTH_USER_
 AUTH_USER_MODEL = 'authentication.User'
 ```
 
-##### Project structure
+#### Project structure
 This CLI makes some assumptions about the structure of your Django project.
 1. It assumes that your apps are one level below the root of your project directory, one level below where `manage.py` is. For example:
 ```
@@ -126,23 +151,27 @@ models/
 This is done in order to aid the CLI with the creation and deletion of files
 in the project as we'll see under the [`generate`](#generator) and [`destroy`](#destroyer) commands.
 
-#### Generator
+
+### Generator
+Add application resources.
+```
+Commands:
+  admin       Generates an admin model within the admin package.
+  form        Generates a model form within the forms package.
+  model       Generates a model under the models directory.
+  resource    Generates an app resource.
+  serializer  Generates a serializer for a given model.
+  template    Generates an html template.
+  test        Generates a new TestCase.
+  view        Generates a view function or class.
+  viewset     Generates a viewset for a serializable model.
+
+Options:
+  --dry, --dry-run  Display output without creating files.
+```
 
 The generator is accessible through the `generate` command (abbreviated `g`).
-It can be used to create the following:
-- **admin**
-- **form**
-- **model**
-- **serializer**
-- **template**
-- **test**
-- **view**
-- **viewset**
 
-If you need all of the above, you can use the **resource** sub-command instead of running the individual sub-commands listed above.
-
-The generator supports `--dry`, meaning it can provide you with the output of the desired command without creating any files in your directory structure.
-This is useful if you want to see what a command accomplishes before fully committing to it.
 
 #### Generating Models
 In order to generate a model, specify the type identifier and then the name of the attribute field. Type identifiers are abbreviated to a more generic name that omits the word `Field`. The input here is case-insensitive, but the fields will be properly CamelCased in the corresponding Python file as in the example below:
@@ -247,10 +276,28 @@ class Track(models.Model):
         return f'{self.uuid}'
 ```
 
-Supported relationship identifiers:
-- **FK**: ForeignKeyField
-- **One**: OneToOneField
-- **Many**: ManyToManyField
+Use either of the following identifiers to specify relationships:
+- **ForeignKey**
+    - belongsto
+    - fk
+    - foreignkey
+- **ManyToManyField**
+    - hasmany
+    - many
+    - manytomany
+- **OneToOneField**
+    - hasone
+    - one
+    - onetoone
+
+
+**SQL Views**
+
+You can also create models as SQL views by passing the `-v` or `--view` flag when generating a model. What's special about this flag is that it adds `managed = False` to the `Meta` property of your model. Run the command like so:
+```
+D generate model people --view
+```
+
 
 #### Generating Serializers and Viewsets
 If you are working on an API and use the `Django REST Framework` to support your backend, you can also use the `django-clite` to create `serializers` and `viewsets`.
@@ -296,7 +343,7 @@ class AlbumViewSet(viewsets.ModelViewSet):
 router.register('albums', AlbumViewSet)
 ```
 
-#### Generating admin models
+#### Generating Admin Models
 ```bash
 D generate admin album
 ```
@@ -322,7 +369,7 @@ class AlbumInline(admin.StackedInline):
     extra = 1
 ```
 
-#### Generating views
+#### Generating Views
 ```bash
 D generate view album --list
 ```
@@ -347,7 +394,7 @@ class AlbumListView(ListView):
 
 When generating list or detail views, the model name is inferred from the view name. This ensures consistency, as it also helps with other cli-related automation.
 
-#### Generating templates
+#### Generating Templates
 ```
 D generate template homepage
 ```
@@ -373,7 +420,7 @@ This command will simply generate an HTML template with the specified name.
 
 ----
 
-#### Generating complete resources
+#### Generating Complete Resources
 The `resource` sub-command is ideal if you want to add a model along with admin, serializer, view, viewset, template, and tests. You can invoke the command the same way you would the model command:
 ```bash
 D generate resource album text:title image:artwork bool:is_compilation fk:album
@@ -381,7 +428,24 @@ D generate resource album text:title image:artwork bool:is_compilation fk:album
 This will generate a model with the specified attributes and all the related classes specified above. For consistency sake, the underlying implementation will prompt you for the same things the `model` sub-command would.
 
 
-#### Destroyer
+### Destroyer
+Remove application resources.
+```
+Commands:
+  admin       Destroys an admin model or inline.
+  form        Destroys a form.
+  model       Destroys a model.
+  resource    Destroys a resource.
+  serializer  Destroys a serializer.
+  template    Destroys a template.
+  test        Destroys a TestCase.
+  view        Destroys a view.
+  viewset     Destroys a viewset.
+
+Options:
+  --dry, --dry-run  Display output without deleting files
+```
+
 This command can be used to undo all that the generator can create.
 So, following our example `Album` model, one can remove it from the project by simply running:
 
@@ -391,26 +455,29 @@ D destroy model album --full
 
 The `--full` flag will ensure all related modules (forms, serializers... etc) are also removed along with the specified model.
 
-**Supports:**
-- **admin**
-- **form**
-- **model**
-- **resource**
-- **serializer**
-- **template**
-- **test**
-- **view**
-- **viewset**
+**Note**: Beware of application errors that may result from incorrectly destroying resources in use within your project. While this command will try to remove modules and packages related to the specified resource (including import statement from package-level init modules), it will not delete database migrations nor will it try to remove references to the resource from your codebase.
 
 ----
 
-### To Do
+
+### Run
+Run maintenance, development, and deployment scripts.
+```
+Commands:
+  server      Runs the development server or another one of choice.
+```
+
+#### Running The Django Server
+Use this command to run the Django's default server. Run it like so:
+```
+D run server -p 3000
+```
+
+## To Do
 [Check open issues.](issues)
 
-
-### Pull requests
+## Pull requests
 Found a bug? Have an idea for new command? Contributions are very much welcome.
 
-
-### LICENSE
+## LICENSE
 **django-clite** is [BSD Licensed](LICENSE.txt).
