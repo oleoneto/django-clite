@@ -216,6 +216,7 @@ This command supports the following flags:
 --test-case        Creates a TestCase for model.
 --full             Adds all related resources and TestCase
 --inherits         Add model inheritance.
+-v, --view         Make model an SQL view.
 ```
 
 Note the presence of the `--inherits` flag. You can specify a base model and the generated model will extend it. For example:
@@ -293,7 +294,7 @@ Use either of the following identifiers to specify relationships:
 
 **SQL Views**
 
-You can also create models as SQL views by passing the `-v` or `--view` flag when generating a model. What's special about this flag is that it adds `managed = False` to the `Meta` property of your model. Run the command like so:
+You can also create models as SQL views by passing the `-v` or `--view` flag when generating a model. What's special about this flag is that it adds `managed = False` to the `Meta` property of your model, which informs Django to not run migrations for or against this model. Run the command like so:
 ```
 D generate model people --view
 ```
