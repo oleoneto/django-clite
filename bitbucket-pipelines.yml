@@ -6,8 +6,7 @@ pipelines:
       - step:
           caches:
             - pip
-            - pipenv
-          script: # Modify the commands below to build your repository.
+          script:
             - pipenv install --dev --deploy --system
             - tox test
             - pipe: atlassian/pypi-publish:0.2.7
