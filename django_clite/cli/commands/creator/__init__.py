@@ -1,3 +1,3 @@
 # django-clite
 # cli.commands.creator
-from .main import new
+from .main import create

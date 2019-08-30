@@ -1,7 +1,4 @@
-import inflect
 from jinja2 import Template
-
-IE = inflect.engine()
 
 model_field_template = Template("""{{ name }} = {% if not special %}models.{% endif %}{{ type }}({{ options }})""")
 
@@ -58,6 +55,20 @@ class {{ model.capitalize() }}({% if base %}{{ base[1] }}{% else %}models.Model{
     class Meta:
         db_table = '{{ db_table.lower() }}'
         managed = False
+""")
+
+sql_view_management_template = ("""
+migrations.RunSQL(
+    \"""
+    DROP VIEW IF EXISTS {{ db_table.lower() }};
+    CREATE OR REPLACE VIEW {{ db_table.lower() }} AS
+        SELECT 
+            {% for field in fields %}
+                {{ field }}
+            {% endfor %} 
+        FROM {{ source }};
+    \"""
+)
 """)
 
 auth_user_model_template = Template("""import uuid

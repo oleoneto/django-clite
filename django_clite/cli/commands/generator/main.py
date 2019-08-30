@@ -9,7 +9,8 @@ from .helpers import (
     TemplateHelper,
     TestHelper,
     ViewHelper,
-    ViewSetHelper
+    ViewSetHelper,
+    SQLHelper
 )
 
 
@@ -20,7 +21,7 @@ def not_an_app_directory_warning():
 
 
 @click.group()
-@click.option('--dry', '--dry-run', is_flag=True, help="Display output without creating files.")
+@click.option('--dry', is_flag=True, help="Display output without creating files.")
 @click.pass_context
 def generate(ctx, dry):
     """
@@ -52,15 +53,12 @@ def admin(ctx, name, inline):
     Generates an admin model within the admin package.
     """
 
-    # Default helper
-    helper = AdminHelper()
-
     path = ctx.obj['admin']
 
     if inline:
         path = ctx.obj['admin_inlines']
 
-    helper.create(model=name, inline=inline, path=path, dry=ctx.obj['dry'])
+    AdminHelper().create(model=name, inline=inline, path=path, dry=ctx.obj['dry'])
 
 
 @generate.command()
@@ -71,12 +69,9 @@ def form(ctx, name):
     Generates a model form within the forms package.
     """
 
-    # Default helper
-    helper = FormHelper()
-
     path = ctx.obj['forms']
 
-    helper.create(model=name, path=path, dry=ctx.obj['dry'])
+    FormHelper().create(model=name, path=path, dry=ctx.obj['dry'])
 
 
 @generate.command()
@@ -101,12 +96,9 @@ def model(ctx, name, full, abstract, fields, register_admin, register_inline, te
     If the model is to be added to admin.site one can optionally opt in by specifying the --register-admin flag.
     """
 
-    # Default helper
-    helper = ModelHelper()
-
     path = ctx.obj['models']
 
-    helper.create(
+    ModelHelper().create(
         model=name,
         abstract=abstract,
         fields=fields,
@@ -183,12 +175,9 @@ def serializer(ctx, name):
     before attempting to create a serializer for it. Aborts if model is not found.
     """
 
-    # Default helper
-    helper = SerializerHelper()
-
     path = ctx.obj['serializers']
 
-    helper.create(model=name, path=path, dry=ctx.obj['dry'])
+    SerializerHelper().create(model=name, path=path, dry=ctx.obj['dry'])
 
 
 @generate.command()
@@ -199,12 +188,9 @@ def template(ctx, name):
     Generates an html template.
     """
 
-    # Default helper
-    helper = TemplateHelper()
-
     path = ctx.obj['templates']
 
-    helper.create(name=name, path=path, dry=ctx.obj['dry'])
+    TemplateHelper().create(name=name, path=path, dry=ctx.obj['dry'])
 
 
 @generate.command()
@@ -215,12 +201,9 @@ def test(ctx, model):
     Generates a new TestCase.
     """
 
-    # Default helper
-    helper = TestHelper()
-
     path = ctx.obj['tests']
 
-    helper.create(
+    TestHelper().create(
         model=model,
         path=path,
         dry=ctx.obj['dry']
@@ -229,8 +212,8 @@ def test(ctx, model):
 
 @generate.command()
 @click.argument("name", required=True)
-@click.option('--list', is_flag=True, help="Create model list view.")
-@click.option('--detail', is_flag=True, help="Create model detail view.")
+@click.option('-l', '--list', is_flag=True, help="Create model list view.")
+@click.option('-d', '--detail', is_flag=True, help="Create model detail view.")
 @click.pass_context
 def view(ctx, name, list, detail):
     """
@@ -242,7 +225,7 @@ def view(ctx, name, list, detail):
 
     path = ctx.obj['views']
 
-    helper.create(
+    ViewHelper().create(
         model=name,
         name=name,
         detail=detail,
@@ -253,7 +236,7 @@ def view(ctx, name, list, detail):
 
 
 @generate.command()
-@click.option('--read-only', is_flag=True, help="Create a read-only viewset.")
+@click.option('-r', '--read-only', is_flag=True, help="Create a read-only viewset.")
 @click.argument("name", required=True)
 @click.pass_context
 def viewset(ctx, read_only, name):
@@ -261,9 +244,30 @@ def viewset(ctx, read_only, name):
     Generates a viewset for a serializable model.
     """
 
-    # Default helper
-    helper = ViewSetHelper()
-
     path = ctx.obj['viewsets']
 
-    helper.create(model=name, path=path, read_only=read_only, dry=ctx.obj['dry'])
+    ViewSetHelper().create(model=name, path=path, read_only=read_only, dry=ctx.obj['dry'])
+
+
+# @generate.command()
+@click.option('-s', '--source', is_flag=True, help="Base table for SQL view.")
+@click.argument("name", required=True)
+@click.argument("fields", nargs=-1, required=False)
+@click.pass_context
+def sql_view(ctx, name, fields, source):
+    """
+    Generates a model as an SQL view.
+    One can specify multiple attributes after the model's name, like so:
+
+        D g sql_view track int:number char:title --source app_tracks
+    """
+
+    path = ctx.obj['models']
+
+    SQLHelper().create(
+        model=name,
+        fields=fields,
+        path=path,
+        dry=ctx.obj['dry'],
+        table=source
+    )
