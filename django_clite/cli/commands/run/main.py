@@ -24,7 +24,7 @@ def run(ctx):
     ctx.obj['path'], ctx.obj['management'], ctx.obj['code'] = find_management_file(os.getcwd())
 
 
-@run.command()
+# @run.command()
 @click.pass_context
 def build(ctx):
     """
@@ -33,7 +33,7 @@ def build(ctx):
     pass
 
 
-@run.command()
+# @run.command()
 @click.pass_context
 def deploy(ctx):
     """
@@ -62,7 +62,7 @@ def deploy(ctx):
     pass
 
 
-@run.command()
+# @run.command()
 @click.pass_context
 def docker(ctx):
     """
@@ -71,7 +71,7 @@ def docker(ctx):
     pass
 
 
-@run.command()
+# @run.command()
 @click.option('-a', '--app', type=str, required=False)
 @click.option('--up/--down', default=True, help='Make or undo migrations.')
 @click.option('-s', '--show', is_flag=True, help='Show current migrations.')
@@ -80,7 +80,7 @@ def migrations(ctx, app, up, show):
     """
     Run database migrations.
 
-    This is combines both `makemigrations` and `migrate` commands into one. For example:
+    This combines both `makemigrations` and `migrate` commands into one. For example:
 
         D run migrations blog
     
@@ -92,7 +92,7 @@ def migrations(ctx, app, up, show):
 
     Another thing this command seeks to accomplish is to bypass the need to navigate to
     the top of the directory in order to have access to the `manage.py` module. As long
-    as the command is ran from within of the three scopes, the command will work as intended:
+    as the command is ran from within one of the following scopes, the command will work as intended:
 
     \b
         /project
@@ -111,7 +111,7 @@ def migrations(ctx, app, up, show):
 @click.pass_context
 def server(ctx, port):
     """
-    Runs the development server or another one of choice.
+    Runs the development server.
     """
 
     path = ctx.obj['management']

@@ -190,8 +190,8 @@ def serializer(ctx, name):
 
 @destroy.command()
 @click.argument('name')
-@click.option('--list', is_flag=True, help='Deletes a model list view')
-@click.option('--detail', is_flag=True, help='Deletes a model detail view')
+@click.option('-l', '--list', is_flag=True, help='Deletes a model list view')
+@click.option('-d', '--detail', is_flag=True, help='Deletes a model detail view')
 @click.pass_context
 def view(ctx, name, list, detail):
     """

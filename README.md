@@ -8,25 +8,26 @@ A CLI tool that handles creating and managing Django projects
 ![Bitbucket Pipelines](https://img.shields.io/bitbucket/pipelines/oleoneto/django-clite/development?style=flat-square)
 ![PyPI - Downloads](https://img.shields.io/pypi/dm/django-clite?style=flat-square)
 
-- [Requirements](#requirements)
-- [Installation](#installation)
-- [Commands](#commands)
-    - [New](#new)
-        - [Creating new projects](#creating-new-projects)
-        - [Project structure](#project-structure)
+- [django-clite](#django-clite)
+  - [Requirements](#requirements)
+  - [Installation](#installation)
+  - [Commands](#commands)
+    - [Create](#create)
+      - [Creating new projects](#creating-new-projects)
+      - [Project structure](#project-structure)
     - [Generator](#generator)
-        - [Models](#generating-models)
-        - [Serializers and viewsets](#generating-serializers-and-viewsets)
-        - [Admin models](#generating-admin-models)
-        - [Views](#generating-views)
-        - [Templates](#generating-templates)
-        - [Resources](#generating-complete-resources)
+      - [Generating Models](#generating-models)
+      - [Generating Serializers and Viewsets](#generating-serializers-and-viewsets)
+      - [Generating Admin Models](#generating-admin-models)
+      - [Generating Views](#generating-views)
+      - [Generating Templates](#generating-templates)
+      - [Generating Complete Resources](#generating-complete-resources)
     - [Destroyer](#destroyer)
     - [Run](#run)
-        - [Running the default Django server](#running-the-django-server)
-- [To Do](#to-do)
-- [Contributions](#pull-requests)
-- [License](#license)
+      - [Running The Django Server](#running-the-django-server)
+  - [To Do](#to-do)
+  - [Pull requests](#pull-requests)
+  - [LICENSE](#license)
 
 ## Requirements
 Check out [requirements.txt](requirements.txt) for all requirements.
@@ -57,18 +58,18 @@ django-clite
 ```
 destroy   Deletes models, serializers, and other resources
 generate  Adds models, routes, and other resources
-new       Creates projects and apps
+create    Creates projects and apps
 run       Run maintenance, development, and deployment scripts.
 ```
 
-### New
+### Create
 Create project and applications.
 ```
 Commands:
   app      Creates new django apps.
   project  Creates a new django project.
 ```
-The `new` command (abbreviated `n`) can be used to start new projects as well as new applications. The command tries to simplify how a project is created as well as the applications contained in it. Here's an example of such simplification:
+The `create` command (abbreviated `c`) can be used to start new projects as well as new applications. The command tries to simplify how a project is created as well as the applications contained in it. Here's an example of such simplification:
 
 Suppose you want to start a new project and want to create two apps within it:
 ```
@@ -80,13 +81,13 @@ django-admin startapp radio
 
 The equivalent command in the `django-clite` is:
 ```bash
-D new project mywebsite blog radio
+D create project mywebsite blog radio
 ```
 
 Specifying `apps` when creating a project is optional, but you're likely to need to create one inside of your project directory, so the CLI can handle the creation of all of your apps if you pass them as arguments after your project name.
 
 #### Creating new projects
-To create a new project, simply run `D new project project_name`. This command supports the following flags:
+To create a new project, simply run `D create project project_name`. This command supports the following flags:
 
 **--flags:**
 
@@ -216,6 +217,7 @@ This command supports the following flags:
 --test-case        Creates a TestCase for model.
 --full             Adds all related resources and TestCase
 --inherits         Add model inheritance.
+-v, --view         Make model an SQL view.
 ```
 
 Note the presence of the `--inherits` flag. You can specify a base model and the generated model will extend it. For example:
@@ -289,14 +291,6 @@ Use either of the following identifiers to specify relationships:
     - hasone
     - one
     - onetoone
-
-
-**SQL Views**
-
-You can also create models as SQL views by passing the `-v` or `--view` flag when generating a model. What's special about this flag is that it adds `managed = False` to the `Meta` property of your model. Run the command like so:
-```
-D generate model people --view
-```
 
 
 #### Generating Serializers and Viewsets

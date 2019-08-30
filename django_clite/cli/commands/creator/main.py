@@ -24,12 +24,13 @@ def wrong_place_warning(ctx):
     return True
 
 
+
 @click.group()
 @click.pass_context
 @click.option('--dry', is_flag=True, help="Display output without creating files.")
-def new(ctx, dry):
+def create(ctx, dry):
     """
-    Creates projects and apps
+    Creates projects and apps.
     """
     ctx.ensure_object(dict)
     ctx.obj['dry'] = dry
@@ -37,7 +38,7 @@ def new(ctx, dry):
     ctx.obj['path'], ctx.obj['management'], ctx.obj['code'] = find_management_file(os.getcwd())
 
 
-@new.command()
+@create.command()
 @click.argument('name')
 @click.option('--docker', is_flag=True, help="Add support for Docker.")
 @click.option('--dokku', is_flag=True, help="Add support for Dokku.")
@@ -77,7 +78,7 @@ def project(ctx, name, docker, dokku, custom_auth, apps):
             ctx.invoke(app, apps=['authentication'], custom_auth=True)
 
 
-@new.command()
+@create.command()
 @click.argument('apps', nargs=-1)
 @click.option('--custom-auth', is_flag=True, help="Add User for custom authentication.")
 @click.pass_context

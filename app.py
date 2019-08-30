@@ -7,9 +7,9 @@ A CLI that handles creating and managing Django projects
 
 import click
 from django_clite import AliasedGroup
+from django_clite.cli.commands import create
 from django_clite.cli.commands import destroy
 from django_clite.cli.commands import generate
-from django_clite.cli.commands import new
 from django_clite.cli.commands import run
 
 
@@ -34,9 +34,9 @@ Commands should be added as sub-commands of the main click group.
 This ensures sub-commands can be chained and
 run as `django-clite SUB-COMMAND COMMAND`
 """
+main.add_command(create)
 main.add_command(destroy)
 main.add_command(generate)
-main.add_command(new)
 main.add_command(run)
 
 if __name__ == '__main__':

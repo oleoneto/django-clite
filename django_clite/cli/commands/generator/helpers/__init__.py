@@ -7,3 +7,4 @@ from .template_helper import TemplateHelper
 from .view_helper import ViewHelper
 from .viewset_helper import ViewSetHelper
 from .test_helper import TestHelper
+from .sql_helper import SQLHelper
