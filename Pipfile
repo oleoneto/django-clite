@@ -11,6 +11,7 @@ inflection = "*"
 tox = "*"
 Django = ">=2.2.1"
 Jinja2 = "*"
+jupyterlab = "*"
 
 [requires]
 python_version = "3.6"
