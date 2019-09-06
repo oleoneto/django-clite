@@ -10,32 +10,39 @@ DEFAULT_MIGRATE_COMMAND = ['python3', 'manage.py', 'migrate']
 class MigrationHelper(object):
 
     @classmethod
-    def make_migrations(cls, path, app):
+    def make_migrations(cls, path, app, options):
         os.chdir(path)
 
         if app is not None:
             DEFAULT_MAKE_MIGRATIONS_COMMAND.append(app)
 
-        command = DEFAULT_MAKE_MIGRATIONS_COMMAND
+        if options:
+            for option in options:
+                DEFAULT_MAKE_MIGRATIONS_COMMAND.append(option)
 
-        subprocess.check_output(command)
+        subprocess.check_output(DEFAULT_MAKE_MIGRATIONS_COMMAND)
 
     @classmethod
-    def migrate(cls, path, app):
+    def migrate(cls, path, app, options):
         os.chdir(path)
 
         if app is not None:
             DEFAULT_MIGRATE_COMMAND.append(app)
 
-        command = DEFAULT_MIGRATE_COMMAND
+        if options:
+            for option in options:
+                DEFAULT_MIGRATE_COMMAND.append(option)
 
-        subprocess.check_output(command)
+        subprocess.check_output(DEFAULT_MIGRATE_COMMAND)
 
     @classmethod
-    def run(cls, path, app, up, show):
-        # cls.make_migrations(path, app)
-        # cls.migrate(path, app)
-        print(path)
-        print(app)
-        print(up)
-        print(show)
+    def run(cls, path, app, general, direction, options):
+        if general:
+            if direction:
+                cls.migrate(path, app=None, options=options)
+            else:
+                cls.make_migrations(path, app=None, options=options)
+                cls.migrate_migrations(path, app=None, options=options)
+        elif app:
+            cls.make_migrations(path, app, options)
+            cls.migrate(path, app, options=options)

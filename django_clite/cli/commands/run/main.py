@@ -2,14 +2,24 @@ import click
 import os
 from django_clite.cli import find_management_file, log_error
 from .helpers import (
+    FixtureHelper,
     MigrationHelper,
     ServerHelper
 )
 
+DEFAULT_MISSING_ARGS_ERROR = 'Missing arguments: {}.'
+DEFAULT_TOO_MANY_ARGS_ERROR = 'Too many arguments passed.'
 
 def not_an_app_directory_warning():
     if not ('apps.py' in os.listdir('.')):
         log_error("Not inside an app directory")
+        raise click.Abort
+
+
+def not_in_project_warning():
+    path, management, code = find_management_file(os.getcwd())
+    if not management:
+        log_error('Cannot find manage.py in directory')
         raise click.Abort
 
 
@@ -72,11 +82,47 @@ def docker(ctx):
 
 
 # @run.command()
+@click.option('-a', '--app', type=str, required=True, help='The app whose fixtures we must load.')
+@click.option('-r', '--recursive', is_flag=True, help='Load all fixtures in directory.')
+@click.argument('fixture', required=False)
+@click.pass_context
+def load_data(ctx, app, recursive, fixture):
+    """
+    Load data from fixtures.
+
+    Loads all data contained in either .yaml or .json file within the fixtures directory of the specified app. For example:
+
+    \b
+        D run load-data --app blog articles
+    
+    This will load the articles.json or articles.yaml fixtures into the database.
+
+    By specifying the --recursive flag, one can load all fixtures contained within the app's fixtures directory.
+    """
+
+    not_in_project_warning()
+
+    if recursive and fixture:
+        log_error(DEFAULT_TOO_MANY_ARGS_ERROR)
+        raise click.Abort
+    elif not recursive and not fixture:
+        log_error(DEFAULT_MISSING_ARGS_ERROR.format('--fixture or --recursive'))
+        raise click.Abort
+    
+    path = ctx.obj['path']
+    management = ctx.obj['management']
+    
+    print(path)
+    print(management)
+
+
+# @run.command()
 @click.option('-a', '--app', type=str, required=False)
 @click.option('--up/--down', default=True, help='Make or undo migrations.')
-@click.option('-s', '--show', is_flag=True, help='Show current migrations.')
+@click.option('-g', '--general', is_flag=True, help='Run migrations for all apps.')
+@click.argument('options', nargs=-1, required=False)
 @click.pass_context
-def migrations(ctx, app, up, show):
+def migrations(ctx, app, general, up, options):
     """
     Run database migrations.
 
@@ -101,9 +147,15 @@ def migrations(ctx, app, up, show):
 
     """
 
+    not_in_project_warning()
+
+    if not app and not general:
+        log_error(DEFAULT_MISSING_ARGS_ERROR.format('--app or --general'))
+        raise click.Abort
+
     path = ctx.obj['management']
 
-    MigrationHelper.run(path, app, up, show)
+    MigrationHelper.run(path, app, general, up, options)
 
 
 @run.command()
@@ -113,6 +165,8 @@ def server(ctx, port):
     """
     Runs the development server.
     """
+
+    not_in_project_warning()
 
     path = ctx.obj['management']
 

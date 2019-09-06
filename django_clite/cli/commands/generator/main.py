@@ -4,6 +4,7 @@ from django_clite.cli import log_error
 from .helpers import (
     AdminHelper,
     FormHelper,
+    ManagerHelper,
     ModelHelper,
     SerializerHelper,
     TemplateHelper,
@@ -37,6 +38,7 @@ def generate(ctx, dry):
     ctx.obj['admin_inlines'] = f"{os.getcwd()}/admin/inlines/"
     ctx.obj['forms'] = f"{os.getcwd()}/forms/"
     ctx.obj['models'] = f"{os.getcwd()}/models/"
+    ctx.obj['managers'] = f"{os.getcwd()}/models/managers"
     ctx.obj['serializers'] = f"{os.getcwd()}/serializers/"
     ctx.obj['tests'] = f"{os.getcwd()}/tests/"
     ctx.obj['templates'] = f"{os.getcwd()}/templates/"
@@ -73,6 +75,21 @@ def form(ctx, name):
 
     FormHelper().create(model=name, path=path, dry=ctx.obj['dry'])
 
+
+@generate.command()
+@click.argument("name", required=True)
+@click.pass_context
+def manager(ctx, name):
+    """
+    Generates a model manager under the model managers directory.
+    """
+    path = ctx.obj['managers']
+
+    ManagerHelper().create(
+        model=name,
+        path=path,
+        dry=ctx.obj['dry']
+    )
 
 @generate.command()
 @click.option('-a', '--abstract', is_flag=True, help="Creates an abstract model type.")
@@ -130,8 +147,9 @@ def model(ctx, name, full, abstract, fields, register_admin, register_inline, te
 @click.argument("name", required=True)
 @click.argument("fields", nargs=-1)
 @click.option('-i', '--inherits', required=False, help="Add model inheritance.")
+@click.option('--api', is_flag=True, help='Only add api-related files.')
 @click.pass_context
-def resource(ctx, name, fields, inherits):
+def resource(ctx, name, fields, inherits, api):
     """
     Generates an app resource.
 
@@ -141,6 +159,9 @@ def resource(ctx, name, fields, inherits):
         D g resource track int:number char:title fk:album bool:is_featured
 
     This will generate a model with the specified attributes and all the related modules specified above.
+
+    In case you're building an api, and don't need forms, templates and views, you can pass the --api flag to the command
+    in order to prevent these files from being created.
     """
 
     ctx.invoke(
@@ -157,11 +178,10 @@ def resource(ctx, name, fields, inherits):
 
     ctx.invoke(viewset, name=name)
 
-    ctx.invoke(form, name=name)
-
-    ctx.invoke(template, name=name)
-
-    ctx.invoke(view, name=name, list=True)
+    if not api:
+        ctx.invoke(form, name=name)
+        ctx.invoke(template, name=name)
+        ctx.invoke(view, name=name, list=True)
 
 
 @generate.command()

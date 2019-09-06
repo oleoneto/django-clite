@@ -4,6 +4,7 @@ from django_clite.cli import log_error
 from django_clite.cli.commands.generator.helpers import (
     AdminHelper,
     FormHelper,
+    ManagerHelper,
     ModelHelper,
     SerializerHelper,
     TemplateHelper,
@@ -43,6 +44,7 @@ def destroy(ctx, dry):
     ctx.obj['admin_inlines'] = f"{os.getcwd()}/admin/inlines/"
     ctx.obj['forms'] = f"{os.getcwd()}/forms/"
     ctx.obj['models'] = f"{os.getcwd()}/models/"
+    ctx.obj['managers'] = f"{os.getcwd()}/models/managers/"
     ctx.obj['serializers'] = f"{os.getcwd()}/serializers/"
     ctx.obj['tests'] = f"{os.getcwd()}/tests/"
     ctx.obj['templates'] = f"{os.getcwd()}/templates/"
@@ -96,6 +98,23 @@ def form(ctx, name):
             model=name,
             dry=ctx.obj['dry']
         )
+
+
+@destroy.command()
+@click.argument('name', required=True)
+@click.pass_context
+def managers(ctx, name):
+    """
+    Destroys a model manager.
+    """
+
+    path = ctx.obj['managers']
+
+    ManagerHelper.delete(
+        path=path,
+        model=name,
+        dry=ctx.obj['dry']
+    )
 
 
 @destroy.command()
