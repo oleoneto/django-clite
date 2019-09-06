@@ -130,8 +130,9 @@ def model(ctx, name, full, abstract, fields, register_admin, register_inline, te
 @click.argument("name", required=True)
 @click.argument("fields", nargs=-1)
 @click.option('-i', '--inherits', required=False, help="Add model inheritance.")
+@click.option('--api', is_flag=True, help='Only add api-related files.')
 @click.pass_context
-def resource(ctx, name, fields, inherits):
+def resource(ctx, name, fields, inherits, api):
     """
     Generates an app resource.
 
@@ -141,6 +142,9 @@ def resource(ctx, name, fields, inherits):
         D g resource track int:number char:title fk:album bool:is_featured
 
     This will generate a model with the specified attributes and all the related modules specified above.
+
+    In case you're building an api, and don't need forms, templates and views, you can pass the --api flag to the command
+    in order to prevent these files from being created.
     """
 
     ctx.invoke(
@@ -157,11 +161,10 @@ def resource(ctx, name, fields, inherits):
 
     ctx.invoke(viewset, name=name)
 
-    ctx.invoke(form, name=name)
-
-    ctx.invoke(template, name=name)
-
-    ctx.invoke(view, name=name, list=True)
+    if not api:
+        ctx.invoke(form, name=name)
+        ctx.invoke(template, name=name)
+        ctx.invoke(view, name=name, list=True)
 
 
 @generate.command()
