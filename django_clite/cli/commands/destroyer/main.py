@@ -103,7 +103,7 @@ def form(ctx, name):
 @destroy.command()
 @click.argument('name', required=True)
 @click.pass_context
-def managers(ctx, name):
+def manager(ctx, name):
     """
     Destroys a model manager.
     """
