@@ -4,12 +4,16 @@ from jinja2 import Template
 default_function_view_template = Template(
     """from django.shortcuts import HttpResponse
 from django.shortcuts import render
+from django.view.decorators.cache import cache_page
 import datetime
 
-
+\"""
+Enable caching if needed. This page will be cached fro 15 minutes.
+@cache_page(60 * 15)
+\"""
 def {{ name.lower() }}_view(request):
-    now = datetime.datetime.now()
     template = "{{ name.lower() }}.html"
+    now = datetime.datetime.now()
     context = {
         'date': now
     }
