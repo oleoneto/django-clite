@@ -2,6 +2,7 @@ import click
 import os
 from django_clite.cli import find_management_file, log_error
 from .helpers import (
+    BuildHelper,
     FixtureHelper,
     MigrationHelper,
     ServerHelper
@@ -9,6 +10,7 @@ from .helpers import (
 
 DEFAULT_MISSING_ARGS_ERROR = 'Missing arguments: {}.'
 DEFAULT_TOO_MANY_ARGS_ERROR = 'Too many arguments passed.'
+
 
 def not_an_app_directory_warning():
     if not ('apps.py' in os.listdir('.')):
@@ -30,17 +32,26 @@ def run(ctx):
     Run maintenance, development, and deployment scripts.
     """
 
+    not_in_project_warning()
+
     ctx.ensure_object(dict)
-    ctx.obj['path'], ctx.obj['management'], ctx.obj['code'] = find_management_file(os.getcwd())
+
+    p, m, c = find_management_file(os.getcwd())
+
+    ctx.obj['path'] = p
+    ctx.obj['management'] = m
+    ctx.obj['code'] = c
 
 
 # @run.command()
 @click.pass_context
 def build(ctx):
     """
-    Install dependencies, run migrations, and collect static files.
+    Run migrations and collect static files.
     """
-    pass
+
+    path = ctx.obj['management']
+    BuildHelper.start(path)
 
 
 # @run.command()
@@ -82,6 +93,16 @@ def docker(ctx):
 
 
 # @run.command()
+@click.pass_context
+def export_dokku_env(ctx):
+    """
+    Export all environment variables for DOKKU. Exported variables will look like so:
+
+    \b
+    dokku config:set --no-restart PROJECT_NAME VARIABLE=value
+    """
+
+# @run.command()
 @click.option('-a', '--app', type=str, required=True, help='The app whose fixtures we must load.')
 @click.option('-r', '--recursive', is_flag=True, help='Load all fixtures in directory.')
 @click.argument('fixture', required=False)
@@ -99,8 +120,6 @@ def load_data(ctx, app, recursive, fixture):
 
     By specifying the --recursive flag, one can load all fixtures contained within the app's fixtures directory.
     """
-
-    not_in_project_warning()
 
     if recursive and fixture:
         log_error(DEFAULT_TOO_MANY_ARGS_ERROR)
@@ -147,8 +166,6 @@ def migrations(ctx, app, general, up, options):
 
     """
 
-    not_in_project_warning()
-
     if not app and not general:
         log_error(DEFAULT_MISSING_ARGS_ERROR.format('--app or --general'))
         raise click.Abort
@@ -165,8 +182,6 @@ def server(ctx, port):
     """
     Runs the development server.
     """
-
-    not_in_project_warning()
 
     path = ctx.obj['management']
 
