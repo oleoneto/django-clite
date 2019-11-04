@@ -2,66 +2,81 @@ from jinja2 import Template
 
 requirements_template = Template("""# Requirements for {{ project }}
 
-# Django
+# Django Framework
 django>=2.2.1
-django-environ
 
-
-# Models
-django-polymorphic
-
-
-# Caching
-django-redis
-
-
-# Event Queueing, Web workers
-gunicorn
-
-# Databases
-psycopg2-binary
-djongo
-
-# Cloud
-cloudinary
-boto3
-django-storages
-
-
-# Image Support
-Pillow
-
-
-# WYSIWYG Editor
-django-ckeditor
-
-
-# Authentication
-django-registration
-django-otp
-django-two-factor-auth
-twilio
-qrcode
-
-
-# REST API Support
+# API Support
 coreapi
-django-rest-swagger
 djangorestframework>=3.9.1
-djangorestframework-httpsignature
 djangorestframework-jsonapi>=2.6.0
-djangorestframework_simplejwt
 django-filter>=2.0.0
+django-rest-swagger
+drf-dynamic-fields
+drf-flex-fields
+drf-nested-routers
+
+# Authentication and Permissions
+djangorestframework-httpsignature
+djangorestframework-simplejwt
+django-cors-headers
+django-allauth
 django-guardian
+django-hijack
 django-oauth-plus
 django-oauth2-provider
+django-otp
+django-registration
+django-role-permissions
+django-two-factor-auth
 oauth2
+qrcode
+twilio
+django-letsencrypt
 
+# Caching and Storage
+boto3
+cloudinary
+django-compress
+django-compressor
+django-redis
+django-storages
+Pillow
 
-# Server
-django-livereload-server
-django-cors-headers
+# Debugging and Testing
+coverage
 django-debug-toolbar
+django-extensions
+django-livereload-server
+health-check
+jupyterlab
+python-coveralls
+sentry-sdk
+
+# Database and Custom Type Support
+django_polymorphic
+django-recurrence
+django-tenant-schemas
+djongo
+psycopg2-binary
+
+# Environments
+django-environ
+python-dotenv
+
+# Miscellaneous
+django-widget-tweaks
+
+# Payments
+stripe
+
+# Servers, Web-workers, and Sockets
+channels
+gunicorn
+werkzeug
+
+# Text Editors
+django-ckeditor
+
 """)
 
 pipenv_template = Template("""
@@ -73,48 +88,81 @@ verify_ssl = true
 [dev-packages]
 
 [packages]
-django-environ = "*"
-django-redis = "*"
-gunicorn = "*"
-psycopg2-binary = "*"
-djongo = "*"
-cloudinary = "*"
-boto3 = "*"
-django-storages = "*"
-django-ckeditor = "*"
-django-registration = "*"
-django-otp = "*"
-django-two-factor-auth = "*"
-twilio = "*"
-qrcode = "*"
+# Django Framework
+django = ">=2.2.1"
+
+# API Support
 coreapi = "*"
-django-rest-swagger = "*"
 djangorestframework = ">=3.9.1"
-djangorestframework-httpsignature = "*"
 djangorestframework-jsonapi = ">=2.6.0"
-djangorestframework-simplejwt = "*"
 django-filter = ">=2.0.0"
+django-rest-swagger = "*"
+drf-dynamic-fields = "*"
+drf-flex-fields = "*"
+drf-nested-routers = "*"
+
+# Authentication and Permissions
+djangorestframework-httpsignature = "*"
+djangorestframework-simplejwt = "*"
+django-cors-headers = "*"
+django-allauth = "*"
 django-guardian = "*"
+django-hijack = "*"
 django-oauth-plus = "*"
 django-oauth2-provider = "*"
+django-otp = "*"
+django-registration = "*"
+django-role-permissions = "*"
+django-two-factor-auth = "*"
 oauth2 = "*"
-django-livereload-server = "*"
-django-cors-headers = "*"
-django-debug-toolbar = "*"
-Django = ">=2.2.1"
-django_polymorphic = "*"
-Pillow = "*"
-django-allauth = "*"
+qrcode = "*"
+twilio = "*"
 django-letsencrypt = "*"
-sentry-sdk = "*"
-coverage = "*"
-python-coveralls = "*"
+
+# Caching and Storage
+boto3 = "*"
+cloudinary = "*"
 django-compress = "*"
 django-compressor = "*"
-django-role-permissions = "*"
+django-redis = "*"
+django-storages = "*"
+Pillow = "*"
+
+# Debugging and Testing
+coverage = "*"
+django-debug-toolbar = "*"
 django-extensions = "*"
-django-hijack = "*"
+django-livereload-server = "*"
+health-check = "*"
+jupyterlab = "*"
+python-coveralls = "*"
+sentry-sdk = "*"
+
+# Database and Custom Type Support
+django_polymorphic = "*"
+django-recurrence = "*"
+django-tenant-schemas = "*"
+djongo = "*"
+psycopg2-binary = "*"
+
+# Environments
+django-environ = "*"
+python-dotenv = "*"
+
+# Miscellaneous
+django-widget-tweaks = "*"
+
+# Payments
+stripe = "*"
+
+# Servers, Web-workers, and Sockets
+channels = "*"
+gunicorn = "*"
 werkzeug = "*"
+
+# Text Editors
+django-ckeditor = "*"
+
 
 [requires]
 python_version = "3.6"
