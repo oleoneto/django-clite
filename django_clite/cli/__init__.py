@@ -1,4 +1,5 @@
 # django-clite
+from __future__ import unicode_literals
 import click
 import inflection
 import os
