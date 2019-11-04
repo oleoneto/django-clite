@@ -56,9 +56,9 @@ django-clite
 
 ## Commands
 ```
+create    Creates projects and apps
 destroy   Deletes models, serializers, and other resources
 generate  Adds models, routes, and other resources
-create    Creates projects and apps
 run       Run maintenance, development, and deployment scripts.
 ```
 
@@ -95,13 +95,19 @@ To create a new project, simply run `D create project project_name`. This comman
 --docker       Add support for Docker
 --dokku        Add support for Dokku
 --custom-auth  Add support for custom AUTH_USER_MODEL
+--default      Apply all default options
 ```
 
-The `--docker` flag will create a `Dockerfile` as well as a `docker-compose.yml` file within your project. These are pre-configured to support the following services: web (the Django application itself), a database (`postgres`), proxy server (`nginx`), and a caching server (`redis`).
+The `--docker` flag will create a `Dockerfile` as well as a `docker-compose.yml` file within your project. 
+These are pre-configured to support the following services: 
+web (the Django application itself), a database (`postgres`), proxy server (`nginx`), and a caching server (`redis`).
 
-The `--dokku` flag will add dokku-specific configuration to your project within the `dokku` directory. The default configuration will allow you to push to your dokku-enabled remote server and deploy your Django project in an instant.
+The `--dokku` flag will add dokku-specific configuration to your project within the `dokku` directory. 
+The default configuration will allow you to push to your dokku-enabled remote server and deploy your Django project in an instant.
 
-The `--custom-auth` flag is used to provide a simple override of the `AUTH_USER_MODEL`. This creates a `User` model under `authentication.models.user`. One can simply specify the override in `settings.py` by setting:
+The `--custom-auth` flag is used to provide a simple override of the `AUTH_USER_MODEL`. 
+This creates a `User` model under `authentication.models.user`. 
+One can simply specify the override in `settings.py` by setting:
 
 ```python
 AUTH_USER_MODEL = 'authentication.User'
@@ -397,6 +403,7 @@ This command will simply generate an HTML template with the specified name.
 
 ```jinja2
 {% load static from staticfiles %}
+{% load cache %}
 
 {% comment %}
     Template for homepage
