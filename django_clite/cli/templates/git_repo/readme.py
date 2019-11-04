@@ -40,8 +40,14 @@ python manage.py createsuperuser
 ----
 
 ### Environment variables
-For safety reasons, prefer to use environment variables instead of hard-coding sensitive values. One option is to use 
-`django-environ`, another is to use an environment file `.env`. Here's an [example environment file](.env.example).
+For safety reasons, prefer to use environment variables instead of hard-coding sensitive values.
+This project has two environment files [`.env`](.env) and [`.env-example`](.env-example) which you can use to
+manage your application configuration and secrets.
+
+Your actual secrets should live in `.env`. This file should not be committed to your repository, but should be added to 
+[`.gitignore`](.gitignore).
+Use `.env-example` to specify the keys that must be set in order for your application to run once deployed.
+
 
 ----
 
