@@ -2,6 +2,7 @@ from jinja2 import Template
 
 
 page_template = Template("""{{ '{% load static from staticfiles %}' }}
+{{ '{% load cache %}' }}
 
 {{ '{% comment %}' }}
     Template for {{ name }}
