@@ -12,6 +12,7 @@ tox = "*"
 Django = ">=2.2.1"
 Jinja2 = "*"
 jupyterlab = "*"
+sentry-sdk = "==0.13.0"
 
 [requires]
 python_version = "3.6"
