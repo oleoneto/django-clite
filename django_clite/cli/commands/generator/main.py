@@ -91,6 +91,7 @@ def manager(ctx, name):
         dry=ctx.obj['dry']
     )
 
+
 @generate.command()
 @click.option('-a', '--abstract', is_flag=True, help="Creates an abstract model type.")
 @click.option('-t', '--test-case', is_flag=True, help="Creates a TestCase for model.")
@@ -234,14 +235,12 @@ def test(ctx, model):
 @click.argument("name", required=True)
 @click.option('-l', '--list', is_flag=True, help="Create model list view.")
 @click.option('-d', '--detail', is_flag=True, help="Create model detail view.")
+@click.option('-t', is_flag=True, help='Generate related template.')
 @click.pass_context
-def view(ctx, name, list, detail):
+def view(ctx, name, list, detail, t):
     """
     Generates a view function or class.
     """
-
-    # Default helper
-    helper = ViewHelper()
 
     path = ctx.obj['views']
 
@@ -253,6 +252,9 @@ def view(ctx, name, list, detail):
         path=path,
         dry=ctx.obj['dry']
     )
+
+    if t:
+        ctx.invoke(template, name=name)
 
 
 @generate.command()
