@@ -3,17 +3,27 @@ from jinja2 import Template
 
 default_function_view_template = Template(
     """from django.shortcuts import HttpResponse
+from django.shortcuts import render
 import datetime
 
 
 def {{ name.lower() }}_view(request):
     now = datetime.datetime.now()
+    template = "{{ name.lower() }}.html"
+    context = {
+        'date': now
+    }
+
+    \"""
+    Alternatively, your view can return HTML directly like so:
     html = "<html><body><h1>{{ name.capitalize() }}View</h1>It is now %s.</body></html>" % now
     return HttpResponse(html)
+    \"""
+    return render(request, template, context)
 """)
 
 default_class_view_template = Template("""from django.utils import timezone{% if list %}
-from django.view.generic.list import ListView
+from django.views.generic.list import ListView
 from ..models import {{ model.capitalize() }}
 
 
