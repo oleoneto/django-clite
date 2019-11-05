@@ -23,6 +23,7 @@ def find_management_file(cwd):
     code = 0
     path = None
     management = None
+    file = None
 
     levels = (
         ('manage.py', 1),    # <-- project
@@ -39,12 +40,32 @@ def find_management_file(cwd):
     if code == 1:
         management = path
         path = f"{path}/{path.split('/')[-1]}"
+        file = management + '/manage.py'
     elif code == 2:
         management = path.rsplit('/', 1)[0]
+        file = management + '/manage.py'
     elif code == 3:
         management = path.rsplit('/', 2)[0]
         path = path.rsplit('/', 1)[0]
-    return path, management, code
+        file = management + '/manage.py'
+    return path, management, code, file
+
+
+def get_project_name(management_file, find_first=False):
+    if find_first:
+        p, m, c, f = find_management_file('.')
+        management_file = f
+
+    with open(management_file, 'r') as file:
+        for line in file:
+            if 'DJANGO_SETTINGS_MODULE' in line:
+                line = line.\
+                    replace("'", "").\
+                    replace(" ", "").\
+                    split(',')[-1].\
+                    split('.')[0]
+                return line
+    return None
 
 
 def log_info(message):
