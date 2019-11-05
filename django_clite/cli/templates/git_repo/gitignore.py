@@ -104,6 +104,7 @@ celerybeat-schedule
 
 # Environments
 .env
+.env-dokku
 .venv
 env/
 venv/
