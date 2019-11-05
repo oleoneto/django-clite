@@ -1,8 +1,10 @@
 import click
 import os
-from django_clite.cli import find_management_file, log_error
+from django_clite.cli import find_management_file, get_project_name, log_error
 from .helpers import (
     BuildHelper,
+    DockerHelper,
+    EnvironmentHelper,
     FixtureHelper,
     MigrationHelper,
     ServerHelper
@@ -19,7 +21,7 @@ def not_an_app_directory_warning():
 
 
 def not_in_project_warning():
-    path, management, code = find_management_file(os.getcwd())
+    path, management, code, file = find_management_file(os.getcwd())
     if not management:
         log_error('Cannot find manage.py in directory')
         raise click.Abort
@@ -36,11 +38,13 @@ def run(ctx):
 
     ctx.ensure_object(dict)
 
-    p, m, c = find_management_file(os.getcwd())
+    p, m, c, f = find_management_file(os.getcwd())
 
     ctx.obj['path'] = p
     ctx.obj['management'] = m
     ctx.obj['code'] = c
+    ctx.obj['file'] = f
+    ctx.obj['project_name'] = get_project_name(f)
 
 
 # @run.command()
@@ -92,15 +96,39 @@ def docker(ctx):
     pass
 
 
-# @run.command()
+@run.command()
 @click.pass_context
-def export_dokku_env(ctx):
+@click.option('-f', '--filepath', type=click.Path(exists=True), required=False, help='Path to environment file.')
+def export_env(ctx, filepath):
     """
-    Export all environment variables for DOKKU. Exported variables will look like so:
+    Export environment variables for for example file and dokku config.
+    For example environment file, all values are striped out, only keys are exported.
 
     \b
-    dokku config:set --no-restart PROJECT_NAME VARIABLE=value
+    In .env-dokku file:
+    dokku config:set --no-restart PROJECT_NAME VARIABLE1=value1
+    dokku config:set --no-restart PROJECT_NAME VARIABLE2=value2
+
+    \b
+    In .env-example file:
+    VARIABLE1=
+    VARIABLE2=
+
+    The path for the environment file (or just its name if in current directory) can be specified
+    by passing the -f, --filepath option:
+
+    \b
+    D run export-env -f [filepath]
     """
+
+    helper = EnvironmentHelper()
+
+    helper.run(
+        path=ctx.obj['management'],
+        project_name=ctx.obj['project_name'],
+        filepath=filepath,
+    )
+
 
 # @run.command()
 @click.option('-a', '--app', type=str, required=True, help='The app whose fixtures we must load.')
@@ -183,6 +211,7 @@ def server(ctx, port):
     Runs the development server.
     """
 
-    path = ctx.obj['management']
-
-    ServerHelper.start(path, port)
+    ServerHelper.run(
+        path=ctx.obj['management'],
+        port=port
+    )
