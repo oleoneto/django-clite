@@ -1,22 +1,24 @@
-import click
 import os
 import subprocess
+from .base_run_helper import BaseRunHelper
 
 DEFAULT_RUNSERVER_COMMAND = ['python3', 'manage.py', 'runserver', '8000']
 
 DEFAULT_PROCESS_SUBGROUP = 'django-run-server-group-soliloquy'
 
 
-class ServerHelper(object):
+class ServerHelper(BaseRunHelper):
 
     @classmethod
-    def start(cls, path, port):
+    def run(cls, **kwargs):
         """
         Starts the default Django development server.
         """
-        os.chdir(path)
+        os.chdir(kwargs['path'])
 
-        if port is not None:
-            DEFAULT_RUNSERVER_COMMAND[-1] = str(port)
+        try:
+            DEFAULT_RUNSERVER_COMMAND[-1] = str(kwargs['port']) if kwargs['port'] else DEFAULT_RUNSERVER_COMMAND[-1]
+        except KeyError:
+            pass
 
         subprocess.call(DEFAULT_RUNSERVER_COMMAND)
