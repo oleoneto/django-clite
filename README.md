@@ -24,6 +24,7 @@ A CLI tool that handles creating and managing Django projects
       - [Generating Complete Resources](#generating-complete-resources)
     - [Destroyer](#destroyer)
     - [Run](#run)
+      - [Exporting Environment Variables](#exporting-environment-variables)
       - [Running The Django Server](#running-the-django-server)
   - [To Do](#to-do)
   - [Pull requests](#pull-requests)
@@ -125,7 +126,10 @@ mywebsite
 │   ├── settings.py
 │   ├── urls.py
 │   └── wsgi.py
+├── .env
 ├── manage.py
+├── Pipfile
+├── Pipfile.lock
 └── requirements.txt
 ```
 
@@ -465,20 +469,53 @@ The `--full` flag will ensure all related modules (forms, serializers... etc) ar
 Run maintenance, development, and deployment scripts.
 ```
 Commands:
+  export-env  Export environment variables.
   server      Runs the development server or another one of choice.
 ```
 
-#### Running The Django Server
-Use this command to run the Django's default server. Run it like so:
+### Exporting Environment Variables
+Use this command to export environment variables to an example file or a **dokku** config file.
+```bash
+D run export-env
 ```
+
+When exporting variables to the example environment file, all values are striped out and only keys are exported.
+```bash
+VARIABLE1=
+VARIABLE2=
+```
+
+The **dokku** configuration file will be configured with instructions to set the environment variables for your dokku app. Note that the CLI assumes your dokku app is named the same as your project.
+```bash
+dokku config:set --no-restart PROJECT_NAME VARIABLE1=value1
+dokku config:set --no-restart PROJECT_NAME VARIABLE2=value2
+```
+
+The CLI assumes that your environment file lives next to the management file aka `manage.py` (that is the case if you created your project with the help of this CLI).
+If your environment file is somewhere else, you can specify its path (or just its name if it is located in the current directory) by passing the `-f`, `--filepath` option:
+```bash
+D run export-env -f /path/to/environment
+```
+
+
+#### Running The Django Server
+Use this command to run the Django's default server from mostly
+anywhere inside your project. Run it like so:
+```bash
+D run server
+```
+
+You can also specify a port number. If none is specified, the command will use Django's default server on port 8000.
+```bash
 D run server -p 3000
 ```
+
 
 ## To Do
 [Check open issues.](issues)
 
 ## Pull requests
-Found a bug? Have an idea for new command? Contributions are very much welcome.
+Found a bug? See a typo? Have an idea for new command? Feel free to submit a pull request with your contributions. They are much welcome.
 
 ## LICENSE
 **django-clite** is [BSD Licensed](LICENSE.txt).

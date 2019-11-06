@@ -99,9 +99,12 @@ def docker(ctx):
 @run.command()
 @click.pass_context
 @click.option('-f', '--filepath', type=click.Path(exists=True), required=False, help='Path to environment file.')
-def export_env(ctx, filepath):
+@click.option('--no-dokku', is_flag=True, help='Skip dokku export.')
+@click.option('--no-example', is_flag=True, help='Skip example export.')
+def export_env(ctx, filepath, no_dokku, no_example):
     """
-    Export environment variables for for example file and dokku config.
+    Export environment variables.
+    Use this command to export environment variables to an example file or a dokku config file.
     For example environment file, all values are striped out, only keys are exported.
 
     \b
@@ -114,8 +117,9 @@ def export_env(ctx, filepath):
     VARIABLE1=
     VARIABLE2=
 
-    The path for the environment file (or just its name if in current directory) can be specified
-    by passing the -f, --filepath option:
+    The CLI assumes that your environment file lives next to the management file (manage.py).
+    If that is not the case for your project, your can specify the path for the environment file
+    (or just its name if in current directory) by passing the -f, --filepath option:
 
     \b
     D run export-env -f [filepath]
@@ -127,6 +131,8 @@ def export_env(ctx, filepath):
         path=ctx.obj['management'],
         project_name=ctx.obj['project_name'],
         filepath=filepath,
+        no_dokku=no_dokku,
+        no_example=no_example
     )
 
 

@@ -7,7 +7,7 @@ with open("README.md", "r") as f:
 
 setup(
     name="django-clite",
-    version="0.1.0-beta.5",
+    version="0.1.0-beta.6",
     author="Leo Neto",
     author_email="leo@ekletik.com",
     url="https://bitbucket.org/oleoneto/django-clite",

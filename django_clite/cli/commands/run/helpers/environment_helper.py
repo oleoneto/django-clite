@@ -1,5 +1,7 @@
+import click
 import re
 from .base_run_helper import BaseRunHelper
+from django_clite.cli import log_error, log_success
 
 
 class EnvironmentHelper(BaseRunHelper):
@@ -56,14 +58,22 @@ class EnvironmentHelper(BaseRunHelper):
 
     def copy_dokku(self, env_file, project_name):
         self.__copy_env(env_file, project_name)
+        log_success('Exported environment to .env-dokku')
 
     def copy_example(self, env_file):
         self.__copy_env(env_file, dokku=False)
+        log_success('Exported environment to .env-example')
 
     def run(self, **kwargs):
         project_name = kwargs['project_name']
 
         env_file = kwargs['filepath'] if kwargs['filepath'] else kwargs['path'] + '/.env'
 
-        self.copy_example(env_file)
-        self.copy_dokku(env_file, project_name)
+        if kwargs['no_dokku'] and kwargs['no_example']:
+            log_error('Nothing to export. Skipping...')
+            click.Abort()
+
+        if not kwargs['no_example']:
+            self.copy_example(env_file)
+        if not kwargs['no_dokku']:
+            self.copy_dokku(env_file, project_name)
