@@ -1,4 +1,5 @@
 import click
+import os
 import re
 from .base_run_helper import BaseRunHelper
 from django_clite.cli import log_error, log_success
@@ -38,14 +39,16 @@ class EnvironmentHelper(BaseRunHelper):
 
         return keys
 
-    def __copy_env(self, env_file, project_name=None, dokku=True):
+    def __copy_env(self, env_file, destination, project_name=None, dokku=True):
         keys = self.__read_environment(env_file)
 
         options = ['.env-dokku', '.env-example']
 
         output = options[0] if dokku else options[1]
 
-        with open(output, 'w') as file:
+        f = os.path.join(destination, output)
+
+        with open(f, 'w') as file:
             for k, v in keys.items():
                 if dokku:
                     v = v.split("#")[0]
@@ -56,12 +59,12 @@ class EnvironmentHelper(BaseRunHelper):
                     statement = f'{k}=\n'
                 file.write(statement)
 
-    def copy_dokku(self, env_file, project_name):
-        self.__copy_env(env_file, project_name)
+    def copy_dokku(self, env_file, destination, project_name):
+        self.__copy_env(env_file, destination, project_name)
         log_success('Exported environment to .env-dokku')
 
-    def copy_example(self, env_file):
-        self.__copy_env(env_file, dokku=False)
+    def copy_example(self, env_file, destination):
+        self.__copy_env(env_file, destination, dokku=False)
         log_success('Exported environment to .env-example')
 
     def run(self, **kwargs):
@@ -69,11 +72,13 @@ class EnvironmentHelper(BaseRunHelper):
 
         env_file = kwargs['filepath'] if kwargs['filepath'] else kwargs['path'] + '/.env'
 
+        destination = kwargs['destination']
+
         if kwargs['no_dokku'] and kwargs['no_example']:
             log_error('Nothing to export. Skipping...')
             click.Abort()
 
         if not kwargs['no_example']:
-            self.copy_example(env_file)
+            self.copy_example(env_file, destination)
         if not kwargs['no_dokku']:
-            self.copy_dokku(env_file, project_name)
+            self.copy_dokku(env_file, destination, project_name)
