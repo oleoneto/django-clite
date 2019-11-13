@@ -24,7 +24,6 @@ def wrong_place_warning(ctx):
     return True
 
 
-
 @click.group()
 @click.pass_context
 @click.option('--dry', is_flag=True, help="Display output without creating files.")
@@ -33,9 +32,14 @@ def create(ctx, dry):
     Creates projects and apps.
     """
     ctx.ensure_object(dict)
+
+    p, m, c, f = find_management_file(os.getcwd())
+
     ctx.obj['dry'] = dry
     ctx.obj['cwd'] = os.getcwd()
-    ctx.obj['path'], ctx.obj['management'], ctx.obj['code'] = find_management_file(os.getcwd())
+    ctx.obj['path'] = p
+    ctx.obj['management'] = m
+    ctx.obj['code'] = c
 
 
 @create.command()

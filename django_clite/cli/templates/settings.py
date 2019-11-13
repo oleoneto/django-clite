@@ -1,10 +1,16 @@
 from jinja2 import Template
 
 settings_template = Template("""
-# Django settings for {{ project_name }} project.
-
+\"""
+Django settings for {{ project_name }} project.
+\"""
 
 import os
+import re
+from dotenv import load_dotenv
+
+# Read values from system environment
+load_dotenv()
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -16,11 +22,26 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = os.environ.get('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DEBUG') == 'True' and os.environ.get('DATABASE_URL') is None
+DEBUG = bool(os.environ.get('DEBUG'))
 
-ALLOWED_HOSTS = [] if os.environ.get('LOCAL_MACHINE') else ['{{ domain }}']
+ALLOWED_HOSTS = {% if domain %}['{{ domain }}']{% else %}[]{% endif %}
 
 INTERNAL_IPS = '127.0.0.1'
+
+
+# Stripe account information. Use TEST values in DEBUG mode.
+
+STRIPE_LIVE_MODE = False if DEBUG else bool(os.environ.get('STRIPE_LIVE_MODE'))
+
+STRIPE_TEST_SECRET_KEY = os.environ.get('STRIPE_TEST_SECRET_KEY')
+
+STRIPE_TEST_PUBLIC_KEY = os.environ.get('STRIPE_TEST_PUBLISHABLE_KEY')
+
+STRIPE_SECRET_KEY = os.environ.get('STRIPE_TEST_SECRET_KEY') \\
+    if DEBUG else os.environ.get('STRIPE_LIVE_SECRET_KEY')
+
+STRIPE_PUBLIC_KEY = os.environ.get('STRIPE_TEST_PUBLISHABLE_KEY') \\
+    if DEBUG else os.environ.get('STRIPE_LIVE_PUBLISHABLE_KEY')
 
 
 # Application definition
@@ -41,9 +62,14 @@ INSTALLED_APPS = [
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
+    'allauth.socialaccount.providers.facebook',
+    'allauth.socialaccount.providers.google',
+    'allauth.socialaccount.providers.linkedin_oauth2',
+    'allauth.socialaccount.providers.twitter',
     'django_otp',
     'django_otp.plugins.otp_static',
     'django_otp.plugins.otp_totp',
+
     'rolepermissions',
     'guardian',
 
@@ -55,34 +81,32 @@ INSTALLED_APPS = [
     
     # File storage and caching
     'storages',
-    'compressor',
     'django_redis',
 
     # Extras
     'corsheaders',
+    'ckeditor',
     'debug_toolbar',
 
-    {% for app in apps %}
-    '{{ project_name }}.{{ app }}',
-    {% endfor %}
+    {% if apps %}{% for app in apps %}
+    '{{ project_name }}.{{ app }}',\n{% endfor %}
+    {% endif %}
 ]
 
 MIDDLEWARE = [
     'django.contrib.sites.middleware.CurrentSiteMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.cache.UpdateCacheMiddleware',
     'django.middleware.common.CommonMiddleware',
+    'django.middleware.cache.FetchFromCacheMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django_otp.middleware.OTPMiddleware',
-    'debug_toolbar.middleware.DebugToolbarMiddleware',
     'corsheaders.middleware.CorsMiddleware',
-    
-    {% for middleware in middlewares %}
-    '{{ middleware }}',
-    {% endfor %}
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
 
 ROOT_URLCONF = '{{ project_name }}.urls'
@@ -91,9 +115,9 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
-            {% for app in apps %}
-            os.path.join(BASE_DIR, '{{ project_name }}/{{ app }}/templates'),
-            {% endfor %}
+            {% if apps %}{% for app in apps %}
+            os.path.join(BASE_DIR, '{{ project_name }}/{{ app }}/templates'),\n{% endfor %}
+            {% endif %}
         ],
         'APP_DIRS': True,
         'OPTIONS': {
@@ -112,15 +136,13 @@ WSGI_APPLICATION = '{{ project_name }}.wsgi.application'
 
 # Database
 
-if "IN_DOCKER" in os.environ:
-    # Stuff for when running in Docker-compose.
+ENGINE = 'django.db.backends.postgresql_psycopg2'
 
-    CELERY_BROKER_URL = 'redis://redis:6379/1'
-    CELERY_RESULT_BACKEND = 'redis://redis:6379/1'
+if "IN_DOCKER" in os.environ:
 
     DATABASES = {
         'default': {
-            'ENGINE': 'django.db.backends.postgresql_psycopg2',
+            'ENGINE': ENGINE,
             'NAME': os.environ.get('DOCKER_DB_NAME'),
             'USER': os.environ.get('DOCKER_DB_USER'),
             'PASSWORD': os.environ.get('DOCKER_DB_PASSWORD'),
@@ -129,12 +151,16 @@ if "IN_DOCKER" in os.environ:
         }
     }
 
+    CELERY_BROKER_URL = 'redis://redis:6379/1'
+    CELERY_RESULT_BACKEND = 'redis://redis:6379/1'
+
 elif "DATABASE_URL" in os.environ:
+
     USER, PASSWORD, HOST, PORT, NAME = re.match("^postgres://(?P<username>.*?)\:(?P<password>.*?)\@(?P<host>.*?)\:(?P<port>\d+)\/(?P<db>.*?)$", os.environ.get("DATABASE_URL", "")).groups()
 
     DATABASES = {
         'default': {
-            'ENGINE': 'django.db.backends.postgresql_psycopg2',
+            'ENGINE': ENGINE,
             'NAME': NAME,
             'USER': USER,
             'PASSWORD': PASSWORD,
@@ -143,49 +169,56 @@ elif "DATABASE_URL" in os.environ:
         }
     }
 
-elif "LOCAL_MACHINE" in os.environ:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': os.environ.get('DB_NAME'),
-            'USER': os.environ.get('DB_USER'),
-            'HOST': os.environ.get('DB_HOST'),
-            'PORT': os.environ.get('DB_PORT'),
-            'PASSWORD': os.environ.get('DB_PASSWORD'),
-        }
-     }
-
-else:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': 'db.sqlite3'
+    CACHES = {
+        "default": {
+            "BACKEND": "django_redis.cache.RedisCache",
+            "LOCATION": os.environ.get("REDIS_URL", "") + "/1",
+            "OPTIONS": {
+                "CLIENT_CLASS": "django_redis.client.DefaultClient"
+            },
+            "KEY_PREFIX": "{{ project_name }}"
         }
     }
 
-if 'EMAIL_HOST_PASSWORD' in os.environ:
-    EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-    EMAIL_USE_TLS = True
-    EMAIL_HOST = os.getenv('EMAIL_HOST', None)
-    EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', None)
-    EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', None)
-    EMAIL_PORT = 587
-    
-    SENDGRID_API_KEY = os.getenv('SENDGRID_API_KEY')
+    CELERY_BROKER_URL = os.environ.get("REDIS_URL", "") + "/1"
+
+    CELERY_RESULT_BACKEND = os.environ.get("REDIS_URL", "") + "/1"
+
+    CACHE_TTL = 60 * 15
+
 else:
+
+    CELERY_TASK_ALWAYS_EAGER = True
+
+    DATABASES = {
+        'default': {
+            'ENGINE': ENGINE,
+            'NAME': os.environ.get('LOCAL_DB_NAME'),
+            'USER': os.environ.get('LOCAL_DB_USER'),
+            'HOST': os.environ.get('LOCAL_DB_HOST'),
+            'PASSWORD': os.environ.get('LOCAL_DB_PASSWORD'),
+            'PORT': '5432',
+        }
+     }
+
+# Email server backend configuration
+# Use SendGrid to deliver automated email
+
+EMAIL_HOST = os.environ.get('EMAIL_HOST')
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+
+if DEBUG:
     EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
-
-SERVER_EMAIL = os.environ.get('SERVER_EMAIL')
-
-EMAIL_RELAY_DOMAIN = os.environ.get('EMAIL_RELAY_DOMAIN')
 
 
 # Password validation
 
 {% if custom_auth %}
 AUTH_USER_MODEL = 'authentication.User'
-
-ACCOUNT_USERNAME_VALIDATORS = '{{ project_name }}.authentication.models.validators.username'
 {% endif %}
 
 AUTHENTICATION_BACKENDS = [
@@ -210,11 +243,30 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 # https://django-allauth.readthedocs.io/en/latest/providers.html
-SOCIALACCOUNT_PROVIDERS = {}
 
-LOGIN_REDIRECT_URL = '/accounts/me'
+# ACCOUNT_AUTHENTICATION_METHOD = 'email'
 
-ROLEPERMISSIONS_MODULE = '{{ project_name }}.roles'
+ACCOUNT_USER_MODEL_USERNAME_FIELD = 'username'
+
+ACCOUNT_USERNAME_REQUIRED = True
+
+ACCOUNT_EMAIL_REQUIRED = True
+
+ACCOUNT_EMAIL_VERIFICATION = "mandatory"
+
+ACCOUNT_USERNAME_MIN_LENGTH = 6
+
+ACCOUNT_LOGIN_ATTEMPTS_LIMIT = int(os.environ.get('ACCOUNT_LOGIN_ATTEMPTS_LIMIT'))
+
+ACCOUNT_LOGIN_ATTEMPTS_TIMEOUT = int(os.environ.get('ACCOUNT_LOGIN_ATTEMPTS_TIMEOUT'))
+
+ACCOUNT_USERNAME_BLACKLIST = os.environ.get('ACCOUNT_USERNAME_BLACKLIST')
+
+ACCOUNT_LOGOUT_REDIRECT_URL = '/'
+
+LOGIN_REDIRECT_URL = '/accounts/me/'
+
+SOCIALACCOUNT_QUERY_EMAIL = True
 
 GUARDIAN_RAISE_403 = True
 
@@ -248,28 +300,19 @@ AWS_S3_CUSTOM_DOMAIN = os.environ.get('AWS_CUSTOM_DOMAIN')
 
 AWS_LOCATION = os.environ.get('AWS_LOCATION')
 
-AWS_STATIC_LOCATION = os.environ.get('AWS_STATIC_LOCATION')
-
-AWS_PUBLIC_MEDIA_LOCATION = os.environ.get('AWS_MEDIA_LOCATION')
-
-AWS_PRIVATE_MEDIA_LOCATION = os.environ.get('AWS_PRIVATE_MEDIA_LOCATION')
-
-AWS_DEFAULT_ACL = 'public-read'
-
 AWS_S3_OBJECT_PARAMETERS = {
     'CacheControl': 'max-age=86400',
 }
 
 AWS_IS_GZIPPED = True
 
-DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+DEFAULT_FILE_STORAGE = '{{ project_name }}.storage.FileStorage'
 
-STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+STATICFILES_STORAGE = '{{ project_name }}.storage.StaticStorage'
 
 STATICFILES_FINDERS = [
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
-    'compressor.finders.CompressorFinder'
 ]
 
 STATIC_URL = f'{AWS_S3_ENDPOINT_URL}/'
@@ -280,124 +323,54 @@ MEDIA_ROOT = 'mediafiles/'
 
 MEDIA_URL = '/files/'
 
-COMPRESS_ROOT = ''
 
+# Django REST Framework, JWT, and Swagger configurations go here.
 
-# Django REST Framework, JWT, and Swagger
-# This implementation is JSON-API compatible
+# REST_FRAMEWORK = {}
 
-REST_FRAMEWORK = {
-    'PAGE_SIZE': 25,
+# SIMPLE_JWT = {}
 
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework_json_api.pagination.JsonApiPageNumberPagination',
-
-    'EXCEPTION_HANDLER': 'rest_framework_json_api.exceptions.exception_handler',
-
-    'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework.authentication.SessionAuthentication',
-        'rest_framework.authentication.TokenAuthentication',
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
-    ),
-
-    'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticated',
-    ],
-
-    'DEFAULT_PARSER_CLASSES': (
-        'rest_framework_json_api.parsers.JSONParser',
-        'rest_framework.parsers.FormParser',
-        'rest_framework.parsers.MultiPartParser'
-    ),
-
-    'DEFAULT_RENDERER_CLASSES': (
-        'rest_framework_json_api.renderers.JSONRenderer',
-    ),
-
-    'DEFAULT_METADATA_CLASS': 'rest_framework_json_api.metadata.JSONAPIMetadata',
-
-    'DEFAULT_FILTER_BACKENDS': (
-        'rest_framework_json_api.filters.QueryParameterValidationFilter',
-        'rest_framework_json_api.filters.OrderingFilter',
-        'rest_framework_json_api.django_filters.DjangoFilterBackend',
-        'rest_framework.filters.SearchFilter',
-    ),
-
-    'SEARCH_PARAM': 'filter[search]',
-
-    'TEST_REQUEST_RENDERER_CLASSES': (
-        'rest_framework_json_api.renderers.JSONRenderer',
-    ),
-
-    'TEST_REQUEST_DEFAULT_FORMAT': 'vnd.api+json'
-}
-
-JSON_API_FORMAT_FIELD_NAMES = 'dasherize'
-
-JSON_API_FORMAT_TYPES = 'dasherize'
-
-JSON_API_PLURALIZE_TYPES = False
-
-SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=5),
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
-    'ROTATE_REFRESH_TOKENS': False,
-    'BLACKLIST_AFTER_ROTATION': True,
-
-    'ALGORITHM': 'HS256',
-    'SIGNING_KEY': SECRET_KEY,
-    'VERIFYING_KEY': None,
-
-    'AUTH_HEADER_TYPES': ('Bearer',),
-    'USER_ID_FIELD': 'id',
-    'USER_ID_CLAIM': 'user_id',
-
-    'AUTH_TOKEN_CLASSES': ('rest_framework_simplejwt.tokens.AccessToken',),
-    'TOKEN_TYPE_CLAIM': 'token_type',
-
-    'SLIDING_TOKEN_REFRESH_EXP_CLAIM': 'refresh_exp',
-    'SLIDING_TOKEN_LIFETIME': timedelta(minutes=5),
-    'SLIDING_TOKEN_REFRESH_LIFETIME': timedelta(days=1),
-}
-
-SWAGGER_SETTINGS = {
-    "LOGIN_URL": 'rest_framework:login',
-    "LOGOUT_URL": 'rest_framework:logout',
-    "APIS_SORTER": "alpha",
-    "DOC_EXPANSION": "None",
-    "USE_SESSION_AUTH": True,
-
-    "SHOW_REQUEST_HEADERS": True,
-    "CUSTOM_HEADERS": {
-      "Accept": "application/vnd.api+json",
-      "Content-type": "application/vnd.api+json"
-    },
-
-    "ENCODING": "application/vnd.api+json",
-
-    "JSON_EDITOR": True,
-    "OPERATIONS_SORTER": 'method',
-    "SECURITY_DEFINITIONS": {
-        "api_key": {
-            "type": "apiKey",
-            "name": "Token ",
-            "in": "header"
-        }
-    },
-}
+# SWAGGER_SETTINGS = {}
 
 
 # Error logging and reporting with Sentry
+# Advanced error reporting in production.
 
-if 'DATABASE_URL' in os.environ:
-    # Advanced error reporting in production.
-    # Include settings when DOKKU environment is detected.
+import sentry_sdk
+from sentry_sdk.integrations.django import DjangoIntegration
+from sentry_sdk.integrations.redis import RedisIntegration
 
-    import sentry_sdk
-    from sentry_sdk.integrations.django import DjangoIntegration
+sentry_sdk.init(
+    dsn=os.environ.get('SENTRY_DSN'),
+    integrations=[
+        DjangoIntegration(),
+        RedisIntegration()
+    ]
+)
 
-    sentry_sdk.init(
-        dsn=os.environ.get('SENTRY_DSN'),
-        integrations=[DjangoIntegration()]
-    )
+""")
 
+storages_template = Template("""# Storage Backends for {{ project_name }}
+from storages.backends.s3boto3 import S3Boto3Storage
+
+
+class PublicStorage(S3Boto3Storage):
+    custom_domain = True
+    location = 'public-files'
+    default_acl = 'public-read'
+    file_overwrite = False
+
+
+class PrivateStorage(S3Boto3Storage):
+    custom_domain = True
+    location = 'private-files'
+    default_acl = 'private'
+    file_overwrite = False
+
+
+class StaticStorage(S3Boto3Storage):
+    custom_domain = True
+    location = 'assets'
+    default_acl = 'public-read'
+    file_overwrite = True
 """)

@@ -1,7 +1,12 @@
 import os
 import subprocess
 import sys
-from django_clite.cli import log_error, log_info, log_success, sanitized_string
+from django_clite.cli import (
+    log_error,
+    log_info,
+    log_success,
+    sanitized_string
+)
 from django_clite.cli.commands.base_helper import BaseHelper
 from django_clite.cli.commands.generator.helpers import (
     AdminHelper,
@@ -27,7 +32,11 @@ from django_clite.cli.templates.dokku import (
     app_template,
     dokku_checks_template,
     dokku_scale_template,
-    procfile_template
+    procfile_template,
+)
+from django_clite.cli.templates.settings import (
+    settings_template,
+    storages_template
 )
 
 
@@ -40,8 +49,8 @@ DEFAULT_ERRORS = {
 }
 
 DEFAULT_APP_PACKAGES = {
-    'admin', 'fixtures', 'forms', 'middleware', 'models', 'serializers',
-    'templates', 'tests', 'views', 'viewsets'
+    'admin', 'fixtures', 'forms', 'middleware', 'models',
+    'serializers', 'templates', 'views', 'viewsets'
 }
 
 DEFAULT_CWD = '.'
@@ -126,8 +135,11 @@ class CreatorHelper(object):
             cls.create_package(package_name='permissions', app_name=app_name)
         if package_name == 'models':
             cls.create_package(package_name='managers', app_name=app_name)
-            cls.create_package(package_name='validators', app_name=app_name)
             cls.create_package(package_name='signals', app_name=app_name)
+            cls.create_package(package_name='tests', app_name=app_name)
+            cls.create_package(package_name='validators', app_name=app_name)
+        if package_name == 'serializers':
+            cls.create_package(package_name='tests', app_name=app_name)
         if package_name == 'viewsets':
             cls.helper.parse_and_create(
                 template=router_template,
@@ -147,7 +159,11 @@ class CreatorHelper(object):
 
         os.mkdir(package_name)
         os.chdir(package_name)
-        cls.helper.create_file(path=DEFAULT_CWD, filename='__init__.py', file_content=content)
+        cls.helper.create_file(
+            path=DEFAULT_CWD,
+            filename='__init__.py',
+            file_content=content
+        )
         os.chdir(DEFAULT_PREVIOUS_WD)
 
     @classmethod
@@ -181,6 +197,17 @@ class CreatorHelper(object):
 
         # Inside project/project/
         os.chdir(project_name)
+
+        # Add storage backends
+        cls.helper.parse_and_create(
+            filename='storage.py',
+            template=storages_template,
+            project_name=project_name,
+            path=DEFAULT_CWD,
+        )
+
+        # Update settings file
+        cls.handle_settings(**kwargs)
 
         if kwargs['apps']:
             for app in kwargs['apps']:
@@ -352,4 +379,23 @@ class CreatorHelper(object):
         subprocess.check_output(['git', 'add', '--all'])
         subprocess.check_output(['git', 'commit', '-m', 'Initial commit'])
         log_success('Successfully initialized git repository')
+
+    @classmethod
+    def handle_settings(cls, **kwargs):
+        project_name = sanitized_string(kwargs['project'])
+
+        try:
+            custom_auth = kwargs['custom_auth']
+        except KeyError:
+            custom_auth = False
+
+        cls.helper.parse_and_create(
+            path=DEFAULT_CWD,
+            filename='settings-override.py',
+            template=settings_template,
+            project_name=project_name,
+            apps=kwargs['apps'],
+            custom_auth=custom_auth,
+        )
+
 # end class
