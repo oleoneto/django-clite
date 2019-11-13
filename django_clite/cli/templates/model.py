@@ -1,15 +1,17 @@
 from jinja2 import Template
 
-model_field_template = Template("""{{ name }} = {% if not special %}models.{% endif %}{{ type }}({{ options }})""")
+model_field_template = Template("""{{ name }} = {% if not special %}models.{% endif %}{{ type }}({{ options }}, verbose_name=_('{{ lazy_name }}'))""")
 
 
-model_admin_template = Template("""admin.register({{ model.capitalize() }}
+model_admin_template = Template(
+    """admin.register({{ model.capitalize() }}
 class {{ model.capitalize() }}Admin(admin.ModelAdmin):
     pass
 """)
 
 
-model_form_template = Template("""from django.forms import forms
+model_form_template = Template(
+    """from django.forms import forms
 from {{ app }}.models.{{ model.lower() }} import {{ model.capitalize() }}
 
 
@@ -20,8 +22,10 @@ class {{ model.capitalize() }}Form(forms.Form):
 """)
 
 
-model_template = Template("""import uuid
+model_template = Template(
+    """import uuid
 from django.db import models
+from django.utils.translation import gettext_lazy as _
 {% for model in imports %}{% if model %}from .{{ model.lower() }} import {{ model.capitalize() }}{% endif %}
 {% endfor %}
 {% if base %}from {{ base[0] }} import {{ base[1] }}\n\n{% endif %}
@@ -30,8 +34,8 @@ class {{ model.capitalize() }}({% if base %}{{ base[1] }}{% else %}models.Model{
     {% endfor %}
     # Default fields. Used for record-keeping.
     uuid = models.UUIDField(default=uuid.uuid4, editable=False)
-    created_at = models.DateTimeField(auto_now_add=True, editable=False)
-    updated_at = models.DateTimeField(auto_now=True, editable=False)
+    created_at = models.DateTimeField(_('created at'), auto_now_add=True, editable=False)
+    updated_at = models.DateTimeField(_('uploaded at'), auto_now=True, editable=False)
 
     class Meta:
         db_table = '{{ db_table.lower() }}'
@@ -44,7 +48,8 @@ class {{ model.capitalize() }}({% if base %}{{ base[1] }}{% else %}models.Model{
         return f'{self.uuid}'
 """)
 
-sql_view_template = Template("""import uuid
+sql_view_template = Template(
+    """import uuid
 from django.db import models
 {% for model in imports %}{% if model %}from .{{ model.lower() }} import {{ model.capitalize() }}{% endif %}
 {% endfor %}
@@ -71,19 +76,28 @@ migrations.RunSQL(
 )
 """)
 
-auth_user_model_template = Template("""import uuid
+auth_user_model_template = Template(
+    """import uuid
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from rest_framework.authtoken.models import Token
+from django.utils.translation import gettext_lazy as _
+
+
+def file_upload_path(instance, filename):
+    name, extension = filename.split('.')
+    filename = f'{instance.uuid}.{extension}'
+    return f'files/people/{filename}'
 
 
 class User(AbstractUser):
-    photo = models.ImageField(upload_to='users/profiles/', blank=True)
+    photo = models.ImageField(_('photo'), upload_to=file_upload_path, blank=True)
+    verified = models.BooleanField(_('verified'), default=False, help_text='Used')
 
     # Default fields. Used for record-keeping.
     uuid = models.UUIDField(default=uuid.uuid4, editable=False)
-    created_at = models.DateTimeField(auto_now_add=True, editable=False)
-    updated_at = models.DateTimeField(auto_now=True, editable=False)
+    created_at = models.DateTimeField(_('created at'), auto_now_add=True, editable=False)
+    updated_at = models.DateTimeField(_('updated at'), auto_now=True, editable=False)
 
     class Meta:
         db_table = 'authentication_users'
