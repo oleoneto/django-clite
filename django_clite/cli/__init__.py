@@ -1,8 +1,11 @@
 # django-clite
 from __future__ import unicode_literals
 import click
+import fileinput
 import inflection
 import os
+import re
+import sys
 
 
 def file_created(filename=''):
@@ -40,15 +43,24 @@ def find_management_file(cwd):
     if code == 1:
         management = path
         path = f"{path}/{path.split('/')[-1]}"
-        file = management + '/manage.py'
+        file = os.path.join(management, 'manage.py')
     elif code == 2:
         management = path.rsplit('/', 1)[0]
-        file = management + '/manage.py'
+        file = os.path.join(management, 'manage.py')
     elif code == 3:
         management = path.rsplit('/', 2)[0]
         path = path.rsplit('/', 1)[0]
-        file = management + '/manage.py'
+        file = os.path.join(management, 'manage.py')
     return path, management, code, file
+
+
+def find_settings_file(path):
+    settings = os.path.join(path, 'settings.py')
+    if not os.path.exists(settings):
+        raise FileNotFoundError(
+            "Can't find `settings.py` file: "f"{settings}"
+        )
+    return settings
 
 
 def get_project_name(management_file, find_first=False):
@@ -88,3 +100,35 @@ def sanitized_string(text):
     r = inflection.transliterate(text)
     r = r.replace(' ', '-')
     return inflection.underscore(r).lower()
+
+
+def replace_line(value, parameter_name, settings_file):
+    """
+    Based on implementation from djecrety
+    https://github.com/mrouhi13/djecrety/blob/master/djecrety/utils.py
+    """
+
+    parameter_is_exist = False
+    if parameter_name:
+        new_line = f'{parameter_name} = {value}'
+        line_pattern = fr'^{parameter_name} = .*'
+
+        for line in fileinput.input(settings_file, inplace=True):
+            if re.match(line_pattern, line):
+                parameter_is_exist = True
+                line = re.sub(line_pattern, new_line, line)
+            sys.stdout.write(line)
+
+        if not parameter_is_exist:
+            raise NameError(f"Can't find parameter name: {parameter_name}")
+        return True
+    return False
+
+
+def save_to_settings(value, parameter, path):
+    """
+    Save the value to the given parameter in `settings.py` file.
+    """
+    settings = find_settings_file(path)
+
+    return replace_line(value, parameter, settings)
