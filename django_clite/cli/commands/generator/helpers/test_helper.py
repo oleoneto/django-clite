@@ -1,6 +1,10 @@
 from django_clite.cli import log_success
 from django_clite.cli.commands.base_helper import BaseHelper
-from django_clite.cli.templates.test import test_case_template, test_case_import_template
+from django_clite.cli.templates.test import (
+    test_model_template,
+    test_serializer_template,
+    test_import_template
+)
 
 
 class TestHelper(BaseHelper):
@@ -9,20 +13,24 @@ class TestHelper(BaseHelper):
         model = self.check_noun(kwargs['model'])
 
         path = kwargs['path']
+        template = test_model_template
+
+        if kwargs['scope'] == 'serializer':
+            template = test_serializer_template
 
         filename = f"{model}.py"
 
         self.parse_and_create(
             model=model,
             filename=filename,
-            template=test_case_template,
+            template=template,
             path=path,
             dry=kwargs['dry']
         )
 
         self.add_import(
             model=model,
-            template=test_case_import_template,
+            template=test_import_template,
             path=path
         )
 
@@ -33,7 +41,7 @@ class TestHelper(BaseHelper):
 
         filename = f"{model.lower()}.py"
 
-        template = test_case_import_template
+        template = test_import_template
 
         if self.destroy(filename=filename, **kwargs):
 
@@ -53,10 +61,10 @@ class TestHelper(BaseHelper):
             model=kwargs['model'],
             filename=kwargs['filename'],
             project_name=kwargs['project'],
-            template=test_case_template,
+            template=test_model_template,
             path=kwargs['path']
         )
 
-        cls.add_import(**kwargs, template=test_case_import_template)
+        cls.add_import(**kwargs, template=test_import_template)
 
         log_success("Successfully created TestCase.")

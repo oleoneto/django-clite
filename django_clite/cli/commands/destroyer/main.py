@@ -44,13 +44,17 @@ def destroy(ctx, dry):
     ctx.obj['admin_inlines'] = f"{os.getcwd()}/admin/inlines/"
     ctx.obj['forms'] = f"{os.getcwd()}/forms/"
     ctx.obj['models'] = f"{os.getcwd()}/models/"
+    ctx.obj['models_tests'] = f"{os.getcwd()}/models/tests/"
     ctx.obj['managers'] = f"{os.getcwd()}/models/managers/"
     ctx.obj['serializers'] = f"{os.getcwd()}/serializers/"
+    ctx.obj['serializers_tests'] = f"{os.getcwd()}/serializers/tests/"
     ctx.obj['tests'] = f"{os.getcwd()}/tests/"
     ctx.obj['templates'] = f"{os.getcwd()}/templates/"
     ctx.obj['views'] = f"{os.getcwd()}/views/"
     ctx.obj['viewsets'] = f"{os.getcwd()}/viewsets/"
-    ctx.obj['confirm'] = confirm_delete()
+
+    if not ctx.obj['dry']:
+        confirm_delete()
 
 
 @destroy.command()
@@ -62,21 +66,17 @@ def admin(ctx, name, inline):
     Destroys an admin model or inline.
     """
 
-    # Default helper
-    helper = AdminHelper()
-
     path = ctx.obj['admin']
 
     if inline:
         path = ctx.obj['admin_inlines']
 
-    if ctx.obj['confirm']:
-        helper.delete(
-            model=name,
-            path=path,
-            inline=inline,
-            dry=ctx.obj['dry']
-        )
+    AdminHelper().delete(
+        model=name,
+        path=path,
+        inline=inline,
+        dry=ctx.obj['dry']
+    )
 
 
 @destroy.command()
@@ -89,15 +89,11 @@ def form(ctx, name):
 
     path = ctx.obj['forms']
 
-    # Default helper
-    helper = FormHelper()
-
-    if ctx.obj['confirm']:
-        helper.delete(
-            path=path,
-            model=name,
-            dry=ctx.obj['dry']
-        )
+    FormHelper().delete(
+        path=path,
+        model=name,
+        dry=ctx.obj['dry']
+    )
 
 
 @destroy.command()
@@ -110,7 +106,7 @@ def manager(ctx, name):
 
     path = ctx.obj['managers']
 
-    ManagerHelper.delete(
+    ManagerHelper().delete(
         path=path,
         model=name,
         dry=ctx.obj['dry']
@@ -131,32 +127,29 @@ def model(ctx, name, full, unregister_admin, unregister_inline, test_case):
 
     path = ctx.obj['models']
 
-    # Default helper
-    helper = ModelHelper()
+    ModelHelper().delete(
+        model=name,
+        path=path,
+        dry=ctx.obj['dry']
+    )
 
-    if ctx.obj['confirm']:
-        helper.delete(
-            model=name,
-            path=path,
-            dry=ctx.obj['dry']
-        )
+    if unregister_admin or full:
+        ctx.invoke(admin, name=name)
 
-        if unregister_admin or full:
-            ctx.invoke(admin, name=name)
+    if unregister_inline or full:
+        ctx.invoke(admin, name=name, inline=True)
 
-        if unregister_inline or full:
-            ctx.invoke(admin, name=name, inline=True)
+    if test_case or full:
+        ctx.invoke(test, name=name, scope='model')
 
-        if test_case or full:
-            ctx.invoke(test, name=name)
-
-        if full:
-            ctx.invoke(form, name=name)
-            ctx.invoke(serializer, name=name)
-            ctx.invoke(template, name=name)
-            ctx.invoke(view, name=name, list=True)
-            ctx.invoke(view, name=name, detail=True)
-            ctx.invoke(viewset, name=name)
+    if full:
+        ctx.invoke(form, name=name)
+        ctx.invoke(serializer, name=name)
+        ctx.invoke(test, name=name, scope='serializer')
+        ctx.invoke(template, name=name)
+        ctx.invoke(view, name=name, list=True)
+        ctx.invoke(view, name=name, detail=True)
+        ctx.invoke(viewset, name=name)
 
 
 @destroy.command()
@@ -196,15 +189,13 @@ def serializer(ctx, name):
 
     path = ctx.obj['serializers']
 
-    # Default helper
-    helper = SerializerHelper()
+    SerializerHelper().delete(
+        path=path,
+        model=name,
+        dry=ctx.obj['dry']
+    )
 
-    if ctx.obj['confirm']:
-        helper.delete(
-            path=path,
-            model=name,
-            dry=ctx.obj['dry']
-        )
+    ctx.invoke(test, name=name, scope='serializer')
 
 
 @destroy.command()
@@ -219,18 +210,14 @@ def view(ctx, name, list, detail):
 
     path = ctx.obj['views']
 
-    # Default helper
-    helper = ViewHelper()
-
-    if ctx.obj['confirm']:
-        helper.delete(
-            path=path,
-            model=name,
-            name=name,
-            list=list,
-            detail=detail,
-            dry=ctx.obj['dry']
-        )
+    ViewHelper().delete(
+        path=path,
+        model=name,
+        name=name,
+        list=list,
+        detail=detail,
+        dry=ctx.obj['dry']
+    )
 
 
 @destroy.command()
@@ -243,15 +230,11 @@ def viewset(ctx, name):
 
     path = ctx.obj['viewsets']
 
-    # Default helper
-    helper = ViewSetHelper()
-
-    if ctx.obj['confirm']:
-        helper.delete(
-            path=path,
-            model=name,
-            dry=ctx.obj['dry']
-        )
+    ViewSetHelper().delete(
+        path=path,
+        model=name,
+        dry=ctx.obj['dry']
+    )
 
 
 @destroy.command()
@@ -264,33 +247,27 @@ def template(ctx, name):
 
     path = ctx.obj['templates']
 
-    # Default helper
-    helper = TemplateHelper()
-
-    if ctx.obj['confirm']:
-        helper.delete(
-            path=path,
-            model=name,
-            dry=ctx.obj['dry']
-        )
+    TemplateHelper().delete(
+        path=path,
+        model=name,
+        dry=ctx.obj['dry']
+    )
 
 
 @destroy.command()
-@click.argument('name')
+@click.argument('name', required=True)
+@click.option("-s", "--scope", type=click.Choice(['model', 'serializer']), required=True)
 @click.pass_context
-def test(ctx, name):
+def test(ctx, name, scope):
     """
     Destroys a TestCase.
     """
 
-    # Default helper
-    helper = TestHelper()
+    path = ctx.obj[f'{scope}s_tests']
 
-    path = ctx.obj['tests']
-
-    if ctx.obj['confirm']:
-        helper.delete(
-            model=name,
-            path=path,
-            dry=ctx.obj['dry']
-        )
+    TestHelper().delete(
+        model=name,
+        scope=scope,
+        path=path,
+        dry=ctx.obj['dry']
+    )

@@ -349,6 +349,7 @@ class ModelHelper(BaseHelper):
 
             return model_field_template.render(
                 name=field_name,
+                lazy_name=field_name.replace("_", " "),
                 type=field_type,
                 options=options
             )

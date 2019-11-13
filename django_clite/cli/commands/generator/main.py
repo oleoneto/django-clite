@@ -38,8 +38,10 @@ def generate(ctx, dry):
     ctx.obj['admin_inlines'] = f"{os.getcwd()}/admin/inlines/"
     ctx.obj['forms'] = f"{os.getcwd()}/forms/"
     ctx.obj['models'] = f"{os.getcwd()}/models/"
+    ctx.obj['models_tests'] = f"{os.getcwd()}/models/tests/"
     ctx.obj['managers'] = f"{os.getcwd()}/models/managers"
     ctx.obj['serializers'] = f"{os.getcwd()}/serializers/"
+    ctx.obj['serializers_tests'] = f"{os.getcwd()}/serializers/tests/"
     ctx.obj['tests'] = f"{os.getcwd()}/tests/"
     ctx.obj['templates'] = f"{os.getcwd()}/templates/"
     ctx.obj['views'] = f"{os.getcwd()}/views/"
@@ -133,7 +135,7 @@ def model(ctx, name, full, abstract, fields, register_admin, register_inline, te
         ctx.invoke(admin, name=name, inline=True)
 
     if test_case or full:
-        ctx.invoke(test, model=name)
+        ctx.invoke(test, name=name, scope="model")
 
     if full:
         ctx.invoke(form, name=name)
@@ -198,7 +200,13 @@ def serializer(ctx, name):
 
     path = ctx.obj['serializers']
 
-    SerializerHelper().create(model=name, path=path, dry=ctx.obj['dry'])
+    SerializerHelper().create(
+        model=name,
+        path=path,
+        dry=ctx.obj['dry']
+    )
+
+    ctx.invoke(test, name=name, scope='serializer')
 
 
 @generate.command()
@@ -215,17 +223,20 @@ def template(ctx, name):
 
 
 @generate.command()
-@click.argument("model", required=True)
+@click.argument("name", required=True)
+@click.option("-s", "--scope", type=click.Choice(['model', 'serializer']), required=True)
 @click.pass_context
-def test(ctx, model):
+def test(ctx, name, scope):
     """
     Generates a new TestCase.
     """
 
-    path = ctx.obj['tests']
+    # TODO: Find better way to deal with scope
+    path = ctx.obj[f'{scope}s_tests']
 
     TestHelper().create(
-        model=model,
+        model=name,
+        scope=scope,
         path=path,
         dry=ctx.obj['dry']
     )
