@@ -1,6 +1,11 @@
 import click
 import os
-from django_clite.cli import find_management_file, get_project_name, log_error
+from django_clite.cli import (
+    find_management_file,
+    get_project_name,
+    log_error,
+    save_to_settings
+)
 from .helpers import (
     BuildHelper,
     DockerHelper,
@@ -125,12 +130,11 @@ def export_env(ctx, filepath, no_dokku, no_example):
     D run export-env -f [filepath]
     """
 
-    helper = EnvironmentHelper()
-
-    helper.run(
+    EnvironmentHelper().run(
         path=ctx.obj['management'],
         project_name=ctx.obj['project_name'],
         filepath=filepath,
+        destination=ctx.obj['management'],
         no_dokku=no_dokku,
         no_example=no_example
     )
@@ -220,4 +224,20 @@ def server(ctx, port):
     ServerHelper.run(
         path=ctx.obj['management'],
         port=port
+    )
+
+
+# @run.command()
+@click.option('-k', '--key', required=True, help='Parameter name.')
+@click.option('-v', '--value', required=True, help='Parameter value.')
+@click.pass_context
+def update_setting(ctx, key, value):
+    """
+    Update project settings.
+    """
+
+    save_to_settings(
+        value=f"{value}",
+        parameter=key,
+        path=ctx.obj['path']
     )
