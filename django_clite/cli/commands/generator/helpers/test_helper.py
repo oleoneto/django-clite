@@ -55,8 +55,9 @@ class TestHelper(BaseHelper):
 
         kwargs['filename'] = 'user.py'
 
-        kwargs['path'] = f"{kwargs['path']}/tests/"
+        path = kwargs['path']
 
+        kwargs['path'] = f"{path}/models/tests/"
         cls.parse_and_create(
             model=kwargs['model'],
             filename=kwargs['filename'],
@@ -64,7 +65,16 @@ class TestHelper(BaseHelper):
             template=test_model_template,
             path=kwargs['path']
         )
+        cls.add_import(**kwargs, template=test_import_template)
 
+        kwargs['path'] = f"{path}/serializers/tests/"
+        cls.parse_and_create(
+            model=kwargs['model'],
+            filename=kwargs['filename'],
+            project_name=kwargs['project'],
+            template=test_model_template,
+            path=kwargs['path']
+        )
         cls.add_import(**kwargs, template=test_import_template)
 
         log_success("Successfully created TestCase.")

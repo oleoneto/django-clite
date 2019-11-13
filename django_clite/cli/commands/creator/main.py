@@ -46,10 +46,11 @@ def create(ctx, dry):
 @click.argument('name')
 @click.option('--docker', is_flag=True, help="Add support for Docker.")
 @click.option('--dokku', is_flag=True, help="Add support for Dokku.")
+@click.option('--default', is_flag=True, help="Apply all defaults.")
 @click.option('-a', '--custom-auth', is_flag=True, help="Add support for custom AUTH_USER_MODEL.")
 @click.argument('apps', nargs=-1)
 @click.pass_context
-def project(ctx, name, docker, dokku, custom_auth, apps):
+def project(ctx, name, docker, dokku, default, custom_auth, apps):
     """
     Creates a new django project.
 
@@ -66,17 +67,17 @@ def project(ctx, name, docker, dokku, custom_auth, apps):
     When the --custom-auth flag is specified, CLI will add an `authentication` app to your project
     along with a subclass of the AbstractUser model which you can extend for your own authentication purposes.
     """
-    helper = CreatorHelper()
 
     if not ctx.obj['dry']:
-        helper.create_project(
+        CreatorHelper().create_project(
             project=name,
+            default=default,
             apps=apps,
             docker=docker,
             dokku=dokku,
             dry=ctx.obj['dry']
         )
-        if custom_auth:
+        if custom_auth or default:
             os.chdir(sanitized_string(name))
             ctx.obj['path'] = os.getcwd()
             ctx.invoke(app, apps=['authentication'], custom_auth=True)

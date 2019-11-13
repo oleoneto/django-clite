@@ -126,7 +126,7 @@ class CreatorHelper(object):
         package_name = sanitized_string(kwargs['package_name'])
         cls.create_package(package_name=package_name, app_name=app_name)
 
-        # Do customizations
+        # Perform customizations
         os.chdir(package_name)
         cls.create_package(package_name='helpers', app_name=app_name)
         if package_name == 'admin':
@@ -189,25 +189,26 @@ class CreatorHelper(object):
 
         cls.handle_dependencies(**kwargs)
 
-        if kwargs['dokku']:
+        if kwargs['dokku'] or kwargs['default']:
             cls.handle_dokku(**kwargs)
 
-        if kwargs['docker']:
+        if kwargs['docker'] or kwargs['default']:
             cls.handle_docker(**kwargs)
 
         # Inside project/project/
         os.chdir(project_name)
 
-        # Add storage backends
-        cls.helper.parse_and_create(
-            filename='storage.py',
-            template=storages_template,
-            project_name=project_name,
-            path=DEFAULT_CWD,
-        )
+        if kwargs['default']:
+            # Add storage backends
+            cls.helper.parse_and_create(
+                filename='storage.py',
+                template=storages_template,
+                project_name=project_name,
+                path=DEFAULT_CWD,
+            )
 
-        # Update settings file
-        cls.handle_settings(**kwargs)
+            # Update settings file
+            cls.handle_settings(**kwargs)
 
         if kwargs['apps']:
             for app in kwargs['apps']:
