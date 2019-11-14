@@ -175,11 +175,9 @@ def load_data(ctx, app, recursive, fixture):
 
 # @run.command()
 @click.option('-a', '--app', type=str, required=False)
-@click.option('--up/--down', default=True, help='Make or undo migrations.')
-@click.option('-g', '--general', is_flag=True, help='Run migrations for all apps.')
 @click.argument('options', nargs=-1, required=False)
 @click.pass_context
-def migrations(ctx, app, general, up, options):
+def migrations(ctx, app, options):
     """
     Run database migrations.
 
@@ -204,13 +202,9 @@ def migrations(ctx, app, general, up, options):
 
     """
 
-    if not app and not general:
-        log_error(DEFAULT_MISSING_ARGS_ERROR.format('--app or --general'))
-        raise click.Abort
-
     path = ctx.obj['management']
 
-    MigrationHelper.run(path, app, general, up, options)
+    MigrationHelper.run(path, app, options)
 
 
 @run.command()

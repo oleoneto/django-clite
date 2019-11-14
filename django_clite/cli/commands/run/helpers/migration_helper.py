@@ -36,13 +36,10 @@ class MigrationHelper(object):
         subprocess.check_output(DEFAULT_MIGRATE_COMMAND)
 
     @classmethod
-    def run(cls, path, app, general, direction, options):
-        if general:
-            if direction:
-                cls.migrate(path, app=None, options=options)
-            else:
-                cls.make_migrations(path, app=None, options=options)
-                cls.migrate_migrations(path, app=None, options=options)
-        elif app:
+    def run(cls, path, app, options):
+        if app:
             cls.make_migrations(path, app, options)
             cls.migrate(path, app, options=options)
+        else:
+            cls.make_migrations(path, app=None, options=options)
+            cls.migrate(path, app=None, options=options)
