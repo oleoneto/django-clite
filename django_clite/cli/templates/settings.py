@@ -89,7 +89,7 @@ INSTALLED_APPS = [
     'debug_toolbar',
 
     {% if apps %}# {{ project_name }} apps{% for app in apps %}
-    '{{ project_name }}.{{ app }}',{% endfor %}{% endif %}
+    '{{ project_name }}.{{ app }}.apps.{{ app.capitalize() }}Config',{% endfor %}{% endif %}
 ]
 
 MIDDLEWARE = [
