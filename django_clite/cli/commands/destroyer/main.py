@@ -20,14 +20,9 @@ def not_an_app_directory_warning():
         raise click.Abort
 
 
-def confirm_delete():
-    if not click.confirm("Are you sure you want to delete this file?", show_default=True, default=False):
-        raise click.Abort()
-    return True
-
-
 @click.group()
 @click.option('--dry', '--dry-run', is_flag=True, help="Display output without deleting files")
+@click.confirmation_option(prompt='Are you sure you want to delete this file?')
 @click.pass_context
 def destroy(ctx, dry):
     """
@@ -52,9 +47,6 @@ def destroy(ctx, dry):
     ctx.obj['templates'] = f"{os.getcwd()}/templates/"
     ctx.obj['views'] = f"{os.getcwd()}/views/"
     ctx.obj['viewsets'] = f"{os.getcwd()}/viewsets/"
-
-    if not ctx.obj['dry']:
-        confirm_delete()
 
 
 @destroy.command()
@@ -186,7 +178,9 @@ def resource(ctx, name):
 
     ctx.invoke(template, name=name)
 
-    ctx.invoke(view, name=name)
+    if not ctx.invoke(view, name=name, class_type='list'):
+        ctx.invoke(view, name=name, class_type='detail')
+        ctx.invoke(view, name=name)
 
 
 @destroy.command()
@@ -223,7 +217,7 @@ def view(ctx, name, class_type):
 
     path = ctx.obj['views']
 
-    ViewHelper().delete(
+    return ViewHelper().delete(
         path=path,
         model=name,
         name=name,
