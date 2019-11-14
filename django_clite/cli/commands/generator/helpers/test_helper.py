@@ -1,5 +1,9 @@
 import inflection
-from django_clite.cli import log_success
+from django_clite.cli import (
+    log_success,
+    DEFAULT_CREATE_MESSAGE,
+    DEFAULT_DELETE_MESSAGE
+)
 from django_clite.cli.commands.base_helper import BaseHelper
 from django_clite.cli.templates.test import (
     test_model_template,
@@ -12,7 +16,7 @@ class TestHelper(BaseHelper):
 
     def create(self, **kwargs):
         model = self.check_noun(kwargs['model'])
-        classname = inflection.camelize(model)
+        kwargs['classname'] = inflection.camelize(model)
 
         path = kwargs['path']
         template = test_model_template
@@ -23,27 +27,30 @@ class TestHelper(BaseHelper):
 
         filename = f"{model}.py"
 
-        self.parse_and_create(
+        self.add_import(
             model=model,
-            classname=classname,
+            path=path,
+            classname=kwargs['classname'],
+            template=test_import_template,
+            dry=kwargs['dry'],
+        )
+
+        if self.parse_and_create(
+            model=model,
+            classname=kwargs['classname'],
             namespace=namespace,
             filename=filename,
             template=template,
             path=path,
             dry=kwargs['dry']
-        )
+        ):
 
-        self.add_import(
-            model=model,
-            classname=classname,
-            template=test_import_template,
-            path=path
-        )
-
-        log_success("Successfully created TestCase.")
+            resource = f"{kwargs['classname']}TestCase"
+            log_success(DEFAULT_CREATE_MESSAGE.format(filename, resource))
 
     def delete(self, **kwargs):
         model = self.check_noun(kwargs['model'])
+        kwargs['classname'] = inflection.camelize(model)
 
         filename = f"{model.lower()}.py"
 
@@ -53,7 +60,8 @@ class TestHelper(BaseHelper):
 
             self.remove_import(template=template, **kwargs)
 
-            log_success('Successfully deleted TestCase.')
+            resource = f"{kwargs['classname']}TestCase"
+            log_success(DEFAULT_DELETE_MESSAGE.format(filename, resource))
 
     @classmethod
     def create_auth_user(cls, **kwargs):

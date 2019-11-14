@@ -1,5 +1,9 @@
 import inflection
-from django_clite.cli import log_success
+from django_clite.cli import (
+    log_success,
+    DEFAULT_CREATE_MESSAGE,
+    DEFAULT_DELETE_MESSAGE
+)
 from django_clite.cli.commands.base_helper import BaseHelper
 from django_clite.cli.templates.serializer import (
     serializer_template,
@@ -22,18 +26,19 @@ class SerializerHelper(BaseHelper):
 
         template_import = serializer_import_template
 
-        self.parse_and_create(
+        self.add_import(**kwargs, template=template_import)
+
+        if self.parse_and_create(
             filename=filename,
             model=model,
             classname=kwargs['classname'],
             path=path,
             template=template,
             dry=kwargs['dry']
-        )
+        ):
 
-        self.add_import(**kwargs, template=template_import)
-
-        log_success("Successfully created serializer class.")
+            resource = f"{kwargs['classname']}Serializer"
+            log_success(DEFAULT_CREATE_MESSAGE.format(filename, resource))
 
     def delete(self, **kwargs):
         model = self.check_noun(kwargs['model'])
@@ -47,7 +52,8 @@ class SerializerHelper(BaseHelper):
 
             self.remove_import(template=template, **kwargs)
 
-            log_success('Successfully deleted serializer.')
+            resource = f"{kwargs['classname']}Serializer"
+            log_success(DEFAULT_DELETE_MESSAGE.format(filename, resource))
 
     @classmethod
     def create_auth_user(cls, **kwargs):

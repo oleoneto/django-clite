@@ -2,7 +2,12 @@ import click
 import fileinput
 import inflection
 import os
-from django_clite.cli import log_success, sanitized_string, log_info
+from django_clite.cli import (
+    log_success,
+    sanitized_string,
+    DEFAULT_CREATE_MESSAGE,
+    DEFAULT_DELETE_MESSAGE
+)
 from django_clite.cli.commands.base_helper import BaseHelper
 from django_clite.cli.templates.model import (
     auth_user_model_template,
@@ -147,7 +152,9 @@ class ModelHelper(BaseHelper):
         if kwargs['view']:
             template = sql_view_template
 
-        self.parse_and_create(
+        self.add_import(**kwargs, template=model_import_template)
+
+        if self.parse_and_create(
             model=model,
             classname=kwargs['classname'],
             abstract=kwargs['abstract'],
@@ -159,14 +166,13 @@ class ModelHelper(BaseHelper):
             filename=filename,
             path=path,
             dry=kwargs['dry']
-        )
+        ):
 
-        self.add_import(**kwargs, template=model_import_template)
+            resource = f"{kwargs['classname']}"
+            log_success(DEFAULT_CREATE_MESSAGE.format(filename, resource))
 
-        log_success("Successfully created model.")
-
-        # Ensure related models are created
-        self.handle_dependencies(**kwargs, app_name=app_name)
+            # Ensure related models are created
+            self.handle_dependencies(**kwargs, app_name=app_name)
 
         return
 
@@ -203,7 +209,8 @@ class ModelHelper(BaseHelper):
 
             self.remove_import(template=template, **kwargs)
 
-            log_success('Successfully deleted model.')
+            resource = f"{kwargs['classname']}"
+            log_success(DEFAULT_DELETE_MESSAGE.format(filename, resource))
 
     @classmethod
     def find_resource_in_scope(cls, model):

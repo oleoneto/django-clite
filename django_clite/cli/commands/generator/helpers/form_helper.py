@@ -1,5 +1,9 @@
 import inflection
-from django_clite.cli import log_success
+from django_clite.cli import (
+    log_success,
+    DEFAULT_CREATE_MESSAGE,
+    DEFAULT_DELETE_MESSAGE
+)
 from django_clite.cli.commands.base_helper import BaseHelper
 from django_clite.cli.templates.form import (
     model_form_template,
@@ -18,15 +22,6 @@ class FormHelper(BaseHelper):
 
         filename = f"{model.lower()}.py"
 
-        self.parse_and_create(
-            filename=filename,
-            model=model,
-            classname=kwargs['classname'],
-            path=path,
-            template=model_form_template,
-            dry=kwargs['dry']
-        )
-
         self.add_import(
             model=model,
             classname=kwargs['classname'],
@@ -35,7 +30,17 @@ class FormHelper(BaseHelper):
             dry=kwargs['dry']
         )
 
-        log_success('Successfully created form.')
+        if self.parse_and_create(
+            filename=filename,
+            model=model,
+            classname=kwargs['classname'],
+            path=path,
+            template=model_form_template,
+            dry=kwargs['dry']
+        ):
+
+            resource = f"{kwargs['classname']}Form"
+            log_success(DEFAULT_CREATE_MESSAGE.format(filename, resource))
 
     def delete(self, **kwargs):
         model = self.check_noun(kwargs['model'])
@@ -49,7 +54,8 @@ class FormHelper(BaseHelper):
 
             self.remove_import(template=template, **kwargs)
 
-            log_success('Successfully deleted form.')
+            resource = f"{kwargs['classname']}Form"
+            log_success(DEFAULT_DELETE_MESSAGE.format(filename, resource))
 
     @classmethod
     def create_auth_user(cls, **kwargs):

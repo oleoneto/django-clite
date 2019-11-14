@@ -22,6 +22,8 @@ class BaseHelper(object):
 
     @classmethod
     def add_import(cls, **kwargs):
+        path = kwargs['path']
+        filename = '__init__.py'
         template = kwargs['template']
 
         try:
@@ -30,9 +32,6 @@ class BaseHelper(object):
             is_dry = False
 
         if not is_dry:
-            filename = '__init__.py'
-            path = kwargs['path']
-
             try:
                 content = template.render(**kwargs)
             except Exception:
@@ -58,6 +57,7 @@ class BaseHelper(object):
                     file.write(content)
                     file.write('\n')
         else:
+            kwargs['filename'] = filename
             content = template.render(**kwargs)
             cls.log_dry(**kwargs, content=content)
 

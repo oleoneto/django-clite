@@ -1,5 +1,9 @@
 import inflection
-from django_clite.cli import log_success
+from django_clite.cli import (
+    log_success,
+    DEFAULT_CREATE_MESSAGE,
+    DEFAULT_DELETE_MESSAGE
+)
 from django_clite.cli.commands.base_helper import BaseHelper
 from django_clite.cli.templates.viewset import (
     viewset_template,
@@ -19,17 +23,6 @@ class ViewSetHelper(BaseHelper):
 
         # TODO: Ensure serializer already exists
 
-        self.parse_and_create(
-            filename=filename,
-            model=model,
-            classname=kwargs['classname'],
-            template=viewset_template,
-            read_only=kwargs['read_only'],
-            route=inflection.pluralize(model),
-            path=path,
-            dry=kwargs['dry']
-        )
-
         self.add_import(
             model=model,
             classname=kwargs['classname'],
@@ -38,7 +31,19 @@ class ViewSetHelper(BaseHelper):
             dry=kwargs['dry']
         )
 
-        log_success("Successfully created viewset.")
+        if self.parse_and_create(
+            filename=filename,
+            model=model,
+            classname=kwargs['classname'],
+            template=viewset_template,
+            read_only=kwargs['read_only'],
+            route=inflection.pluralize(model),
+            path=path,
+            dry=kwargs['dry']
+        ):
+
+            resource = f"{kwargs['classname']}ViewSet"
+            log_success(DEFAULT_CREATE_MESSAGE.format(filename, resource))
 
     def delete(self, **kwargs):
         model = self.check_noun(kwargs['model'])
@@ -52,10 +57,14 @@ class ViewSetHelper(BaseHelper):
 
             self.remove_import(template=template, **kwargs)
 
-            log_success('Successfully deleted viewset.')
+            resource = f"{kwargs['classname']}ViewSet"
+            log_success(DEFAULT_DELETE_MESSAGE.format(filename, resource))
 
     @classmethod
     def create_auth_user(cls, **kwargs):
+
+        # TODO: define create_auth_user() in terms of create()
+
         kwargs['model'] = 'User'
 
         kwargs['filename'] = 'user.py'

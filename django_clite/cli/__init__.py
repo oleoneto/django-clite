@@ -8,6 +8,11 @@ import re
 import sys
 
 
+DEFAULT_CREATE_MESSAGE = 'Successfully created {} for {}.'
+
+DEFAULT_DELETE_MESSAGE = 'Successfully deleted {} for {}.'
+
+
 def file_created(filename=''):
     log_success("Successfully created %s" % filename)
 
