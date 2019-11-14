@@ -197,7 +197,7 @@ def resource(ctx, name, fields, inherits, api):
     if not api:
         ctx.invoke(form, name=name)
         ctx.invoke(template, name=name)
-        ctx.invoke(view, name=name, list=True)
+        ctx.invoke(view, name=name, class_type='list')
 
 
 @generate.command()

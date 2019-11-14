@@ -68,4 +68,6 @@ class ViewHelper(BaseHelper):
 
             log_success(DEFAULT_DELETE_MESSAGE.format(filename, resource))
 
+            return True
+
 # end class
