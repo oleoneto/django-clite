@@ -1,6 +1,6 @@
 import click
 import os
-from django_clite.cli import log_error
+from django_clite.cli import log_error, sanitized_string
 from django_clite.cli.commands.generator.helpers import (
     AdminHelper,
     FormHelper,
@@ -66,6 +66,8 @@ def admin(ctx, name, inline):
     Destroys an admin model or inline.
     """
 
+    name = sanitized_string(name)
+
     path = ctx.obj['admin']
 
     if inline:
@@ -87,11 +89,13 @@ def form(ctx, name):
     Destroys a form.
     """
 
+    name = sanitized_string(name)
+
     path = ctx.obj['forms']
 
     FormHelper().delete(
-        path=path,
         model=name,
+        path=path,
         dry=ctx.obj['dry']
     )
 
@@ -104,11 +108,13 @@ def manager(ctx, name):
     Destroys a model manager.
     """
 
+    name = sanitized_string(name)
+
     path = ctx.obj['managers']
 
     ManagerHelper().delete(
-        path=path,
         model=name,
+        path=path,
         dry=ctx.obj['dry']
     )
 
@@ -124,6 +130,8 @@ def model(ctx, name, full, unregister_admin, unregister_inline, test_case):
     """
     Destroys a model.
     """
+
+    name = sanitized_string(name)
 
     path = ctx.obj['models']
 
@@ -160,6 +168,8 @@ def resource(ctx, name):
     Destroys a resource.
     """
 
+    name = sanitized_string(name)
+
     ctx.invoke(
         model,
         name=name,
@@ -187,6 +197,8 @@ def serializer(ctx, name):
     Destroys a serializer.
     """
 
+    name = sanitized_string(name)
+
     path = ctx.obj['serializers']
 
     SerializerHelper().delete(
@@ -200,13 +212,14 @@ def serializer(ctx, name):
 
 @destroy.command()
 @click.argument('name')
-@click.option('-l', '--list', is_flag=True, help='Deletes a model list view')
-@click.option('-d', '--detail', is_flag=True, help='Deletes a model detail view')
+@click.option("-c", "--class-type", type=click.Choice(['list', 'detail']))
 @click.pass_context
-def view(ctx, name, list, detail):
+def view(ctx, name, class_type):
     """
     Destroys a view.
     """
+
+    name = sanitized_string(name)
 
     path = ctx.obj['views']
 
@@ -214,8 +227,7 @@ def view(ctx, name, list, detail):
         path=path,
         model=name,
         name=name,
-        list=list,
-        detail=detail,
+        class_type=class_type,
         dry=ctx.obj['dry']
     )
 
@@ -227,6 +239,8 @@ def viewset(ctx, name):
     """
     Destroys a viewset.
     """
+
+    name = sanitized_string(name)
 
     path = ctx.obj['viewsets']
 
@@ -245,6 +259,8 @@ def template(ctx, name):
     Destroys a template.
     """
 
+    name = sanitized_string(name)
+
     path = ctx.obj['templates']
 
     TemplateHelper().delete(
@@ -262,6 +278,8 @@ def test(ctx, name, scope):
     """
     Destroys a TestCase.
     """
+
+    name = sanitized_string(name)
 
     path = ctx.obj[f'{scope}s_tests']
 

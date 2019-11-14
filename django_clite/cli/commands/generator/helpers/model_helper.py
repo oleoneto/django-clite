@@ -121,6 +121,7 @@ class ModelHelper(BaseHelper):
 
     def create(self, **kwargs):
         model = self.check_noun(kwargs['model'])
+        kwargs['classname'] = inflection.camelize(model)
 
         base_model = self.check_noun(kwargs['inherits']) if kwargs['inherits'] else None
 
@@ -148,6 +149,7 @@ class ModelHelper(BaseHelper):
 
         self.parse_and_create(
             model=model,
+            classname=kwargs['classname'],
             abstract=kwargs['abstract'],
             base=self.special_import,
             fields=self.fields_list,
@@ -191,6 +193,7 @@ class ModelHelper(BaseHelper):
 
     def delete(self, **kwargs):
         model = self.check_noun(kwargs['model'])
+        kwargs['classname'] = inflection.camelize(model)
 
         filename = f"{model.lower()}.py"
 

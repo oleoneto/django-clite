@@ -1,6 +1,6 @@
 import click
 import os
-from django_clite.cli import log_error
+from django_clite.cli import log_error, sanitized_string
 from .helpers import (
     AdminHelper,
     FormHelper,
@@ -62,7 +62,12 @@ def admin(ctx, name, inline):
     if inline:
         path = ctx.obj['admin_inlines']
 
-    AdminHelper().create(model=name, inline=inline, path=path, dry=ctx.obj['dry'])
+    AdminHelper().create(
+        model=sanitized_string(name),
+        inline=inline,
+        path=path,
+        dry=ctx.obj['dry']
+    )
 
 
 @generate.command()
@@ -75,7 +80,11 @@ def form(ctx, name):
 
     path = ctx.obj['forms']
 
-    FormHelper().create(model=name, path=path, dry=ctx.obj['dry'])
+    FormHelper().create(
+        model=sanitized_string(name),
+        path=path,
+        dry=ctx.obj['dry']
+    )
 
 
 @generate.command()
@@ -88,7 +97,7 @@ def manager(ctx, name):
     path = ctx.obj['managers']
 
     ManagerHelper().create(
-        model=name,
+        model=sanitized_string(name),
         path=path,
         dry=ctx.obj['dry']
     )
@@ -115,6 +124,8 @@ def model(ctx, name, full, abstract, fields, register_admin, register_inline, te
     This will generate a Track model and add a foreign key of Album.
     If the model is to be added to admin.site one can optionally opt in by specifying the --register-admin flag.
     """
+
+    name = sanitized_string(name)
 
     path = ctx.obj['models']
 
@@ -167,6 +178,8 @@ def resource(ctx, name, fields, inherits, api):
     in order to prevent these files from being created.
     """
 
+    name = sanitized_string(name)
+
     ctx.invoke(
         model,
         name=name,
@@ -198,6 +211,8 @@ def serializer(ctx, name):
     before attempting to create a serializer for it. Aborts if model is not found.
     """
 
+    name = sanitized_string(name)
+
     path = ctx.obj['serializers']
 
     SerializerHelper().create(
@@ -217,6 +232,8 @@ def template(ctx, name):
     Generates an html template.
     """
 
+    name = sanitized_string(name)
+
     path = ctx.obj['templates']
 
     TemplateHelper().create(name=name, path=path, dry=ctx.obj['dry'])
@@ -235,7 +252,7 @@ def test(ctx, name, scope):
     path = ctx.obj[f'{scope}s_tests']
 
     TestHelper().create(
-        model=name,
+        model=sanitized_string(name),
         scope=scope,
         path=path,
         dry=ctx.obj['dry']
@@ -244,22 +261,22 @@ def test(ctx, name, scope):
 
 @generate.command()
 @click.argument("name", required=True)
-@click.option('-l', '--list', is_flag=True, help="Create model list view.")
-@click.option('-d', '--detail', is_flag=True, help="Create model detail view.")
+@click.option("-c", "--class-type", type=click.Choice(['list', 'detail']))
 @click.option('-t', is_flag=True, help='Generate related template.')
 @click.pass_context
-def view(ctx, name, list, detail, t):
+def view(ctx, name, class_type, t):
     """
     Generates a view function or class.
     """
+
+    name = sanitized_string(name)
 
     path = ctx.obj['views']
 
     ViewHelper().create(
         model=name,
         name=name,
-        detail=detail,
-        list=list,
+        class_type=class_type,
         path=path,
         dry=ctx.obj['dry']
     )
@@ -276,6 +293,8 @@ def viewset(ctx, read_only, name):
     """
     Generates a viewset for a serializable model.
     """
+
+    name = sanitized_string(name)
 
     path = ctx.obj['viewsets']
 
@@ -294,6 +313,8 @@ def sql_view(ctx, name, fields, source):
 
         D g sql_view track int:number char:title --source app_tracks
     """
+
+    name = sanitized_string(name)
 
     path = ctx.obj['models']
 

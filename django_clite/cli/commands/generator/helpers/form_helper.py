@@ -1,3 +1,4 @@
+import inflection
 from django_clite.cli import log_success
 from django_clite.cli.commands.base_helper import BaseHelper
 from django_clite.cli.templates.form import (
@@ -11,6 +12,8 @@ class FormHelper(BaseHelper):
     def create(self, **kwargs):
 
         model = self.check_noun(kwargs['model'])
+        kwargs['classname'] = inflection.camelize(model)
+
         path = kwargs['path']
 
         filename = f"{model.lower()}.py"
@@ -18,6 +21,7 @@ class FormHelper(BaseHelper):
         self.parse_and_create(
             filename=filename,
             model=model,
+            classname=kwargs['classname'],
             path=path,
             template=model_form_template,
             dry=kwargs['dry']
@@ -25,6 +29,7 @@ class FormHelper(BaseHelper):
 
         self.add_import(
             model=model,
+            classname=kwargs['classname'],
             template=model_form_import_template,
             path=path,
             dry=kwargs['dry']
@@ -34,6 +39,7 @@ class FormHelper(BaseHelper):
 
     def delete(self, **kwargs):
         model = self.check_noun(kwargs['model'])
+        kwargs['classname'] = inflection.camelize(model)
 
         filename = f"{model.lower()}.py"
 

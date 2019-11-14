@@ -5,17 +5,17 @@ viewset_template = Template(
     """from rest_framework import viewsets
 from rest_framework import permissions
 from .router import router
-from ..models import {{ model.capitalize() }}
-from ..serializers import {{ model.capitalize() }}Serializer
+from ..models import {{ classname }}
+from ..serializers import {{ classname }}Serializer
 
 
-class {{ model.capitalize() }}ViewSet(viewsets.{% if read_only %}ReadOnlyModelViewSet{% else %}ModelViewSet{% endif %}):
-    queryset = {{ model.capitalize() }}.objects.all()
-    serializer_class = {{ model.capitalize() }}Serializer
+class {{ classname }}ViewSet(viewsets.{% if read_only %}ReadOnlyModelViewSet{% else %}ModelViewSet{% endif %}):
+    queryset = {{ classname }}.objects.all()
+    serializer_class = {{ classname }}Serializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
 
-router.register('{{ route.lower() }}', {{ model.capitalize() }}ViewSet)
+router.register('{{ route.lower() }}', {{ classname }}ViewSet)
 """)
 
-viewset_import_template = Template("""from .{{ model.lower() }} import {{ model.capitalize() }}ViewSet""")
+viewset_import_template = Template("""from .{{ model.lower() }} import {{ classname }}ViewSet""")

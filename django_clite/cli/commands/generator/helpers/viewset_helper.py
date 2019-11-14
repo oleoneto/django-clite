@@ -11,6 +11,7 @@ class ViewSetHelper(BaseHelper):
 
     def create(self, **kwargs):
         model = self.check_noun(kwargs['model'])
+        kwargs['classname'] = inflection.camelize(model)
 
         path = kwargs['path']
 
@@ -21,6 +22,7 @@ class ViewSetHelper(BaseHelper):
         self.parse_and_create(
             filename=filename,
             model=model,
+            classname=kwargs['classname'],
             template=viewset_template,
             read_only=kwargs['read_only'],
             route=inflection.pluralize(model),
@@ -30,6 +32,7 @@ class ViewSetHelper(BaseHelper):
 
         self.add_import(
             model=model,
+            classname=kwargs['classname'],
             template=viewset_import_template,
             path=path,
             dry=kwargs['dry']
@@ -39,6 +42,7 @@ class ViewSetHelper(BaseHelper):
 
     def delete(self, **kwargs):
         model = self.check_noun(kwargs['model'])
+        kwargs['classname'] = inflection.camelize(model)
 
         filename = f"{model.lower()}.py"
 

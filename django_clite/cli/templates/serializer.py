@@ -3,10 +3,10 @@ from jinja2 import Template
 
 serializer_template = Template(
     """from rest_framework import serializers
-{% if model %}from ..models import {{ model.capitalize() }}
+{% if model %}from ..models import {{ classname }}
 {% endif %}
 
-class {{ model.capitalize() }}Serializer(serializers.ModelSerializer):
+class {{ classname }}Serializer(serializers.ModelSerializer):
     
     # Add related fields below:
     # Example relation fields are:
@@ -20,7 +20,7 @@ class {{ model.capitalize() }}Serializer(serializers.ModelSerializer):
     # likes = LikeSerializer(many=True)
 
     class Meta:
-        model = {{ model.capitalize() }}
+        model = {{ classname }}
         fields = "__all__"
 """)
 
@@ -38,5 +38,5 @@ class UserSerializer(serializers.ModelSerializer):
 """)
 
 serializer_import_template = Template(
-    """from .{{ model.lower() }} import {{ model.capitalize() }}Serializer"""
+    """from .{{ model.lower() }} import {{ classname }}Serializer"""
 )

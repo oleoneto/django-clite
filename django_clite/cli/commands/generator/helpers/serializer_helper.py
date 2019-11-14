@@ -1,3 +1,4 @@
+import inflection
 from django_clite.cli import log_success
 from django_clite.cli.commands.base_helper import BaseHelper
 from django_clite.cli.templates.serializer import (
@@ -11,6 +12,7 @@ class SerializerHelper(BaseHelper):
 
     def create(self, **kwargs):
         model = self.check_noun(kwargs['model'])
+        kwargs['classname'] = inflection.camelize(model)
 
         path = kwargs['path']
 
@@ -23,6 +25,7 @@ class SerializerHelper(BaseHelper):
         self.parse_and_create(
             filename=filename,
             model=model,
+            classname=kwargs['classname'],
             path=path,
             template=template,
             dry=kwargs['dry']
@@ -34,6 +37,7 @@ class SerializerHelper(BaseHelper):
 
     def delete(self, **kwargs):
         model = self.check_noun(kwargs['model'])
+        kwargs['classname'] = inflection.camelize(model)
 
         filename = f"{model.lower()}.py"
 

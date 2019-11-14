@@ -2,11 +2,11 @@ from jinja2 import Template
 
 model_admin_template = Template(
     """from django.contrib import admin
-from ..models import {{ model.capitalize() }}
+from ..models import {{ classname }}
 
 
-@admin.register({{ model.capitalize() }})
-class {{ model.capitalize() }}Admin(admin.ModelAdmin):
+@admin.register({{ classname }})
+class {{ classname }}Admin(admin.ModelAdmin):
     pass
 """)
 
@@ -43,17 +43,17 @@ class UserAdmin(BaseUserAdmin):
 """)
 
 
-model_admin_import_template = Template("""from .{{ model.lower() }} import {{ model.capitalize() }}Admin""")
+model_admin_import_template = Template("""from .{{ model.lower() }} import {{ classname }}Admin""")
 
 
 model_admin_inline_template = Template(
     """from django.contrib import admin
-from ...models import {{ model.capitalize() }}
+from ...models import {{ classname }}
 
 
-class {{ model.capitalize() }}Inline(admin.StackedInline):
+class {{ classname }}Inline(admin.StackedInline):
     model = {{ model.capitalize() }}
     extra = 1
 """)
 
-model_inline_import_template = Template("""from .{{ model.lower() }} import {{ model.capitalize() }}Inline""")
+model_inline_import_template = Template("""from .{{ model.lower() }} import {{ classname }}Inline""")

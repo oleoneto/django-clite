@@ -4,20 +4,20 @@ model_field_template = Template("""{{ name }} = {% if not special %}models.{% en
 
 
 model_admin_template = Template(
-    """admin.register({{ model.capitalize() }}
-class {{ model.capitalize() }}Admin(admin.ModelAdmin):
+    """admin.register({{ classname }}
+class {{ classname }}Admin(admin.ModelAdmin):
     pass
 """)
 
 
 model_form_template = Template(
     """from django.forms import forms
-from {{ app }}.models.{{ model.lower() }} import {{ model.capitalize() }}
+from {{ app }}.models.{{ model.lower() }} import {{ classname }}
 
 
-class {{ model.capitalize() }}Form(forms.Form):
+class {{ classname }}Form(forms.Form):
     class Meta:
-        model = {{ model.capitalize() }}
+        model = {{ classname }}
         fields = "__all__"
 """)
 
@@ -26,10 +26,10 @@ model_template = Template(
     """import uuid
 from django.db import models
 from django.utils.translation import gettext_lazy as _
-{% for model in imports %}{% if model %}from .{{ model.lower() }} import {{ model.capitalize() }}{% endif %}
+{% for model in imports %}{% if model %}from .{{ model.lower() }} import {{ classname }}{% endif %}
 {% endfor %}
 {% if base %}from {{ base[0] }} import {{ base[1] }}\n\n{% endif %}
-class {{ model.capitalize() }}({% if base %}{{ base[1] }}{% else %}models.Model{% endif %}):
+class {{ classname }}({% if base %}{{ base[1] }}{% else %}models.Model{% endif %}):
     {% for field in fields %}{{ field }}
     {% endfor %}
     # Default fields. Used for record-keeping.
@@ -51,10 +51,10 @@ class {{ model.capitalize() }}({% if base %}{{ base[1] }}{% else %}models.Model{
 sql_view_template = Template(
     """import uuid
 from django.db import models
-{% for model in imports %}{% if model %}from .{{ model.lower() }} import {{ model.capitalize() }}{% endif %}
+{% for model in imports %}{% if model %}from .{{ model.lower() }} import {{ classname }}{% endif %}
 {% endfor %}
 {% if base %}from {{ base[0] }} import {{ base[1] }}\n\n{% endif %}
-class {{ model.capitalize() }}({% if base %}{{ base[1] }}{% else %}models.Model{% endif %}):
+class {{ classname }}({% if base %}{{ base[1] }}{% else %}models.Model{% endif %}):
     {% for field in fields %}{{ field }}
     {% endfor %}
     class Meta:
@@ -136,4 +136,4 @@ class User(AbstractUser):
         return self.username
 """)
 
-model_import_template = Template("""from .{{ model.lower() }} import {{ model.capitalize() }}""")
+model_import_template = Template("""from .{{ model.lower() }} import {{ classname }}""")
