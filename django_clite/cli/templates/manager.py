@@ -1,16 +1,7 @@
 from jinja2 import Template
 
-manager_template = Template("""from django.db import models, transaction
-
-
-class Custom{{ classname }}QuerySet(models.QuerySet):
-    # Available on both Manager and QuerySet.
-    def public_method(self):
-        raise NotImplementedError
-
-    # Available only on QuerySet.
-    def _private_method(self):
-        raise NotImplementedError
+manager_template = Template("""from django.db import models
+from django.db.models import Q
 
 
 class {{ classname }}Manager(models.Manager):
@@ -27,10 +18,11 @@ class {{ classname }}Manager(models.Manager):
 
     def get_queryset(self):
         return super().get_queryset()
-
-    @transaction.atomic
-    def create_{{ model.lower() }}(self, **kwargs):
-        raise NotImplementedError
+        
+    def get_for_user(self, user):
+        return self.get_queryset().filter(
+            user=user
+        )
 """)
 
 
