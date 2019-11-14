@@ -109,7 +109,7 @@ class CreatorHelper(object):
             os.chdir(DEFAULT_PREVIOUS_WD)
 
         try:
-            if kwargs['custom_auth']:
+            if kwargs['is_auth']:
                 cls.handle_custom_auth(**kwargs)
         except KeyError:
             pass
@@ -210,9 +210,13 @@ class CreatorHelper(object):
             # Update settings file
             cls.handle_settings(**kwargs)
 
+        # Create project apps
         if kwargs['apps']:
             for app in kwargs['apps']:
                 cls.create_app(app_name=app, **kwargs)
+
+        if kwargs['default'] or kwargs['custom_auth']:
+            cls.create_app(app_name='authentication', is_auth=True, **kwargs)
 
         # cd ../../
         os.chdir(DEFAULT_PREVIOUS_WD)
