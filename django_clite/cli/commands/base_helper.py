@@ -22,7 +22,7 @@ class BaseHelper(object):
 
     @classmethod
     def add_import(cls, **kwargs):
-        content = None
+        template = kwargs['template']
 
         try:
             is_dry = kwargs['dry']
@@ -32,7 +32,6 @@ class BaseHelper(object):
         if not is_dry:
             filename = '__init__.py'
             path = kwargs['path']
-            template = kwargs['template']
 
             try:
                 content = template.render(**kwargs)
@@ -55,7 +54,12 @@ class BaseHelper(object):
                     file.write('\n')
                 file.close()
             except FileNotFoundError:
-                raise FileNotFoundError
+                with open(filename, 'w') as file:
+                    file.write(content)
+                    file.write('\n')
+        else:
+            content = template.render(**kwargs)
+            cls.log_dry(**kwargs, content=content)
 
         return content
 
@@ -162,6 +166,8 @@ class BaseHelper(object):
                 filename=kwargs['filename'],
                 file_content=content
             )
+            return True
+        return False
 
     @classmethod
     def remove_import(cls, **kwargs):
