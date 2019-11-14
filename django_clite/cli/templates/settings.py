@@ -88,18 +88,17 @@ INSTALLED_APPS = [
     'ckeditor',
     'debug_toolbar',
 
-    {% if apps %}{% for app in apps %}
-    '{{ project_name }}.{{ app }}',\n{% endfor %}
-    {% endif %}
+    {% if apps %}# {{ project_name }} apps{% for app in apps %}
+    '{{ project_name }}.{{ app }}',{% endfor %}{% endif %}
 ]
 
 MIDDLEWARE = [
     'django.contrib.sites.middleware.CurrentSiteMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.cache.UpdateCacheMiddleware',
+    # 'django.middleware.cache.UpdateCacheMiddleware', # <-- Caching
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.cache.FetchFromCacheMiddleware',
+    # 'django.middleware.cache.FetchFromCacheMiddleware', # <-- Caching
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
@@ -114,10 +113,8 @@ ROOT_URLCONF = '{{ project_name }}.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [
-            {% if apps %}{% for app in apps %}
-            os.path.join(BASE_DIR, '{{ project_name }}/{{ app }}/templates'),\n{% endfor %}
-            {% endif %}
+        'DIRS': [{% if apps %}{% for app in apps %}
+            os.path.join(BASE_DIR, '{{ project_name }}/{{ app }}/templates'),{% endfor %}{% endif %}
         ],
         'APP_DIRS': True,
         'OPTIONS': {
@@ -217,9 +214,7 @@ if DEBUG:
 
 # Password validation
 
-{% if custom_auth %}
 AUTH_USER_MODEL = 'authentication.User'
-{% endif %}
 
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
@@ -347,7 +342,6 @@ sentry_sdk.init(
         RedisIntegration()
     ]
 )
-
 """)
 
 storages_template = Template("""# Storage Backends for {{ project_name }}
