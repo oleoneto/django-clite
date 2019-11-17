@@ -17,6 +17,7 @@ CONTEXT_SETTINGS = dict(token_normalize_func=lambda x: x.lower())
 
 
 @click.command(cls=AliasedGroup)
+@click.version_option()
 @click.pass_context
 def main(ctx):
     """
