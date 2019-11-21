@@ -1,0 +1,1 @@
+{{ name }} = {% if not special %}models.{% endif %}{{ type }}({{ options }}, verbose_name=_('{{ lazy_name }}'))

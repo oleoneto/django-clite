@@ -7,7 +7,7 @@ with open("README.md", "r") as f:
 
 setup(
     name="django-clite",
-    version="0.1.0-beta.7",
+    version="0.1.0-beta.8",
     author="Leo Neto",
     author_email="leo@ekletik.com",
     url="https://bitbucket.org/oleoneto/django-clite",
@@ -34,10 +34,12 @@ setup(
     license="BSD",
     install_requires=[
         'Click==7.0',
+        'click-repl==0.1.6',
         'jinja2',
         'inflection',
         'django>=2.2.4',
-        'tox'
+        'tox',
+        'pytest==5.3.0',
     ],
     zip_safe=False,
     include_package_data=True,
