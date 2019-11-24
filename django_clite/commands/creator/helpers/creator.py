@@ -133,7 +133,8 @@ class CreatorHelper(FSHelper):
             names=TEMPLATES,
             directory=TEMPLATE_DIR,
             context={
-                'project': project
+                'project': project,
+                'apps': apps,
             }
         )
 
