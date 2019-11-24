@@ -44,7 +44,7 @@ DOKKU_TEMPLATES = {
 
 TOP_LEVEL_TEMPLATES = {
     'CHECKS': 'dokku_checks.tpl',
-    'dockerfile-compose.yml': 'docker-compose.tpl',
+    'docker-compose.yml': 'docker-compose.tpl',
     'Pipfile': 'Pipfile.tpl',
     'README.md': 'README.tpl',
     '.env': 'env.tpl',

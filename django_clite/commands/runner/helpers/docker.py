@@ -18,7 +18,7 @@ class DockerHelper(RunnerHelper):
     def create_compose(self, project, **kwargs):
 
         template = 'docker-compose.tpl'
-        filename = 'dockerfile-compose.yml'
+        filename = 'docker-compose.yml'
 
         try:
             os.chdir(project)
