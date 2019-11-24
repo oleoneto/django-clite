@@ -1,7 +1,7 @@
 from click.testing import CliRunner
 
-import pytest
+# import pytest
 
-@pytest.fixture(scope='function')
-def runner(request):
-    return CliRunner()
+# @pytest.fixture(scope='function')
+# def runner(request):
+#     return CliRunner()

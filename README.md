@@ -93,10 +93,10 @@ To create a new project, simply run `D create project project_name`. This comman
 **--flags:**
 
 ```
---docker       Add support for Docker
---dokku        Add support for Dokku
+--docker       Add support for Docker.
+--dokku        Add support for Dokku.
 --custom-auth  Add support for custom AUTH_USER_MODEL
---default      Apply all default options
+--default      Apply all default options.
 ```
 
 The `--docker` flag will create a `Dockerfile` as well as a `docker-compose.yml` file within your project. 
@@ -116,39 +116,42 @@ AUTH_USER_MODEL = 'authentication.User'
 
 #### Project structure
 This CLI makes some assumptions about the structure of your Django project.
-1. It assumes that your apps are one level below the root of your project directory, one level below where `manage.py` is. For example:
+1. It assumes that your apps are one level below the root of your project directory, one level below where `manage.py` is.
+For example, here's a project generated with defaults:
 ```
-mywebsite
-├── mywebsite
+mysite
+├── mysite
+│   ├── myapp
 │   ├── __init__.py
-│   ├── blog
-│   ├── radio
 │   ├── settings.py
+│   ├── storage.py
 │   ├── urls.py
 │   └── wsgi.py
 ├── .env
+├── .env-example
 ├── manage.py
 ├── Pipfile
-├── Pipfile.lock
 └── requirements.txt
 ```
 
 2. It assumes that your app resources are grouped together by type in packages. For example:
 ```
 radio
-├── __init__.py
 ├── admin
-├── apps.py
+├── fixtures
 ├── forms
 ├── middleware
 ├── migrations
 ├── models
+│   ├── tests
 ├── serializers
+│   ├── tests
 ├── templates
-├── tests
-├── urls.py
 ├── views
-└── viewsets
+├── viewsets
+├── __init__.py
+├── apps.py
+└── urls.py
 ```
 
 3. Each class representing a `model`, `serializer`, `viewset`, or `form` is located in its own Python module. For example:
@@ -195,17 +198,18 @@ This would add the following model `album.py` under the `models` directory:
 ```python
 import uuid
 from django.db import models
+from django.utils.translation import gettext_lazy as _
 
 
 class Album(models.Model):
-    title = models.TextField(blank=True)
-    artwork = models.ImageField(blank=True, upload_to='uploads')
-    compilation = models.BooleanField(default=False)
-
+    title = models.TextField(blank=True, verbose_name=_('title'))
+    artwork = models.ImageField(blank=True, upload_to='uploads/artworks/', verbose_name=_('artwork'))
+    is_compilation = models.BooleanField(default=False, verbose_name=_('is compilation'))
+    
     # Default fields. Used for record-keeping.
     uuid = models.UUIDField(default=uuid.uuid4, editable=False)
-    created_at = models.DateTimeField(auto_now_add=True, editable=False)
-    updated_at = models.DateTimeField(auto_now=True, editable=False)
+    created_at = models.DateTimeField(_('created at'), auto_now_add=True, editable=False)
+    updated_at = models.DateTimeField(_('uploaded at'), auto_now=True, editable=False)
 
     class Meta:
         db_table = 'radio_albums'
@@ -215,7 +219,7 @@ class Album(models.Model):
           super().save(*args, **kwargs)
 
     def __str__(self):
-        return f'{self.uuid}
+        return f'{self.uuid}'
 ```
 As in the example above, the database table name is derived from both the app name (`radio`) and the model name (`album`).
 
@@ -240,6 +244,7 @@ Will generate the following model:
 ```python
 import uuid
 from django.db import models
+from django.utils.translation import gettext_lazy as _
 from .audio import Audio
 
 
@@ -266,16 +271,18 @@ What the output would look like:
 ```python
 import uuid
 from django.db import models
+from django.utils.translation import gettext_lazy as _
 from .album import Album
 
-class Track(models.Model):
-    title = models.CharField(max_length=100)
-    album = models.ForeignKey(Album, related_name='tracks', on_delete=models.PROTECT)
 
+class Track(models.Model):
+    title = models.CharField(max_length=100, verbose_name=_('title'))
+    album = models.ForeignKey(Album, related_name='tracks', on_delete=models.PROTECT, verbose_name=_('album'))
+    
     # Default fields. Used for record-keeping.
     uuid = models.UUIDField(default=uuid.uuid4, editable=False)
-    created_at = models.DateTimeField(auto_now_add=True, editable=False)
-    updated_at = models.DateTimeField(auto_now=True, editable=False)
+    created_at = models.DateTimeField(_('created at'), auto_now_add=True, editable=False)
+    updated_at = models.DateTimeField(_('uploaded at'), auto_now=True, editable=False)
 
     class Meta:
         db_table = 'radio_tracks'
@@ -473,7 +480,7 @@ Commands:
   server      Runs the development server or another one of choice.
 ```
 
-### Exporting Environment Variables
+#### Exporting Environment Variables
 Use this command to export environment variables to an example file or a **dokku** config file.
 ```bash
 D run export-env

@@ -1,4 +1,0 @@
-
-
-class DockerHelper(object):
-    pass
