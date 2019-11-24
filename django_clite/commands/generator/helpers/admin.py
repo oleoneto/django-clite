@@ -1,8 +1,6 @@
 import os
 import inflection
 from django_clite.helpers.logger import *
-from django_clite.helpers import sanitized_string
-from django_clite.helpers import rendered_file_template
 from django_clite.helpers import FSHelper
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__)).rsplit('/', 1)[0]

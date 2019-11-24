@@ -89,13 +89,36 @@ def deploy(ctx):
     pass
 
 
-# @run.command()
+@run.command()
 @click.pass_context
 def docker(ctx):
     """
     Run project from within a Docker container.
     """
-    pass
+
+    helper = DockerHelper(cwd=ctx.obj['path'])
+
+
+@run.command()
+@click.pass_context
+def create_dockerfile(ctx):
+    """
+    Creates a Dockerfile for this project.
+    """
+
+    h = DockerHelper(cwd=ctx.obj['path'])
+    h.create_dockerfile(project=ctx.obj['project_name'])
+
+
+@run.command()
+@click.pass_context
+def create_docker_compose(ctx):
+    """
+    Creates a docker-compose for this project.
+    """
+
+    h = DockerHelper(cwd=ctx.obj['management'])
+    h.create_compose(project=ctx.obj['project_name'])
 
 
 @run.command()
