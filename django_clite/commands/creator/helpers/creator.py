@@ -20,20 +20,15 @@ TEMPLATE_DIR = os.path.join(BASE_DIR, 'templates')
 
 TEMPLATES = [f for f in os.listdir(TEMPLATE_DIR) if f.endswith('tpl')]
 
+CURRENT_WORKING_DIRECTORY = '.'
+
+PREVIOUS_WORKING_DIRECTORY = '..'
+
 DEFAULT_APP_PACKAGES = {
     'admin', 'fixtures', 'forms',
     'middleware', 'models', 'serializers',
     'templates', 'views', 'viewsets'
 }
-
-UNWANTED_FILES = {
-    'admin.py', 'models.py',
-    'tests.py', 'views.py', '__init__.py'
-}
-
-CURRENT_WORKING_DIRECTORY = '.'
-
-PREVIOUS_WORKING_DIRECTORY = '..'
 
 DOKKU_TEMPLATES = {
     'app.json': 'app_json.tpl',
@@ -56,6 +51,16 @@ INNER_LEVEL_TEMPLATES = {
     'Dockerfile': 'dockerfile.tpl',
     'settings_override.py': 'settings.tpl',
     'storage.py': 'storage.tpl',
+}
+
+UNWANTED_FILES = {
+    'apps.py', 'admin.py', 'models.py',
+    'tests.py', 'views.py', '__init__.py'
+}
+
+APP_TEMPLATES = {
+    'urls.py': 'urls.tpl',
+    'apps.py': 'apps.tpl'
 }
 
 
@@ -244,22 +249,20 @@ class CreatorHelper(FSHelper):
         except FileNotFoundError:
             pass
 
-        # Parse template for urls.py module
+        # Parse templates for apps.py and urls.py
         try:
-            index = TEMPLATES.index('urls.tpl')
-            template = TEMPLATES[index]
+            for filename, template in APP_TEMPLATES.items():
+                content = rendered_file_template(
+                    path=TEMPLATE_DIR,
+                    template=template,
+                    context={'project': project, 'app': app}
+                )
 
-            content = rendered_file_template(
-                path=TEMPLATE_DIR,
-                template=template,
-                context={'project': project, 'app': app}
-            )
-
-            self.create_file(
-                path=os.getcwd(),
-                filename='urls.py',
-                content=content
-            )
+                self.create_file(
+                    path=os.getcwd(),
+                    filename=filename,
+                    content=content
+                )
         except OSError:
             pass
 
