@@ -90,43 +90,6 @@ def deploy(ctx):
 
 
 @run.command()
-@click.option('--create-config', is_flag=True, help='Create Dockerfile and docker-compose.yml')
-@click.pass_context
-def docker(ctx, create_config):
-    """
-    Run project from within a Docker container.
-    """
-
-    _ = DockerHelper(cwd=ctx.obj['path'])
-
-    if create_config:
-        ctx.invoke(create_dockerfile)
-        ctx.invoke(create_docker_compose)
-
-
-@run.command()
-@click.pass_context
-def create_dockerfile(ctx):
-    """
-    Creates a Dockerfile for this project.
-    """
-
-    h = DockerHelper(cwd=ctx.obj['management'])
-    h.create_dockerfile(project=ctx.obj['project_name'])
-
-
-@run.command()
-@click.pass_context
-def create_docker_compose(ctx):
-    """
-    Creates a docker-compose for this project.
-    """
-
-    h = DockerHelper(cwd=ctx.obj['management'])
-    h.create_compose(project=ctx.obj['project_name'])
-
-
-@run.command()
 @click.pass_context
 @click.option('-f', '--filepath', type=click.Path(exists=True), required=False, help='Path to environment file.')
 @click.option('--no-dokku', is_flag=True, help='Skip dokku export.')
@@ -260,3 +223,41 @@ def update_setting(ctx, key, value):
         parameter=key,
         path=ctx.obj['path']
     )
+
+
+@click.group()
+@click.option('--create-config', is_flag=True, help='Create Dockerfile and docker-compose.yml')
+@click.pass_context
+def docker(ctx, create_config):
+    """
+    Run Docker-related options for your project.
+    """
+
+    _ = DockerHelper(cwd=ctx.obj['path'])
+
+
+@docker.command()
+@click.pass_context
+def create_dockerfile(ctx):
+    """
+    Creates a Dockerfile for this project.
+    """
+
+    h = DockerHelper(cwd=ctx.obj['management'])
+
+    return h.create_dockerfile(project=ctx.obj['project_name'])
+
+
+@docker.command()
+@click.pass_context
+def create_compose(ctx):
+    """
+    Creates a docker-compose file for this project.
+    """
+
+    h = DockerHelper(cwd=ctx.obj['management'])
+
+    return h.create_compose(project=ctx.obj['project_name'])
+
+
+run.add_command(docker)
