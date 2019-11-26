@@ -90,13 +90,18 @@ def deploy(ctx):
 
 
 @run.command()
+@click.option('--create-config', is_flag=True, help='Create Dockerfile and docker-compose.yml')
 @click.pass_context
-def docker(ctx):
+def docker(ctx, create_config):
     """
     Run project from within a Docker container.
     """
 
-    helper = DockerHelper(cwd=ctx.obj['path'])
+    _ = DockerHelper(cwd=ctx.obj['path'])
+
+    if create_config:
+        ctx.invoke(create_dockerfile)
+        ctx.invoke(create_docker_compose)
 
 
 @run.command()
@@ -106,7 +111,7 @@ def create_dockerfile(ctx):
     Creates a Dockerfile for this project.
     """
 
-    h = DockerHelper(cwd=ctx.obj['path'])
+    h = DockerHelper(cwd=ctx.obj['management'])
     h.create_dockerfile(project=ctx.obj['project_name'])
 
 
