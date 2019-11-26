@@ -5,11 +5,8 @@ services:
     container_name: "{{ project }}-web"
     labels:
         com.{{ project }}.web.description = "{{ project }}: Web Application"
-    build: ./application
-    volumes:
-        - ./application/:code/
-        - static_volume:/var/www/static
-        - media_volume:/var/www/media
+    build: ./
+    command: gunicorn {{ project }}.wsgi:application --bind 0.0.0.0:8000 --workers 3
     ports:
         - "8093:8000"
     networks:
@@ -18,7 +15,6 @@ services:
         - .env
     depends_on:
         - db
-    command: gunicorn {{ project }}.wsgi:application --bind 0.0.0.0:8000 --workers 3
 
 
   db:
@@ -29,6 +25,11 @@ services:
       - postgres_data:/var/lib/postgresql/data/
     networks:
         - {{ project }}_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_ready -U postgres"]
+      interval: 10s
+      timeout: 83s
+      retries: 40
     restart: always
 
 
@@ -37,9 +38,6 @@ services:
     labels:
         com.{{ project }}.nginx.description: "{{ project }}: Proxy Server"
     image: nginx:1.15.0-alpine
-    volumes:
-      - static_volume:/var/www/static
-      - media_volume:/var/www/media
     ports:
       - 1337:80
     depends_on:
@@ -52,7 +50,11 @@ services:
     expose:
       - "6379"
 
+
+networks:
+  {{ project }}_network:
+    driver: bridge
+
+
 volumes:
   postgres_data:
-  static_volume:
-  media_volume:
