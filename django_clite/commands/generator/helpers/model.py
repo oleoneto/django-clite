@@ -74,7 +74,7 @@ DEFAULT_MODEL_OPTIONS = {
     'SlugField': 'unique=True',
     'TextField': 'blank=True',
     'TimeField': 'auto_now=True',
-    'URLlField': '',
+    'URLField': '',
     'UUIDField': 'default=uuid.uuid4, editable=False',
 }
 
