@@ -24,8 +24,9 @@ A CLI tool that handles creating and managing Django projects
       - [Generating Complete Resources](#generating-complete-resources)
     - [Destroyer](#destroyer)
     - [Run](#run)
+      - [Docker Containers](#running-docker-containers)
       - [Exporting Environment Variables](#exporting-environment-variables)
-      - [Running The Django Server](#running-the-django-server)
+      - [Server](#running-the-django-server)
   - [To Do](#to-do)
   - [Pull requests](#pull-requests)
   - [LICENSE](#license)
@@ -309,7 +310,6 @@ Use either of the following identifiers to specify relationships:
     - one
     - onetoone
 
-
 #### Generating Serializers and Viewsets
 If you are working on an API and use the `Django REST Framework` to support your backend, you can also use the `django-clite` to create `serializers` and `viewsets`.
 
@@ -389,7 +389,7 @@ Specifying a flag of `--list` will generate a ListView as the one below. The `de
 
 ```python
 from django.utils import timezone
-from django.view.generic.list import ListView
+from django.views.generic.list import ListView
 from ..models import Album
 
 class AlbumListView(ListView):
@@ -476,8 +476,23 @@ The `--full` flag will ensure all related modules (forms, serializers... etc) ar
 Run maintenance, development, and deployment scripts.
 ```
 Commands:
-  export-env  Export environment variables.
-  server      Runs the development server or another one of choice.
+  docker                 Run project from within a Docker container.
+  export-env             Export environment variables.
+  server                 Runs the development server.
+```
+
+#### Running Docker Containers
+```bash
+D run docker
+```
+Use this command to build and start a container for your project.
+
+```bash
+Sub-commands:
+  build              Build Docker container for this project.
+  create-compose     Creates a docker-compose file for this project.
+  create-dockerfile  Creates a Dockerfile for this project.
+  start              Start Docker container for this project.
 ```
 
 #### Exporting Environment Variables
@@ -504,7 +519,6 @@ If your environment file is somewhere else, you can specify its path (or just it
 D run export-env -f /path/to/environment
 ```
 
-
 #### Running The Django Server
 Use this command to run the Django's default server from mostly
 anywhere inside your project. Run it like so:
@@ -517,9 +531,8 @@ You can also specify a port number. If none is specified, the command will use D
 D run server -p 3000
 ```
 
-
 ## To Do
-[Check open issues.](issues)
+[Check open issues.](/issues)
 
 ## Pull requests
 Found a bug? See a typo? Have an idea for new command? Feel free to submit a pull request with your contributions. They are much welcome.

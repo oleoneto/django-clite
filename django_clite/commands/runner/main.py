@@ -225,15 +225,44 @@ def update_setting(ctx, key, value):
     )
 
 
+#######################################
+
 @click.group()
 @click.option('--create-config', is_flag=True, help='Create Dockerfile and docker-compose.yml')
+@click.option('--verbose', is_flag=True, help='Run in verbose mode.')
 @click.pass_context
-def docker(ctx, create_config):
+def docker(ctx, verbose, create_config):
     """
     Run Docker-related options for your project.
     """
 
-    _ = DockerHelper(cwd=ctx.obj['path'])
+    ctx.obj['verbose'] = verbose
+
+    ctx.obj['docker'] = DockerHelper(cwd=ctx.obj['management'])
+
+    if create_config:
+        ctx.invoke(create_dockerfile)
+        ctx.invoke(create_compose)
+
+
+@docker.command()
+@click.pass_context
+def build(ctx):
+    """
+    Build Docker container for this project.
+    """
+
+    return ctx.obj['docker'].build(verbose=ctx.obj['verbose'])
+
+
+@docker.command()
+@click.pass_context
+def start(ctx):
+    """
+    Start Docker container for this project.
+    """
+
+    return ctx.obj['docker'].start(verbose=ctx.obj['verbose'])
 
 
 @docker.command()
@@ -243,9 +272,9 @@ def create_dockerfile(ctx):
     Creates a Dockerfile for this project.
     """
 
-    h = DockerHelper(cwd=ctx.obj['management'])
-
-    return h.create_dockerfile(project=ctx.obj['project_name'])
+    return ctx.obj['docker'].create_dockerfile(
+        project=ctx.obj['project_name']
+    )
 
 
 @docker.command()
@@ -255,9 +284,9 @@ def create_compose(ctx):
     Creates a docker-compose file for this project.
     """
 
-    h = DockerHelper(cwd=ctx.obj['management'])
-
-    return h.create_compose(project=ctx.obj['project_name'])
+    return ctx.obj['docker'].create_compose(
+        project=ctx.obj['project_name']
+    )
 
 
 run.add_command(docker)
