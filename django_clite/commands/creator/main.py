@@ -1,6 +1,8 @@
+import os
 import click
-from django_clite.helpers import *
+from django_clite.helpers import get_project_name
 from django_clite.helpers import find_project_files
+from django_clite.helpers.logger import *
 from .helpers import *
 
 
@@ -27,7 +29,11 @@ def create(ctx, dry, default):
         default=default
     )
 
-    ctx.obj['path'], _, ctx.obj['file'] = find_project_files(cwd='.')
+    p, m, f = find_project_files(os.getcwd())
+
+    ctx.obj['path'] = p
+    ctx.obj['file'] = f
+    ctx.obj['project_name'] = get_project_name(f)
 
 
 @create.command()
@@ -96,14 +102,18 @@ def app(ctx, apps, is_auth):
     wrong_place_warning(ctx)
 
     try:
-        project_name = get_project_name(find_first=True)
-    except ValueError:
+        project_name = ctx.obj['project_name']
+    except TypeError:
         log_error(DEFAULT_MANAGEMENT_ERROR)
         raise click.Abort()
 
     auth_application = None
 
-    os.chdir(project_name)
+    try:
+        os.chdir(ctx.obj['path'])
+    except TypeError:
+        log_error(DEFAULT_MANAGEMENT_ERROR)
+        raise click.Abort()
 
     if is_auth:
         auth_application = click.prompt(f"Which app will be used for authentication? {apps}")
