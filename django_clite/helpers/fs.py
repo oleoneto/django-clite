@@ -161,6 +161,14 @@ class FSHelper(object):
         :return: True if file is created. False otherwise
         """
 
+        if self.is_dry:
+            self.__log_dry(
+                path=path,
+                filename=filename,
+                content=content
+            )
+            return False
+
         path = path if path else self.__cwd
 
         try:
