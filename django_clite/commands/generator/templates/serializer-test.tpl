@@ -18,7 +18,7 @@ class {{ classname }}TestCase(APITestCase):
         user = get_user_model().objects.first()
 
         # API endpoint
-        self.namespace = '/{{ namespace }}'
+        self.namespace = '/v1/{{ namespace }}'
         self.client.force_authenticate(user=user)
 
     def test_create_{{ model.lower() }}(self):
