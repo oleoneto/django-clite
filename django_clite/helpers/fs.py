@@ -5,6 +5,8 @@ import fileinput
 import subprocess
 from .parser import sanitized_string
 from .templates import rendered_file_template
+from django_clite.helpers.finders import get_project_name
+from django_clite.helpers.finders import walk_up
 from .logger import *
 
 
@@ -31,11 +33,13 @@ class FSHelper(object):
         self.__project_name = None
         self.__cwd = cwd
         self.__default = default
-        self.__project_directory, \
-            self.__path_to_management_file, \
-            self.__management_file = self.find_project_files()
+        self.__project_directory = None
+        self.__path_to_management_file = None
+        self.__management_file = None
 
         self.__settings_file = self.find_settings_file()
+
+        self.find_project_files()
 
     def check_noun(self, noun):
         """
@@ -58,16 +62,15 @@ class FSHelper(object):
     # Class properties
 
     @property
-    def project_name(self):
-        return self.__project_name
-
-    @property
     def directory(self):
         return self.__project_directory
 
     @property
     def management_file(self):
-        return self.__management_file
+        print(self.__management_file)
+        return self.__management_file \
+            if self.__management_file \
+            else self.find_project_files()[-1]
 
     @property
     def settings_file(self):
@@ -81,9 +84,26 @@ class FSHelper(object):
     def is_force(self):
         return self.__force
 
-    @property
-    def cwd(self):
+    def get_cwd(self):
         return self.__cwd
+
+    def set_cwd(self, path):
+        self.__cwd = path
+
+    def get_project(self):
+        return self.__project_name \
+            if self.__project_name \
+            else get_project_name(
+                management_file=self.management_file,
+                find_first=True
+            )
+
+    def set_project(self, name):
+        self.__project_name = name
+
+    cwd = property(fget=get_cwd, fset=set_cwd)
+
+    project_name = property(fget=get_project, fset=set_project)
 
     ##################################
     # Writing to the file system
@@ -352,7 +372,7 @@ class FSHelper(object):
     ##################################
     # Locate files
 
-    def find_project_files(self):
+    def find_project_files(self, path=None):
         """
         Searches the set working directory for any of 4 key Django
         files to determine from where a command is being run:
@@ -363,40 +383,39 @@ class FSHelper(object):
         are always run in the correct directory and within a Django project.
         """
 
+        current_dir = path if path else self.__cwd
+
         code = 0
-        path_to_project = None
-        path_to_management_file = None
-        management_file = None
+        path = None
 
         levels = (
-            ('manage.py', 1),    # <-- project
+            ('manage.py', 1),  # <-- project
             ('settings.py', 2),  # <-- project/project
-            ('wsgi.py', 2),      # <-- project/project
-            ('apps.py', 3),      # <-- project/project/app
+            ('wsgi.py', 2),  # <-- project/project
+            ('apps.py', 3),  # <-- project/project/app
         )
 
         for filename, c in levels:
-            if filename in os.listdir(self.__cwd):
+            if filename in os.listdir(current_dir):
                 code = c
-                path_to_project = os.getcwd()
+                path = current_dir
 
         if code == 1:
-            path_to_management_file = path_to_project
-            path_to_project = f"{path_to_project}/{path_to_project.split('/')[-1]}"
-            management_file = os.path.join(path_to_management_file, 'manage.py')
-            self.__management_file = management_file
-        elif code == 2:
-            path_to_management_file = path_to_project.rsplit('/', 1)[0]
-            management_file = os.path.join(path_to_management_file, 'manage.py')
-            # self.__settings_file = os.path_to_project.join(path_to_project)
-            self.__management_file = management_file
-        elif code == 3:
-            path_to_management_file = path_to_project.rsplit('/', 2)[0]
-            path_to_project = path_to_project.rsplit('/', 1)[0]
-            management_file = os.path.join(path_to_management_file, 'manage.py')
-            self.__management_file = management_file
+            self.__project_directory = path
+            self.__management_file = os.path.join(
+                self.__project_directory, 'manage.py'
+            )
 
-        return path_to_project, path_to_management_file, management_file
+        elif code == 2 or code == 3:
+            for c, d, f in walk_up('.'):
+                if 'manage.py' in f:
+                    self.__project_directory = c
+                    self.__management_file = os.path.join(
+                        self.__project_directory, 'manage.py'
+                    )
+                    break
+
+        return path, self.__project_directory, self.__management_file
 
     def find_settings_file(self):
         """
