@@ -28,7 +28,10 @@ class TestHelper(FSHelper):
             template=template,
             template_import=template_import,
             scope='TestCase',
-            context={'model': model}
+            context={
+                'model': model,
+                'namespace': inflection.pluralize(model)
+            }
         )
 
     def delete(self, model, scope):
