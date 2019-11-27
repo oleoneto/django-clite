@@ -362,7 +362,11 @@ class ModelHelper(FSHelper):
             for line in fileinput.input('apps.py'):
                 if "name = " in line:
                     fileinput.close()
-                    return line.split(" = ")[1].lstrip().replace("\n", "").replace("'", "")
+                    return line.split(" = ")[-1]\
+                        .lstrip()\
+                        .replace("\n", "")\
+                        .replace("'", "")\
+                        .split('.')[-1]
             fileinput.close()
         except FileNotFoundError:
             return "app"
