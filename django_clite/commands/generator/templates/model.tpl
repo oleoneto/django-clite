@@ -1,9 +1,10 @@
 import uuid
 from django.db import models
 from django.utils.translation import gettext_lazy as _
-{% for model in imports %}{% if model %}from .{{ model[0] }} import {{ model[1] }}{% endif %}
-{% endfor %}
-{% if base %}from {{ base[0] }} import {{ base[1] }}\n\n{% endif %}
+{% for model in imports %}{% if model %}from {{ model[0] }} import {{ model[1] }}{% endif %}
+{% endfor %}{% if base %}from {{ base[0] }} import {{ base[1] }}
+{% endif %}
+
 class {{ classname }}({% if base %}{{ base[1] }}{% else %}models.Model{% endif %}):
     {% for field in fields %}{{ field }}
     {% endfor %}
@@ -14,8 +15,9 @@ class {{ classname }}({% if base %}{{ base[1] }}{% else %}models.Model{% endif %
 
     class Meta:
         db_table = '{{ db_table.lower() }}'
-        ordering = ['-created_at']
-        {% if abstract %}abstract = True\n{% endif %}
+        ordering = ['-created_at']{% if abstract %}
+        abstract = True{% endif %}
+
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
 
