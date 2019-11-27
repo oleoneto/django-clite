@@ -1,7 +1,9 @@
 import os
 import click
 from .helpers import *
-from django_clite.helpers.logger import log_error
+from django_clite.helpers.logger import log_error, log_standard
+from django_clite.helpers import get_project_name
+from django_clite.helpers import find_project_files
 
 
 def not_an_app_directory_warning():
@@ -21,6 +23,9 @@ def generate(ctx, dry, force):
     not_an_app_directory_warning()
 
     ctx.ensure_object(dict)
+
+    p, m, f = find_project_files(os.getcwd())
+
     ctx.obj['dry'] = dry
     ctx.obj['force'] = force
     ctx.obj['in_app'] = 'apps.py' in os.listdir('.')
@@ -38,6 +43,11 @@ def generate(ctx, dry, force):
     ctx.obj['templates'] = f"{os.getcwd()}/templates/"
     ctx.obj['views'] = f"{os.getcwd()}/views/"
     ctx.obj['viewsets'] = f"{os.getcwd()}/viewsets/"
+
+    if f is not None:
+        ctx.obj['project_name'] = get_project_name(f)
+    else:
+        ctx.obj['project_name'] = None
 
 
 @generate.command()
@@ -108,10 +118,11 @@ def manager(ctx, name):
 @click.option('--register-admin', is_flag=True, help="Register model to admin site.")
 @click.option('--register-inline', is_flag=True, help="Register model to admin site as inline.")
 @click.option('-i', '--inherits', required=False, help="Add model inheritance.")
+@click.option('--app', required=False, help="If base model inherits is in another app.")
 @click.argument("name", required=True)
 @click.argument("fields", nargs=-1, required=False)
 @click.pass_context
-def model(ctx, name, full, abstract, fields, register_admin, register_inline, test_case, inherits, view):
+def model(ctx, name, full, abstract, fields, register_admin, register_inline, test_case, inherits, app, view):
     """
     Generates a model under the models directory.
     One can specify multiple attributes after the model's name, like so:
@@ -121,6 +132,13 @@ def model(ctx, name, full, abstract, fields, register_admin, register_inline, te
     This will generate a Track model and add a foreign key of Album.
     If the model is to be added to admin.site one can optionally opt in by specifying the --register-admin flag.
     """
+
+    # Ensure --app is used only if --inherits is used
+    if app and not inherits:
+        log_error("You've specified an app inheritance scope but did not specify the model to inherit from.")
+        log_error("Please rerun the command like so:")
+        log_standard(f"D generate model {name} --inherits BASE_MODEL --app {app}")
+        raise click.Abort
 
     path = ctx.obj['models']
 
@@ -135,6 +153,8 @@ def model(ctx, name, full, abstract, fields, register_admin, register_inline, te
         abstract=abstract,
         fields=fields,
         inherits=inherits,
+        scope=app,
+        project=ctx.obj['project_name'],
         view=view
     )
 

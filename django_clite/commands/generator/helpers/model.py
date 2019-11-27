@@ -4,6 +4,7 @@ import inflection
 from django_clite.helpers.logger import *
 from django_clite.helpers import sanitized_string
 from django_clite.helpers import rendered_file_template
+from django_clite.helpers import get_project_name
 from django_clite.helpers import FSHelper
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__)).rsplit('/', 1)[0]
@@ -111,11 +112,14 @@ class ModelHelper(FSHelper):
 
         # Get name of the parent class for this model (if any)
         base_model = self.check_noun(kwargs['inherits']) if kwargs['inherits'] else None
+        scope = kwargs.get('scope', '')
+
+        self.project_name = kwargs.get('project') if kwargs.get('project') else self.project_name
 
         # Check if model is in the `special` category before
         # attempting to create a module for it if one is not found.
         if base_model is not None:
-            if not self.__append_special_import(base_model):
+            if not self.__append_special_import(base_model, scope=scope):
                 self.__find_resource_in_scope(base_model)
 
         # Get app name
@@ -328,11 +332,11 @@ class ModelHelper(FSHelper):
 
         return True
 
-    def __append_import(self, value):
+    def __append_import(self, value, scope=''):
         if value not in self.imports_list:
-            self.imports_list.append([f'{value}', f'{inflection.camelize(value)}'])
+            self.imports_list.append([f'{scope}.{value}', f'{inflection.camelize(value)}'])
 
-    def __append_special_import(self, value):
+    def __append_special_import(self, value, scope=''):
         """
         Creates an import statement for special inheritance.
 
@@ -347,7 +351,13 @@ class ModelHelper(FSHelper):
         else:
             model = inflection.camelize(inflection.underscore(value))
             value = inflection.underscore(value)
-            self.special_import = (f'.{value}', model)
+            if scope:
+                if self.project_name:
+                    self.special_import = (f'{self.project_name}.{scope}.models.{value}', model)
+                else:
+                    self.special_import = (f'{scope}.models.{value}', model)
+            else:
+                self.special_import = (f'.{value}', model)
         return False
 
     ####################################
