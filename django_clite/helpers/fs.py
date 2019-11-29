@@ -161,16 +161,18 @@ class FSHelper(object):
 
         content = f'# {project}:{kwargs.get("app")}:{package}'
 
+        top_directory = os.getcwd()
+
         os.mkdir(package)
         os.chdir(package)
 
         _ = self.create_file(
-            path=self.__cwd,
+            path=os.getcwd(),
             filename='__init__.py',
             content=content
         )
 
-        os.chdir(PREVIOUS_WORKING_DIRECTORY)
+        os.chdir(top_directory)
         return _
 
     def create_file(self, content, filename, path=None):
