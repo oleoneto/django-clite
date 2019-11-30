@@ -3,6 +3,7 @@ from django_clite.commands import create
 from django_clite.commands import destroy
 from django_clite.commands import generate
 from django_clite.commands import run
+from django_clite.commands import inspect
 
 
 __author__ = 'Leo Neto'
@@ -62,6 +63,7 @@ main.add_command(create)
 main.add_command(destroy)
 main.add_command(generate)
 main.add_command(run)
+main.add_command(inspect)
 
 if __name__ == '__main__':
     main()
