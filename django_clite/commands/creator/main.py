@@ -4,6 +4,8 @@ from django_clite.helpers import get_project_name
 from django_clite.helpers import find_project_files
 from django_clite.helpers.logger import *
 from .helpers import *
+from django_clite.commands.inspector.main import InspectorHelper
+from django_clite.commands.inspector.main import apps as inspect_apps
 
 
 def wrong_place_warning(ctx):
@@ -139,19 +141,29 @@ def app(ctx, apps, is_auth):
 
 
 @create.command()
+@click.option('--ignore-apps', is_flag=True, help="Do not add project apps to INSTALLED_APPS.")
 @click.pass_context
-def settings(ctx):
+def settings(ctx, ignore_apps):
     """
     Create settings file for project.
     """
 
     wrong_place_warning(ctx)
 
+    project_name = ctx.obj['project_name']
+
+    path = os.path.join(ctx.obj['management'], project_name)
+
     h = CreatorHelper(
-        cwd=ctx.obj['management'],
+        cwd=path,
         dry=ctx.obj['dry'],
         default=ctx.obj['default'],
         verbose=ctx.obj['verbose']
     )
 
-    h.create_settings(project=ctx.obj['project_name'])
+    if not ignore_apps:
+        ctx.obj['helper'] = InspectorHelper(cwd=ctx.obj['management'])
+        apps = ctx.invoke(inspect_apps, no_stdout=True)
+        h.create_settings(project=ctx.obj['project_name'], apps=apps)
+    else:
+        h.create_settings(project=ctx.obj['project_name'])

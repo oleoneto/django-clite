@@ -321,23 +321,23 @@ class CreatorHelper(FSHelper):
             'viewsets': f'{base}/viewsets'
         }
 
-        # AdminHelper(cwd=paths['admin']).create_auth_user()
-        # FormHelper(cwd=paths['forms']).create_auth_user()
+        AdminHelper(cwd=paths['admin']).create_auth_user()
+        FormHelper(cwd=paths['forms']).create_auth_user()
         ModelHelper(cwd=paths['models']).create_auth_user()
-        # SerializerHelper(cwd=paths['serializers']).create_auth_user()
-        # ViewSetHelper(cwd=paths['viewsets']).create(model='user')
+        SerializerHelper(cwd=paths['serializers']).create_auth_user()
+        ViewSetHelper(cwd=paths['viewsets']).create(model='user')
 
-        # TestHelper(cwd=paths['models_test']).create_auth_user(scope='model')
-        # TestHelper(cwd=paths['serializers_test']).create_auth_user(scope='serializer')
+        TestHelper(cwd=paths['models_test']).create_auth_user(scope='model')
+        TestHelper(cwd=paths['serializers_test']).create_auth_user(scope='serializer')
 
-    def create_settings(self, project):
+    def create_settings(self, project, apps=None):
         template = 'settings.tpl'
         filename = 'settings_override.py'
 
         content = rendered_file_template(
             path=TEMPLATE_DIR,
             template=template,
-            context={'project': project}
+            context={'project': project, 'apps': apps}
         )
 
         return self.create_file(
