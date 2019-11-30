@@ -27,6 +27,8 @@ def inspect(ctx):
     ctx.obj['management'] = m
     ctx.obj['project_name'] = get_project_name(f)
 
+    wrong_place_warning(ctx)
+
     ctx.obj['helper'] = InspectorHelper(cwd=m)
 
 
@@ -38,8 +40,6 @@ def apps(ctx, paths, no_stdout):
     """
     Show your project apps.
     """
-
-    wrong_place_warning(ctx)
 
     return ctx.obj['helper'].get_apps(
         show_paths=paths,
@@ -53,7 +53,5 @@ def models(ctx):
     """
     Show your project models.
     """
-
-    wrong_place_warning(ctx)
 
     return ctx.obj['helper'].get_models()
