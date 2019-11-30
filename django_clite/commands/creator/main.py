@@ -7,14 +7,17 @@ from .helpers import *
 
 
 def wrong_place_warning(ctx):
-    return True if ctx.obj['path'] else False
+    if (ctx.obj['path'] and ctx.obj['project_name']) is None:
+        log_error(DEFAULT_MANAGEMENT_ERROR)
+        raise click.Abort
 
 
 @click.group()
 @click.pass_context
 @click.option('--dry', is_flag=True, help="Display output without creating files.")
 @click.option('--default', is_flag=True, help="Apply all default configurations.")
-def create(ctx, dry, default):
+@click.option('--verbose', is_flag=True, help="Run in verbose mode.")
+def create(ctx, dry, default, verbose):
     """
     Creates projects and apps.
     """
@@ -22,17 +25,20 @@ def create(ctx, dry, default):
 
     ctx.obj['dry'] = dry
     ctx.obj['default'] = default
+    ctx.obj['verbose'] = verbose
 
     ctx.obj['helper'] = CreatorHelper(
-        cwd='.',
+        cwd=os.getcwd(),
         dry=dry,
-        default=default
+        default=default,
+        verbose=verbose
     )
 
     p, m, f = find_project_files(os.getcwd())
 
     ctx.obj['path'] = p
     ctx.obj['file'] = f
+    ctx.obj['management'] = m
     ctx.obj['project_name'] = get_project_name(f)
 
 
@@ -101,26 +107,26 @@ def app(ctx, apps, is_auth):
 
     wrong_place_warning(ctx)
 
-    try:
-        project_name = ctx.obj['project_name']
-    except TypeError:
-        log_error(DEFAULT_MANAGEMENT_ERROR)
-        raise click.Abort()
+    project_name = ctx.obj['project_name']
+
+    path = os.path.join(ctx.obj['management'], project_name)
+
+    helper = CreatorHelper(
+        cwd=path,
+        dry=ctx.obj['dry'],
+        default=ctx.obj['default'],
+        verbose=ctx.obj['verbose']
+    )
 
     auth_application = None
 
-    try:
-        os.chdir(ctx.obj['path'])
-    except TypeError:
-        log_error(DEFAULT_MANAGEMENT_ERROR)
-        raise click.Abort()
-
     if is_auth:
-        auth_application = click.prompt(f"Which app will be used for authentication? {apps}")
-        while auth_application not in apps:
-            auth_application = click.prompt(f"Please choose a valid option: {apps}")
-
-    helper = ctx.obj['helper']
+        if len(apps) == 1:
+            auth_application = apps[0]
+        else:
+            auth_application = click.prompt(f"Which app will be used for authentication? {apps}")
+            while auth_application not in apps:
+                auth_application = click.prompt(f"Please choose a valid option: {apps}")
 
     for name in apps:
         is_custom_app = (name == auth_application)
@@ -130,3 +136,22 @@ def app(ctx, apps, is_auth):
             app=name,
             auth=is_custom_app
         )
+
+
+@create.command()
+@click.pass_context
+def settings(ctx):
+    """
+    Create settings file for project.
+    """
+
+    wrong_place_warning(ctx)
+
+    h = CreatorHelper(
+        cwd=ctx.obj['management'],
+        dry=ctx.obj['dry'],
+        default=ctx.obj['default'],
+        verbose=ctx.obj['verbose']
+    )
+
+    h.create_settings(project=ctx.obj['project_name'])
