@@ -42,7 +42,7 @@ def log_error(message, **kwargs):
 
 
 def log_info(message, **kwargs):
-    click.secho(message=message, **kwargs, fg='yellow')
+    click.secho(message=message, **kwargs, fg='blue')
 
 
 def log_success(message, **kwargs):

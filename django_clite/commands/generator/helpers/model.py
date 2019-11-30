@@ -4,8 +4,9 @@ import inflection
 from django_clite.helpers.logger import *
 from django_clite.helpers import sanitized_string
 from django_clite.helpers import rendered_file_template
+from django_clite.helpers import walk_up
 from django_clite.helpers import get_project_name
-from django_clite.helpers import FSHelper
+from django_clite.helpers.fs import FSHelper, PREVIOUS_WORKING_DIRECTORY
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__)).rsplit('/', 1)[0]
 
@@ -362,12 +363,31 @@ class ModelHelper(FSHelper):
 
     ####################################
 
-    @classmethod
-    def __get_app_name(cls):
+    def __get_app_name(self):
         """
         Searches current directory for apps.py in order to
         retrieve the application name from it.
         """
+
+        # Assume cwd is *app/models
+        # walk up from the directory in search for apps.py and AppConfig
+        base = None
+
+        if self.verbose:
+            log_info(f"Searching for AppConfig at {os.getcwd()}")
+
+        for root, dirs, files in walk_up(os.getcwd()):
+            if "apps.py" in files:
+                base = root
+
+        if not base:
+            if self.verbose:
+                log_info(f"Cannot find for AppConfig for this app.")
+
+            return "app"
+
+        os.chdir(base)
+
         try:
             for line in fileinput.input('apps.py'):
                 if "name = " in line:
@@ -379,7 +399,9 @@ class ModelHelper(FSHelper):
                         .split('.')[-1]
             fileinput.close()
         except FileNotFoundError:
-            return "app"
+            pass
+
+        os.chdir(PREVIOUS_WORKING_DIRECTORY)
         return "app"
 
     ####################################
