@@ -21,7 +21,7 @@ class FSHelper(object):
     searching, creating, and deleting files.
     """
 
-    def __init__(self, cwd, dry=False, force=False, default=False):
+    def __init__(self, cwd, dry=False, force=False, default=False, verbose=False):
         """
         :param cwd: current working directory
         :param dry: specifies if file system should be changed
@@ -33,6 +33,7 @@ class FSHelper(object):
         self.__project_name = None
         self.__cwd = cwd
         self.__default = default
+        self.__verbose = verbose
         self.__project_directory = None
         self.__path_to_management_file = None
         self.__management_file = None
@@ -40,6 +41,8 @@ class FSHelper(object):
         self.__settings_file = self.find_settings_file()
 
         self.find_project_files()
+
+        os.chdir(self.__cwd)
 
     def check_noun(self, noun):
         """
@@ -67,7 +70,6 @@ class FSHelper(object):
 
     @property
     def management_file(self):
-        print(self.__management_file)
         return self.__management_file \
             if self.__management_file \
             else self.find_project_files()[-1]
@@ -101,9 +103,17 @@ class FSHelper(object):
     def set_project(self, name):
         self.__project_name = name
 
+    def get_verbose(self):
+        return self.__verbose
+
+    def set_verbose(self, verbose):
+        self.__verbose = verbose
+
     cwd = property(fget=get_cwd, fset=set_cwd)
 
     project_name = property(fget=get_project, fset=set_project)
+
+    verbose = property(fget=get_verbose, fset=set_verbose)
 
     ##################################
     # Writing to the file system
@@ -170,6 +180,9 @@ class FSHelper(object):
             content=content
         )
 
+        if self.__verbose:
+            log_info(f"Created package {package} at {os.getcwd()}")
+
         os.chdir(PREVIOUS_WORKING_DIRECTORY)
         return _
 
@@ -211,6 +224,10 @@ class FSHelper(object):
                 file.close()
                 os.chdir(path)
             return False
+
+        if self.verbose:
+            log_info(f"Created {filename} at {path}")
+
         return True
 
     def destroy_file(self, filename, path=None):
@@ -232,6 +249,10 @@ class FSHelper(object):
             except FileNotFoundError:
                 log_error(f"File {filename} does not exist.")
                 return False
+
+        if self.verbose:
+            log_info(f"Removed {filename} from {path}")
+
         return True
 
     def default_destroy_file(self, model, **kwargs):
@@ -293,6 +314,9 @@ class FSHelper(object):
                 file.write(content)
                 file.write('\n')
 
+        if self.verbose:
+            log_info(f"Added: {content} to {path}/{filename}")
+
         return content
 
     def remove_import(self, content, path=None, **kwargs):
@@ -321,6 +345,9 @@ class FSHelper(object):
                 for line in fileinput.FileInput(filename, inplace=1):
                     if line.rstrip():
                         print(line, end='')
+
+                if self.verbose:
+                    log_info(f"Removed: {content} from {path}/{filename}")
 
             except FileNotFoundError:
                 raise click.Abort
@@ -357,6 +384,10 @@ class FSHelper(object):
                 filename=file,
                 content=content,
             )
+
+            if self.verbose:
+                log_info(f"Created file {file} from {template}")
+
         return True
 
     def create_repository(self):

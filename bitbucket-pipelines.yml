@@ -2,13 +2,13 @@ image: python:3.7.3
 
 pipelines:
   branches:
-    development:
+    master:
       - step:
           caches:
             - pip
           script:
             - pip install pipenv --upgrade
-            - pipenv install --dev --deploy --system
+            - pipenv install --deploy
             - tox test
             - pipe: atlassian/pypi-publish:0.2.7
               variables:

@@ -8,12 +8,16 @@ from django.utils.translation import gettext_lazy as _
 def file_upload_path(instance, filename):
     name, extension = filename.split('.')
     filename = f'{instance.uuid}.{extension}'
-    return f'files/people/{filename}'
+    return f'people/{filename}'
 
 
 class User(AbstractUser):
     photo = models.ImageField(_('photo'), upload_to=file_upload_path, blank=True)
-    verified = models.BooleanField(_('verified'), default=False, help_text='Used')
+    has_verification = models.BooleanField(
+        default=False,
+        help_text='Used to distinguish between top accounts of interest',
+        verbose_name=_('has verification'),
+    )
 
     # Default fields. Used for record-keeping.
     uuid = models.UUIDField(default=uuid.uuid4, editable=False)
@@ -21,7 +25,7 @@ class User(AbstractUser):
     updated_at = models.DateTimeField(_('updated at'), auto_now=True, editable=False)
 
     class Meta:
-        db_table = 'authentication_users'
+        db_table = '{{ db_table.lower() }}'
         ordering = ['-created_at']
 
     @property

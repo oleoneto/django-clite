@@ -15,8 +15,9 @@ def not_an_app_directory_warning():
 @click.group()
 @click.option('--dry', is_flag=True, help="Display output without creating files.")
 @click.option('--force', is_flag=True, help="Override any conflicting files.")
+@click.option('--verbose', is_flag=True, help="Run in verbose mode.")
 @click.pass_context
-def generate(ctx, dry, force):
+def generate(ctx, dry, force, verbose):
     """
     Adds models, routes, and other resources
     """
@@ -28,6 +29,7 @@ def generate(ctx, dry, force):
 
     ctx.obj['dry'] = dry
     ctx.obj['force'] = force
+    ctx.obj['verbose'] = verbose
     ctx.obj['in_app'] = 'apps.py' in os.listdir('.')
     ctx.obj['cwd'] = os.getcwd()
     ctx.obj['admin'] = f"{os.getcwd()}/admin/"
@@ -67,7 +69,8 @@ def admin(ctx, name, inline):
     helper = AdminHelper(
         cwd=path,
         dry=ctx.obj['dry'],
-        force=ctx.obj['force']
+        force=ctx.obj['force'],
+        verbose=ctx.obj['verbose']
     )
 
     helper.create(model=name, inline=inline)
@@ -86,7 +89,8 @@ def form(ctx, name):
     helper = FormHelper(
         cwd=path,
         dry=ctx.obj['dry'],
-        force=ctx.obj['force']
+        force=ctx.obj['force'],
+        verbose=ctx.obj['verbose']
     )
 
     helper.create(model=name)
@@ -104,7 +108,8 @@ def manager(ctx, name):
     helper = ManagerHelper(
         cwd=path,
         dry=ctx.obj['dry'],
-        force=ctx.obj['force']
+        force=ctx.obj['force'],
+        verbose=ctx.obj['verbose']
     )
 
     helper.create(model=name)
@@ -122,7 +127,8 @@ def manager(ctx, name):
 @click.argument("name", required=True)
 @click.argument("fields", nargs=-1, required=False)
 @click.pass_context
-def model(ctx, name, full, abstract, fields, register_admin, register_inline, test_case, inherits, app, view):
+def model(ctx, name, full, abstract, fields, register_admin,
+          register_inline, test_case, inherits, app, view):
     """
     Generates a model under the models directory.
     One can specify multiple attributes after the model's name, like so:
@@ -146,6 +152,7 @@ def model(ctx, name, full, abstract, fields, register_admin, register_inline, te
         cwd=path,
         dry=ctx.obj['dry'],
         force=ctx.obj['force'],
+        verbose=ctx.obj['verbose']
     )
 
     helper.create(
@@ -233,7 +240,8 @@ def serializer(ctx, name):
     helper = SerializerHelper(
         cwd=path,
         dry=ctx.obj['dry'],
-        force=ctx.obj['force']
+        force=ctx.obj['force'],
+        verbose=ctx.obj['verbose']
     )
 
     helper.create(model=name)
@@ -254,7 +262,8 @@ def template(ctx, name):
     helper = TemplateHelper(
         cwd=path,
         dry=ctx.obj['dry'],
-        force=ctx.obj['force']
+        force=ctx.obj['force'],
+        verbose=ctx.obj['verbose']
     )
 
     helper.create(model=name)
@@ -275,7 +284,8 @@ def test(ctx, name, scope):
     helper = TestHelper(
         cwd=path,
         dry=ctx.obj['dry'],
-        force=ctx.obj['force']
+        force=ctx.obj['force'],
+        verbose=ctx.obj['verbose']
     )
 
     helper.create(model=name, scope=scope)
@@ -296,7 +306,8 @@ def view(ctx, name, class_type, t):
     helper = ViewHelper(
         cwd=path,
         dry=ctx.obj['dry'],
-        force=ctx.obj['force']
+        force=ctx.obj['force'],
+        verbose=ctx.obj['verbose']
     )
 
     helper.create(model=name, class_type=class_type)
@@ -319,7 +330,8 @@ def viewset(ctx, read_only, name):
     helper = ViewSetHelper(
         cwd=path,
         dry=ctx.obj['dry'],
-        force=ctx.obj['force']
+        force=ctx.obj['force'],
+        verbose=ctx.obj['verbose']
     )
 
     helper.create(
@@ -346,7 +358,8 @@ def sql_view(ctx, name, fields, source):
     helper = ModelHelper(
         cwd=path,
         dry=ctx.obj['dry'],
-        force=ctx.obj['force']
+        force=ctx.obj['force'],
+        verbose=ctx.obj['verbose']
     )
 
     helper.create(

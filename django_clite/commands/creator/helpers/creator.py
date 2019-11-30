@@ -72,8 +72,8 @@ class CreatorHelper(FSHelper):
     Class has access to file system through FSHelper.
     """
 
-    def __init__(self, cwd, dry=False, force=False, default=False):
-        super(CreatorHelper, self).__init__(cwd, dry, force, default)
+    def __init__(self, cwd, dry=False, force=False, default=False, verbose=False):
+        super(CreatorHelper, self).__init__(cwd, dry, force, default, verbose)
 
     def create_project(self, project, apps, **kwargs):
         """
@@ -153,12 +153,12 @@ class CreatorHelper(FSHelper):
             self.create_app(
                 project=project,
                 app='authentication',
-                custom_auth=True
+                auth=True
             )
 
             # Handle authentication app
             os.chdir('authentication')
-            self.__handle_custom_auth(**kwargs)
+            self.__handle_custom_auth(project=project, **kwargs)
             os.chdir(PREVIOUS_WORKING_DIRECTORY)
 
         # cd ../../
@@ -185,6 +185,10 @@ class CreatorHelper(FSHelper):
 
         # Package customizations
         os.chdir(package)
+
+        if self.verbose:
+            log_info(f"Performing customizations for {package}")
+
         self.create_package(project=project, package='helpers', app=app)
         if package == 'admin':
             self.create_package(project=project, package='actions', app=app)
@@ -216,6 +220,9 @@ class CreatorHelper(FSHelper):
 
         os.chdir(PREVIOUS_WORKING_DIRECTORY)
 
+        if self.verbose:
+            log_info(f"Finished customizing {package}")
+
     def create_app(self, project, app, auth=False, **kwargs):
         """
         :param project: name of django project
@@ -227,6 +234,9 @@ class CreatorHelper(FSHelper):
 
         project = sanitized_string(project)
         app = sanitized_string(app)
+
+        if self.verbose:
+            log_info(f"Creating {app} at {os.getcwd()}")
 
         # Create django application
         try:
@@ -242,12 +252,18 @@ class CreatorHelper(FSHelper):
         # Perform app customizations
         os.chdir(app)
 
+        if self.verbose:
+            log_info(f"Performing customizations for {app}")
+
         # Remove unwanted files
         try:
             for unwanted in UNWANTED_FILES:
                 os.remove(unwanted)
         except FileNotFoundError:
             pass
+
+        if self.verbose:
+            log_standard(f"Removed unwanted modules {UNWANTED_FILES}")
 
         # Parse templates for apps.py and urls.py
         try:
@@ -268,11 +284,20 @@ class CreatorHelper(FSHelper):
 
         # Create app-specific packages and module
         for package in DEFAULT_APP_PACKAGES:
-            self.create_app_package(
-                package=package,
-                project=project,
-                app=app
-            )
+            try:
+                self.create_app_package(
+                    package=package,
+                    project=project,
+                    app=app
+                )
+            except OSError as e:
+                log_error(f"Cannot create package: {package}\n{e}")
+
+        if auth:
+            if self.verbose:
+                log_info(f"Adding default User model for {app} app")
+
+            self.__handle_custom_auth(project=project, app=app)
 
         os.chdir(PREVIOUS_WORKING_DIRECTORY)
         log_success(DEFAULT_APP_CREATION_LOG.format(app))
@@ -280,6 +305,9 @@ class CreatorHelper(FSHelper):
         return True
 
     def __handle_custom_auth(self, **kwargs):
+
+        project = kwargs.get('project')
+        app = kwargs.get('app')
 
         base = os.getcwd()
 
@@ -301,3 +329,18 @@ class CreatorHelper(FSHelper):
 
         TestHelper(cwd=paths['models_test']).create_auth_user(scope='model')
         TestHelper(cwd=paths['serializers_test']).create_auth_user(scope='serializer')
+
+    def create_settings(self, project, apps=None):
+        template = 'settings.tpl'
+        filename = 'settings_override.py'
+
+        content = rendered_file_template(
+            path=TEMPLATE_DIR,
+            template=template,
+            context={'project': project, 'apps': apps}
+        )
+
+        return self.create_file(
+            content=content,
+            filename=filename,
+        )

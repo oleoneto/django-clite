@@ -9,5 +9,6 @@ from .finders import (
     get_app_name,
     get_project_name,
     save_to_settings,
-    replace_line
+    replace_line,
+    walk_up
 )
