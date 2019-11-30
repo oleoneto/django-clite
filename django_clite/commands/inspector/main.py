@@ -32,15 +32,19 @@ def inspect(ctx):
 
 @inspect.command()
 @click.option('--paths', is_flag=True, help="Show app paths.")
+@click.option('--no-stdout', is_flag=True, help="Do not print to stdout.")
 @click.pass_context
-def apps(ctx, paths):
+def apps(ctx, paths, no_stdout):
     """
     Show your project apps.
     """
 
     wrong_place_warning(ctx)
 
-    ctx.obj['helper'].get_apps(show_paths=paths)
+    return ctx.obj['helper'].get_apps(
+        show_paths=paths,
+        no_stdout=no_stdout
+    )
 
 
 @inspect.command()
@@ -52,4 +56,4 @@ def models(ctx):
 
     wrong_place_warning(ctx)
 
-    ctx.obj['helper'].get_models()
+    return ctx.obj['helper'].get_models()

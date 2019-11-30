@@ -5,11 +5,12 @@ from django_clite.helpers.logger import log_info, log_standard
 
 class InspectorHelper(FSHelper):
 
-    def get_apps(self, show_paths=False):
+    def get_apps(self, show_paths=False, no_stdout=False):
         """
         Traverse file system in search for AppConfig files.
 
         :param show_paths: Toggle showing the path to each app
+        :param no_stdout: Toggle printing to stdout
         :return: dictionary of app names and paths
         """
 
@@ -19,10 +20,13 @@ class InspectorHelper(FSHelper):
         }
 
         for app, path in sorted(current_apps.items()):
-            log_info(app)
+
+            if not no_stdout:
+                log_info(app)
 
             if show_paths:
-                log_standard(f"{path}")
+                if not no_stdout:
+                    log_standard(f"{path}")
 
         return current_apps
 
