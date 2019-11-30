@@ -8,7 +8,7 @@ pipelines:
             - pip
           script:
             - pip install pipenv --upgrade
-            - pipenv install --dev --deploy --system
+            - pipenv install --deploy
             - tox test
             - pipe: atlassian/pypi-publish:0.2.7
               variables:
