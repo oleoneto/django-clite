@@ -118,6 +118,7 @@ def get_project_name(management_file=None, find_first=False):
                     line = line.\
                         replace("'", "").\
                         replace(" ", "").\
+                        replace('"', "").\
                         split(',')[-1].\
                         split('.')[0]
                     return line
