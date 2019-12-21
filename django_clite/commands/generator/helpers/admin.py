@@ -12,7 +12,7 @@ TEMPLATES = [f for f in os.listdir(TEMPLATE_DIR) if f.endswith('tpl')]
 
 class AdminHelper(FSHelper):
 
-    def create(self, model, **kwargs):
+    def create(self, model, fields=None, **kwargs):
 
         scope = "Admin"
         template = 'admin.tpl' \
@@ -33,7 +33,7 @@ class AdminHelper(FSHelper):
             template=template,
             template_import=template_import,
             scope=scope.capitalize(),
-            context={'model': model}
+            context={'model': model, 'fields': fields, 'permissions': kwargs.get('permissions')}
         )
 
     def delete(self, model, **kwargs):

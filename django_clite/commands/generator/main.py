@@ -55,13 +55,17 @@ def generate(ctx, dry, force, verbose):
 @generate.command()
 @click.argument('name')
 @click.option('--inline', is_flag=True, help='Register admin model as inline.')
+@click.option('--stub-permissions', is_flag=True, help='Add permission stubs to admin model.')
+@click.argument("fields", nargs=-1, required=False)
 @click.pass_context
-def admin(ctx, name, inline):
+def admin(ctx, name, inline, fields, stub_permissions):
     """
     Generates an admin model within the admin package.
     """
 
     path = ctx.obj['admin']
+
+    fields = [f for f in fields]
 
     if inline:
         path = ctx.obj['admin_inlines']
@@ -73,7 +77,7 @@ def admin(ctx, name, inline):
         verbose=ctx.obj['verbose']
     )
 
-    helper.create(model=name, inline=inline)
+    helper.create(model=name, fields=fields, inline=inline, permissions=stub_permissions)
 
 
 @generate.command()
@@ -118,17 +122,17 @@ def manager(ctx, name):
 @generate.command()
 @click.option('-a', '--abstract', is_flag=True, help="Creates an abstract model type.")
 @click.option('-t', '--test-case', is_flag=True, help="Creates a TestCase for model.")
-@click.option('-v', '--view', is_flag=True, help="Make model an SQL view.")
 @click.option('-f', '--full', is_flag=True, help="Adds all related resources and TestCase")
 @click.option('--register-admin', is_flag=True, help="Register model to admin site.")
 @click.option('--register-inline', is_flag=True, help="Register model to admin site as inline.")
+@click.option('-m', '--is-user-managed', is_flag=True, help="Add created_by and updated_by fields.")
 @click.option('-i', '--inherits', required=False, help="Add model inheritance.")
 @click.option('--app', required=False, help="If base model inherits is in another app.")
 @click.argument("name", required=True)
 @click.argument("fields", nargs=-1, required=False)
 @click.pass_context
 def model(ctx, name, full, abstract, fields, register_admin,
-          register_inline, test_case, inherits, app, view):
+          register_inline, test_case, inherits, app, is_user_managed):
     """
     Generates a model under the models directory.
     One can specify multiple attributes after the model's name, like so:
@@ -155,18 +159,18 @@ def model(ctx, name, full, abstract, fields, register_admin,
         verbose=ctx.obj['verbose']
     )
 
-    helper.create(
+    model_fields = helper.create(
         model=name,
         abstract=abstract,
         fields=fields,
         inherits=inherits,
         scope=app,
         project=ctx.obj['project_name'],
-        view=view
+        is_user_managed=is_user_managed,
     )
 
     if register_admin or full:
-        ctx.invoke(admin, name=name)
+        ctx.invoke(admin, name=name, fields=model_fields)
 
     if register_inline or full:
         ctx.invoke(admin, name=name, inline=True)
@@ -178,18 +182,22 @@ def model(ctx, name, full, abstract, fields, register_admin,
         ctx.invoke(form, name=name)
         ctx.invoke(serializer, name=name)
         ctx.invoke(template, name=name)
-        ctx.invoke(view, name=name, list=True)
-        ctx.invoke(view, name=name, detail=True)
+        ctx.invoke(view, name=name, class_type="list")
+        ctx.invoke(view, name=name, class_type="detail")
         ctx.invoke(viewset, name=name)
+
+    # Retuning model fields
+    return model_fields
 
 
 @generate.command()
 @click.argument("name", required=True)
 @click.argument("fields", nargs=-1)
 @click.option('-i', '--inherits', required=False, help="Add model inheritance.")
+@click.option('-m', '--is-user-managed', is_flag=True, help="Add created_by and updated_by fields.")
 @click.option('--api', is_flag=True, help='Only add api-related files.')
 @click.pass_context
-def resource(ctx, name, fields, inherits, api):
+def resource(ctx, name, fields, inherits, api, is_user_managed):
     """
     Generates an app resource.
 
@@ -211,7 +219,8 @@ def resource(ctx, name, fields, inherits, api):
         register_inline=True,
         fields=fields,
         test_case=True,
-        inherits=inherits
+        inherits=inherits,
+        is_user_managed=is_user_managed,
     )
 
     ctx.invoke(serializer, name=name)

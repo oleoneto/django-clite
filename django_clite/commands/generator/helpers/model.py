@@ -5,7 +5,6 @@ from django_clite.helpers.logger import *
 from django_clite.helpers import sanitized_string
 from django_clite.helpers import rendered_file_template
 from django_clite.helpers import walk_up
-from django_clite.helpers import get_project_name
 from django_clite.helpers.fs import FSHelper, PREVIOUS_WORKING_DIRECTORY
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__)).rsplit('/', 1)[0]
@@ -87,6 +86,14 @@ DEFAULT_SPECIAL_INHERITABLE_TYPES = {
     'user': 'django.contrib.auth.models',
 }
 
+UNSUPPORTED_ADMIN_FIELD_TYPES = {
+    'FileField',
+    'FilePathField',
+    'ImageField',
+    'ManyToManyField',
+    'TextField'
+}
+
 
 class ModelHelper(FSHelper):
 
@@ -101,6 +108,9 @@ class ModelHelper(FSHelper):
 
     # List of special imports to be rendered in model template
     special_import = []
+
+    # List of fields for admin model
+    admin_fields_list = []
 
     ####################################
 
@@ -148,14 +158,16 @@ class ModelHelper(FSHelper):
                 'fields': self.fields_list,
                 'imports': self.imports_list,
                 'db_table': table_name,
-                'model': model
+                'model': model,
+                'model_plural': inflection.pluralize(model),
+                'is_user_managed': kwargs.get('is_user_managed'),
             }
         )
 
         # Ensure related models are created
         self.__handle_dependencies(app=app, **kwargs)
 
-        return
+        return self.admin_fields_list
 
     ####################################
 
@@ -231,6 +243,13 @@ class ModelHelper(FSHelper):
             else:
                 options = DEFAULT_MODEL_OPTIONS[field_type]
 
+                # Save model for admin list
+                log_error(field_name)
+                log_error(field_type)
+
+            if field_type not in UNSUPPORTED_ADMIN_FIELD_TYPES:
+                self.__append_admin_field(field_name)
+
             return rendered_file_template(
                 path=TEMPLATE_DIR,
                 template=template,
@@ -279,7 +298,7 @@ class ModelHelper(FSHelper):
         asking the user whether the model should be created.
         """
 
-        path = f"{os.getcwd()}/models"
+        path = f"{os.getcwd()}"
 
         init = f"{path}/__init__.py"
 
@@ -360,6 +379,11 @@ class ModelHelper(FSHelper):
             else:
                 self.special_import = (f'.{value}', model)
         return False
+
+    def __append_admin_field(self, value):
+        # TODO: Add default `id` field
+        if value not in self.admin_fields_list:
+            self.admin_fields_list.append(value)
 
     ####################################
 

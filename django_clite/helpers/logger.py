@@ -8,7 +8,7 @@ DEFAULT_NOUN_NUMBER_WARNING = "Tip: resource name should be singular."
 
 DEFAULT_NOUN_NUMBER_OPTION = "Change resource name from {} to {}?"
 
-DEFAULT_PARSED_CONTENT_LOG = """Filename: {}\nFilepath: {}\n\n---- Begin content ----\n{}\n---- End content ----"""
+DEFAULT_PARSED_CONTENT_LOG = """Filename: {}\nFilepath: {}\n\n---- Begin content ----\n{}\n---- End content ----\n\n"""
 
 DEFAULT_DESTROY_LOG = """Will delete...\nFilename: {}\nFilepath: {}\n\nWill also remove imports in __init__.py"""
 
