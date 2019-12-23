@@ -149,17 +149,24 @@ class CreatorHelper(FSHelper):
                 self.create_app(project=project, app=app)
 
         # Create optional `custom-auth`
+        auth_app = 'authentication'
         if kwargs.get('custom_auth'):
-            self.create_app(
+            if self.create_app(
                 project=project,
-                app='authentication',
+                app=auth_app,
                 auth=True
-            )
+            ):
 
-            # Handle authentication app
-            os.chdir('authentication')
-            self.__handle_custom_auth(project=project, **kwargs)
-            os.chdir(PREVIOUS_WORKING_DIRECTORY)
+                auth_app_path = os.getcwd()
+                log_error(auth_app_path)
+
+                log_error("Cannot create authentication app.")
+                log_error(os.getcwd())
+
+                # Handle authentication app
+                os.chdir(auth_app)
+                self.__handle_custom_auth(project=project, **kwargs)
+                os.chdir(PREVIOUS_WORKING_DIRECTORY)
 
         # cd ../../
         os.chdir(PREVIOUS_WORKING_DIRECTORY)

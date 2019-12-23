@@ -13,20 +13,18 @@ class {{ classname }}Admin(admin.ModelAdmin):
     {% endif -%}
 
     {% if permissions %}
-    def has_add_permission(self, request):
-        return request.user.is_superuser
-
     def has_change_permission(self, request, obj=None):
         return request.user.is_superuser
 
     def has_delete_permission(self, request, obj=None):
         return request.user.is_superuser
 
-    def has_module_permission(self, request):
-        return request.user.is_superuser
-
-    # Update the name of the last editor
+    """
+    # For managed models, update the name of the last editor
     def save_model(self, request, obj, form, change):
-            obj.edited_by_id = request.user
-        obj.save
-    {% endif %}
+        if obj.created_by_id is None:
+            obj.created_by_id = request.user.id
+        obj.updated_by_id = request.user
+        super().save_model(request, obj, form, change)
+    """
+    {%- endif -%}

@@ -1,5 +1,6 @@
 import uuid
 from django.db import models
+from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 {%- if is_user_managed %}
 from django.contrib.auth import get_user_model
@@ -23,12 +24,14 @@ class {{ classname }}({% if base %}{{ base[1] }}{% else %}models.Model{% endif %
     created_by = models.ForeignKey(
             get_user_model(), related_name="created_{{ model_plural }}",
             on_delete=models.PROTECT, editable=False,
-            verbose_name=_('created by')
+            verbose_name=_('created by'),
+            null=True
     )
     updated_by = models.ForeignKey(
             get_user_model(), related_name="updated_{{ model_plural }}",
             on_delete=models.PROTECT, editable=False,
-            verbose_name=_('updated by')
+            verbose_name=_('updated by'),
+            null=True
     )
     {%- endif %}
 
@@ -45,3 +48,6 @@ class {{ classname }}({% if base %}{{ base[1] }}{% else %}models.Model{% endif %
 
     def __str__(self):
         return f'{self.uuid}'
+
+    def get_absolute_url(self):
+        return reverse('{{ model.lower() }}-detail', kwargs={'pk': self.pk})

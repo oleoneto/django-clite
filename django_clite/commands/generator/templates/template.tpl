@@ -1,8 +1,6 @@
-{{ '{% load static from staticfiles %}' }}
 {{ '{% load cache %}' }}
 
 {{ '{% comment %}' }}
-    Template for {{ name }}
     Describe the template here.
 {{ '{% endcomment %}' }}
 

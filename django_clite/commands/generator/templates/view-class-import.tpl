@@ -1,1 +1,1 @@
-from .{{ model.lower() }}_{% if class_type == 'list' %}list{% else %}detail{% endif %} import {{ classname }}{% if class_type == 'list' %}ListView{% else %}DetailView{% endif %}
+from .{{ model.lower() }}_{{ class_type.lower() }} import {{ classname }}{{ class_type.capitalize() }}View
