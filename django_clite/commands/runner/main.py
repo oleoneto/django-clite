@@ -118,7 +118,9 @@ def export_env(ctx, filepath, no_dokku, no_example):
     D run export-env -f [filepath]
     """
 
-    EnvironmentHelper().run(
+    helper = EnvironmentHelper(cwd=ctx.obj['management'])
+
+    helper.run(
         path=ctx.obj['management'],
         project_name=ctx.obj['project_name'],
         filepath=filepath,
@@ -202,8 +204,9 @@ def server(ctx, port):
     """
     Runs the development server.
     """
+    helper = ServerHelper(cwd=ctx.obj['management'])
 
-    ServerHelper.run(
+    helper.run(
         path=ctx.obj['management'],
         port=port
     )
