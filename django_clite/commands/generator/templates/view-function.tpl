@@ -12,7 +12,7 @@ def {{ model.lower() }}_view(request):
     template = "{{ model.lower() }}.html"
     current_date = datetime.datetime.now()
     context = {
-        'date': now
+        'date': current_date
     }
 
     """

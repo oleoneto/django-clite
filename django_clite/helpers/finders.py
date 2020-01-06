@@ -89,23 +89,6 @@ def find_settings_file(path):
     return settings
 
 
-def get_app_name(path='.', find_first=False):
-    """
-    Searches current directory for apps.py in order to
-    retrieve the application name from it.
-    """
-
-    try:
-        for line in fileinput.input('apps.py'):
-            if "name = " in line:
-                fileinput.close()
-                return line.split(" = ")[1].lstrip().replace("\n", "").replace("'", "")
-        fileinput.close()
-    except FileNotFoundError:
-        return "app"
-    return "app"
-
-
 def get_project_name(management_file=None, find_first=False):
     if find_first:
         p, m, f = find_project_files('.')
