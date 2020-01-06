@@ -10,6 +10,9 @@ class {{ classname }}TestCase(APITestCase):
     # The client used to connect to the API
     client = APIClient()
 
+    # Resource endpoint namespace
+    namespace = '/v1/{{ namespace }}'
+
     def setUp(self):
         """
         Prepare database and client.
@@ -18,7 +21,6 @@ class {{ classname }}TestCase(APITestCase):
         user = get_user_model().objects.first()
 
         # API endpoint
-        self.namespace = '/v1/{{ namespace }}'
         self.client.force_authenticate(user=user)
 
     def test_create_{{ model.lower() }}(self):

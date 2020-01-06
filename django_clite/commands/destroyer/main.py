@@ -10,6 +10,16 @@ def not_an_app_directory_warning():
         raise click.Abort
 
 
+def ensure_test_directory(cwd):
+    if 'tests' in os.listdir(cwd):
+        pass
+    else:
+        try:
+            os.mkdir('tests')
+        except FileExistsError:
+            pass
+
+
 @click.group()
 @click.option('--dry', '--dry-run', is_flag=True, help="Display output without deleting files")
 @click.confirmation_option(prompt='Are you sure you want to delete this file?')
@@ -104,6 +114,8 @@ def model(ctx, name, full, unregister_admin, unregister_inline, test_case):
 
     h = ModelHelper(cwd=path, dry=ctx.obj['dry'])
 
+    ensure_test_directory(path)
+
     h.delete(model=name)
 
     if unregister_admin or full:
@@ -167,6 +179,8 @@ def serializer(ctx, name):
     h = SerializerHelper(cwd=path, dry=ctx.obj['dry'])
 
     h.delete(model=name)
+    
+    ensure_test_directory(path)
 
     ctx.invoke(test, name=name, scope='serializer')
 
@@ -229,5 +243,7 @@ def test(ctx, name, scope):
     path = ctx.obj[f'{scope}s_tests']
 
     h = TestHelper(cwd=path, dry=ctx.obj['dry'])
+
+    ensure_test_directory(ctx.obj[f'{scope}s'])
 
     h.delete(model=name, scope=scope)
