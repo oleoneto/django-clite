@@ -12,6 +12,16 @@ def not_an_app_directory_warning():
         raise click.Abort
 
 
+def ensure_test_directory(cwd):
+    if 'tests' in os.listdir(cwd):
+        pass
+    else:
+        try:
+            os.mkdir('tests')
+        except FileExistsError:
+            pass
+
+
 @click.group()
 @click.option('--dry', is_flag=True, help="Display output without creating files.")
 @click.option('--force', is_flag=True, help="Override any conflicting files.")
@@ -159,6 +169,8 @@ def model(ctx, name, full, abstract, fields, register_admin,
         verbose=ctx.obj['verbose']
     )
 
+    ensure_test_directory(path)
+
     model_fields = helper.create(
         model=name,
         abstract=abstract,
@@ -255,6 +267,8 @@ def serializer(ctx, name):
 
     helper.create(model=name)
 
+    ensure_test_directory(path)
+
     ctx.invoke(test, name=name, scope='serializer')
 
 
@@ -297,6 +311,8 @@ def test(ctx, name, scope):
         force=ctx.obj['force'],
         verbose=ctx.obj['verbose']
     )
+
+    ensure_test_directory(ctx.obj[f'{scope}s'])
 
     helper.create(model=name, scope=scope)
 

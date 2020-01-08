@@ -7,7 +7,7 @@ with open("README.md", "r") as f:
 
 setup(
     name="django-clite",
-    version="0.1.0b19",
+    version="0.1.0b20",
     author="Leo Neto",
     author_email="leo@ekletik.com",
     url="https://bitbucket.org/oleoneto/django-clite",
@@ -18,7 +18,7 @@ setup(
     classifiers=[
         'Development Status :: 4 - Beta',
         'Environment :: Web Environment',
-        'Framework :: Django :: 2.2',
+        'Framework :: Django :: 3.0',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: BSD License',
         'Natural Language :: English',
@@ -37,7 +37,7 @@ setup(
         'click-repl==0.1.6',
         'jinja2',
         'inflection',
-        'django>=2.2.4',
+        'django>=3.0.1',
         'tox',
         'pytest==5.3.0',
     ],

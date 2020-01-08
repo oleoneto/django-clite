@@ -79,8 +79,9 @@ class ViewHelper(FSHelper):
             path=TEMPLATE_DIR,
             template=template_import,
             context={
+                'model': model,
                 'classname': classname,
-                'model': model
+                'class_type': class_type,
             }
         )
 
