@@ -8,7 +8,7 @@ services:
     build: ./
     command: gunicorn {{ project }}.wsgi:application --bind 0.0.0.0:8000 --workers 3
     ports:
-        - "8093:8000"
+        - "8093:8000" # host:docker
     networks:
         - {{ project }}_network
     env_file:
@@ -39,7 +39,7 @@ services:
         com.{{ project }}.nginx.description: "{{ project }}: Proxy Server"
     image: nginx:1.15.0-alpine
     ports:
-      - 1337:80
+      - 1337:80 # host:docker
     depends_on:
       - web
 
