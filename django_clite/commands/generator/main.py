@@ -230,7 +230,7 @@ def resource(ctx, name, fields, inherits, api, is_user_managed):
     if not api:
         ctx.invoke(form, name=name)
         ctx.invoke(template, name=name)
-        ctx.invoke(view, name=name, class_type='list')
+        ctx.invoke(view, name=name, class_type='list', no_template=True)
 
 
 @generate.command()
@@ -260,8 +260,9 @@ def serializer(ctx, name):
 
 @generate.command()
 @click.argument("name", required=True)
+@click.option("-c", "--class-type", type=click.Choice(['create', 'detail', 'list', 'edit', 'update']))
 @click.pass_context
-def template(ctx, name):
+def template(ctx, name, class_type):
     """
     Generates an html template.
     """
@@ -275,7 +276,7 @@ def template(ctx, name):
         verbose=ctx.obj['verbose']
     )
 
-    helper.create(model=name)
+    helper.create(model=name, class_type=class_type)
 
 
 @generate.command()
@@ -303,9 +304,9 @@ def test(ctx, name, scope):
 @generate.command()
 @click.argument("name", required=True)
 @click.option("-c", "--class-type", type=click.Choice(['create', 'detail', 'list', 'edit', 'update']))
-@click.option('-t', is_flag=True, help='Generate related template.')
+@click.option('--no-template', is_flag=True, default=False, help='Generate related template.')
 @click.pass_context
-def view(ctx, name, class_type, t):
+def view(ctx, name, class_type, no_template):
     """
     Generates a view function or class.
     """
@@ -323,8 +324,10 @@ def view(ctx, name, class_type, t):
 
     helper.create(model=name, class_type=class_type)
 
-    if t:
-        ctx.invoke(template, name=name)
+    if no_template:
+        pass
+    else:
+        ctx.invoke(template, name=name, class_type=class_type)
 
 
 @generate.command()

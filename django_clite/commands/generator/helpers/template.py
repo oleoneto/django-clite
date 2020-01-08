@@ -19,6 +19,8 @@ class TemplateHelper(FSHelper):
 
         template = 'template.tpl'
         filename = f"{model}.html"
+        if kwargs.get('class_type'):
+            filename = f"{model.lower()}_{kwargs.get('class_type')}.html"
 
         content = rendered_file_template(
             path=TEMPLATE_DIR,
