@@ -37,7 +37,7 @@ setup(
         'click-repl==0.1.6',
         'jinja2',
         'inflection',
-        'django>=3.0.1',
+        'django>=2.2.4',
         'tox',
         'pytest==5.3.0',
     ],
