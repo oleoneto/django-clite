@@ -39,7 +39,9 @@ DOKKU_TEMPLATES = {
 
 TOP_LEVEL_TEMPLATES = {
     'CHECKS': 'dokku_checks.tpl',
+    'Dockerfile': 'dockerfile.tpl',
     'docker-compose.yml': 'docker-compose.tpl',
+    'docker-entrypoint.sh': 'docker-entrypoint_sh.tpl',
     'Pipfile': 'Pipfile.tpl',
     'README.md': 'README.tpl',
     '.env': 'env.tpl',
@@ -48,7 +50,6 @@ TOP_LEVEL_TEMPLATES = {
 }
 
 INNER_LEVEL_TEMPLATES = {
-    'Dockerfile': 'dockerfile.tpl',
     'settings_override.py': 'settings.tpl',
     'storage.py': 'storage.tpl',
 }
