@@ -41,7 +41,7 @@ TOP_LEVEL_TEMPLATES = {
     'CHECKS': 'dokku_checks.tpl',
     'Dockerfile': 'dockerfile.tpl',
     'docker-compose.yml': 'docker-compose.tpl',
-    'docker-entrypoint.sh': 'docker-entrypoint_sh.tpl',
+    'docker-entrypoint.sh': 'docker-entrypoint.tpl',
     'Pipfile': 'Pipfile.tpl',
     'README.md': 'README.tpl',
     '.env': 'env.tpl',

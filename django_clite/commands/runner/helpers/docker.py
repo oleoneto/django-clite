@@ -20,10 +20,7 @@ class DockerHelper(RunnerHelper):
     def run(self, **kwargs):
         pass
 
-    def create_compose(self, project):
-
-        template = 'docker-compose.tpl'
-        filename = 'docker-compose.yml'
+    def __create(self, project, template, filename):
 
         try:
             os.chdir(self.cwd)
@@ -40,28 +37,21 @@ class DockerHelper(RunnerHelper):
             log_success(f"Created {filename}")
         except FileNotFoundError:
             log_error(f"Unable to create {filename}")
+
+    def create_compose(self, project):
+
+            template = 'docker-compose.tpl'
+            filename = 'docker-compose.yml'
+
+            self.__create(project, template, filename)
 
     def create_dockerfile(self, project):
 
         template = 'dockerfile.tpl'
         filename = 'Dockerfile'
 
-        try:
-            os.chdir(self.cwd)
-
-            content = rendered_file_template(
-                path=TEMPLATE_DIR,
-                template=template,
-                context={'project': project}
-            )
-
-            self.create_file(
-                content=content,
-                filename=filename
-            )
-            log_success(f"Created {filename}")
-        except FileNotFoundError:
-            log_error(f"Unable to create {filename}")
+        self.__create(project, template, filename)
+        self.__create(project, 'docker-entrypoint.tpl', 'docker-entrypoint.sh')
 
     def build(self, verbose=False):
 
