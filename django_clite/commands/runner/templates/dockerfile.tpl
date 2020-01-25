@@ -26,5 +26,8 @@ RUN apt-get update \
 # Copy other files to docker container
 COPY . .
 
+# Switch users
+RUN groupadd -r docker && useradd --no-log-init -r -g docker docker
+USER docker
 
 CMD ["python3", "manage.py", "runserver"]

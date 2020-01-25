@@ -5,19 +5,21 @@ services:
     container_name: "{{ project }}_web"
     labels:
         com.{{ project }}.web.description = "{{ project }}: Web Application"
-    build: .
+    build:
+        context: .
     volumes:
         - .:/app
     env_file:
         - .env
     environment:
-        DJANGO_ENV: development
+        DJANGO_ENV: docker
     entrypoint: /docker-entrypoint.sh
     command: gunicorn {{ project }}.wsgi:application --bind 0.0.0.0:8000 --workers 3
     ports:
         - 8007:8000 # host:docker
     depends_on:
         - db
+        - redis
 
 
   db:
@@ -45,3 +47,7 @@ services:
     ports:
         - 6377:6379 # host:docker
     restart: always
+
+
+volumes:
+    database:
