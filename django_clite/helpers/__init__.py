@@ -6,6 +6,7 @@ from .fs import FSHelper
 from .finders import (
     find_project_files,
     find_settings_file,
+    get_app_name,
     get_project_name,
     save_to_settings,
     replace_line,

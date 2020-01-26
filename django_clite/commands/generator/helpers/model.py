@@ -5,6 +5,7 @@ from django_clite.helpers.logger import *
 from django_clite.helpers import sanitized_string
 from django_clite.helpers import rendered_file_template
 from django_clite.helpers import walk_up
+from django_clite.helpers import get_app_name
 from django_clite.helpers.fs import FSHelper, PREVIOUS_WORKING_DIRECTORY
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__)).rsplit('/', 1)[0]
@@ -133,11 +134,8 @@ class ModelHelper(FSHelper):
             if not self.__append_special_import(base_model, scope=scope):
                 self.__find_resource_in_scope(base_model)
 
-        # Get app name
-        app = self.__get_app_name()
-
         # Get database name
-        table_name = f"{app}_{inflection.pluralize(model)}"
+        table_name = f"{self.app_name}_{inflection.pluralize(model)}"
 
         # Parse model fields by name and type
         if kwargs['fields'] is not None:
@@ -160,12 +158,12 @@ class ModelHelper(FSHelper):
                 'db_table': table_name,
                 'model': model,
                 'model_plural': inflection.pluralize(model),
-                'is_user_managed': kwargs.get('is_user_managed'),
+                'is_managed': kwargs.get('is_managed'),
             }
         )
 
         # Ensure related models are created
-        self.__handle_dependencies(app=app, **kwargs)
+        self.__handle_dependencies(app=self.app_name, **kwargs)
 
         return self.admin_fields_list
 
@@ -302,8 +300,6 @@ class ModelHelper(FSHelper):
 
         init = f"{path}/__init__.py"
 
-        app_name = self.__get_app_name()
-
         filename = model.lower()
 
         if not model.endswith('.py'):
@@ -322,7 +318,7 @@ class ModelHelper(FSHelper):
 
         fileinput.close()
 
-        if click.confirm(DEFAULT_NOT_IN_SCOPE_WARNING.format(model.capitalize(), app_name)):
+        if click.confirm(DEFAULT_NOT_IN_SCOPE_WARNING.format(model.capitalize(), self.app_name)):
             self.dependencies_list.append(model.capitalize())
 
     def __handle_dependencies(self, app, **kwargs):
@@ -384,49 +380,6 @@ class ModelHelper(FSHelper):
         # TODO: Add default `id` field
         if value not in self.admin_fields_list:
             self.admin_fields_list.append(value)
-
-    ####################################
-
-    def __get_app_name(self):
-        """
-        Searches current directory for apps.py in order to
-        retrieve the application name from it.
-        """
-
-        # Assume cwd is *app/models
-        # walk up from the directory in search for apps.py and AppConfig
-        base = None
-
-        if self.verbose:
-            log_info(f"Searching for AppConfig at {os.getcwd()}")
-
-        for root, dirs, files in walk_up(os.getcwd()):
-            if "apps.py" in files:
-                base = root
-
-        if not base:
-            if self.verbose:
-                log_info(f"Cannot find for AppConfig for this app.")
-
-            return "app"
-
-        os.chdir(base)
-
-        try:
-            for line in fileinput.input('apps.py'):
-                if "name = " in line:
-                    fileinput.close()
-                    return line.split(" = ")[-1]\
-                        .lstrip()\
-                        .replace("\n", "")\
-                        .replace("'", "")\
-                        .split('.')[-1]
-            fileinput.close()
-        except FileNotFoundError:
-            pass
-
-        os.chdir(PREVIOUS_WORKING_DIRECTORY)
-        return "app"
 
     ####################################
 

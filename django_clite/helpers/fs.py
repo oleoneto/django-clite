@@ -5,6 +5,7 @@ import fileinput
 import subprocess
 from .parser import sanitized_string
 from .templates import rendered_file_template
+from django_clite.helpers.finders import get_app_name
 from django_clite.helpers.finders import get_project_name
 from django_clite.helpers.finders import walk_up
 from .logger import *
@@ -37,6 +38,7 @@ class FSHelper(object):
         self.__project_directory = None
         self.__path_to_management_file = None
         self.__management_file = None
+        self.__app = get_app_name(verbose=verbose)
 
         self.__settings_file = self.find_settings_file()
 
@@ -63,6 +65,10 @@ class FSHelper(object):
 
     ##################################
     # Class properties
+
+    @property
+    def app_name(self):
+        return self.__app
 
     @property
     def directory(self):

@@ -22,7 +22,7 @@ class {{ classname }}({% if base %}{{ base[1] }}{% else %}models.Model{% endif %
     created_at = models.DateTimeField(_('created at'), auto_now_add=True, editable=False)
     updated_at = models.DateTimeField(_('updated at'), auto_now=True, editable=False)
 
-    {%- if is_user_managed %}
+    {%- if is_managed %}
     created_by = models.ForeignKey(
             get_user_model(), related_name="created_{{ model_plural }}",
             on_delete=models.PROTECT, editable=False,
