@@ -211,6 +211,7 @@ class CreatorHelper(FSHelper):
         if package == 'serializers':
             self.create_package(project=project, package='tests', app=app)
         if package == 'viewsets':
+            self.create_package(project=project, package='permissions', app=app)
             filename = 'router.py'
             index = TEMPLATES.index('router.tpl')
             template = TEMPLATES[index]
