@@ -207,6 +207,7 @@ class CreatorHelper(FSHelper):
             self.create_package(project=project, package='signals', app=app)
             self.create_package(project=project, package='tests', app=app)
             self.create_package(project=project, package='validators', app=app)
+            self.create_package(project=project, package='permissions', app=app)
         if package == 'serializers':
             self.create_package(project=project, package='tests', app=app)
         if package == 'viewsets':
