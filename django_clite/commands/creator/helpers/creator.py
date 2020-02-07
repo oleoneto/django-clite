@@ -210,6 +210,8 @@ class CreatorHelper(FSHelper):
             self.create_package(project=project, package='permissions', app=app)
         if package == 'serializers':
             self.create_package(project=project, package='tests', app=app)
+        if package == 'templates':
+            self.create_package(project=project, package='tags', app=app)
         if package == 'viewsets':
             self.create_package(project=project, package='permissions', app=app)
             filename = 'router.py'
