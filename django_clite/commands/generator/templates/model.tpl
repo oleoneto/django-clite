@@ -1,9 +1,11 @@
 import uuid
 from django.db import models
+{%- if not api %}
 from django.urls import reverse
+{%- endif %}
 from django.template.defaultfilters import slugify
 from django.utils.translation import gettext_lazy as _
-{%- if is_user_managed %}
+{%- if is_managed %}
 from django.contrib.auth import get_user_model
 {%- endif %}
 {% for model in imports -%}
@@ -53,6 +55,8 @@ class {{ classname }}({% if base %}{{ base[1] }}{% else %}models.Model{% endif %
 
     def __str__(self):
         return f'{self.slug}'
-
+    {% if not api %}
     def get_absolute_url(self):
         return reverse('{{ model.lower() }}-detail', kwargs={'slug': self.slug})
+    {%- else -%}
+    {%- endif %}
