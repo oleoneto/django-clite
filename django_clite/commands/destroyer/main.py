@@ -37,6 +37,7 @@ def destroy(ctx, dry):
     ctx.obj['cwd'] = os.getcwd()
     ctx.obj['admin'] = f"{os.getcwd()}/admin/"
     ctx.obj['admin_inlines'] = f"{os.getcwd()}/admin/inlines/"
+    ctx.obj['fixtures'] = f"{os.getcwd()}/fixtures/"
     ctx.obj['forms'] = f"{os.getcwd()}/forms/"
     ctx.obj['models'] = f"{os.getcwd()}/models/"
     ctx.obj['models_tests'] = f"{os.getcwd()}/models/tests/"
@@ -66,6 +67,21 @@ def admin(ctx, name, inline):
     h = AdminHelper(cwd=path, dry=ctx.obj['dry'])
 
     h.delete(model=name, inline=inline)
+
+
+@destroy.command()
+@click.argument('name')
+@click.pass_context
+def fixture(ctx, name):
+    """
+    Destroys a fixture
+    """
+
+    path = ctx.obj.get('fixtures')
+
+    helper = FixtureHelper(cwd=path, dry=ctx.obj.get('dry'))
+
+    helper.delete(model=name)
 
 
 @destroy.command()

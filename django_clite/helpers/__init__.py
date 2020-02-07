@@ -1,5 +1,6 @@
 # helpers
 from .logger import *
+from .field_parser import FieldParser
 from .parser import sanitized_string
 from .templates import rendered_file_template
 from .fs import FSHelper

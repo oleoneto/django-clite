@@ -44,6 +44,7 @@ def generate(ctx, dry, force, verbose):
     ctx.obj['cwd'] = os.getcwd()
     ctx.obj['admin'] = f"{os.getcwd()}/admin/"
     ctx.obj['admin_inlines'] = f"{os.getcwd()}/admin/inlines/"
+    ctx.obj['fixtures'] = f"{os.getcwd()}/fixtures/"
     ctx.obj['forms'] = f"{os.getcwd()}/forms/"
     ctx.obj['migrations'] = f"{os.getcwd()}/migrations/"
     ctx.obj['models'] = f"{os.getcwd()}/models/"
@@ -88,6 +89,24 @@ def admin(ctx, name, inline, fields, stub_permissions):
     )
 
     helper.create(model=name, fields=fields, inline=inline, permissions=stub_permissions)
+
+
+@generate.command()
+@click.argument('name')
+@click.argument("fields", nargs=-1, required=False)
+@click.option('-n', '--number', default=1, help='Number of objects to create in fixture.')
+@click.pass_context
+def fixture(ctx, name, fields, number):
+    path = ctx.obj.get('fixtures')
+
+    helper = FixtureHelper(
+        cwd=path,
+        dry=ctx.obj.get('dry'),
+        force=ctx.obj.get('force'),
+        verbose=ctx.obj.get('verbose')
+    )
+
+    helper.create(model=name, fields=fields, total=number)
 
 
 @generate.command()
@@ -138,11 +157,12 @@ def manager(ctx, name):
 @click.option('-m', '--is-managed', is_flag=True, help="Add created_by and updated_by fields.")
 @click.option('-i', '--inherits', '--extends', required=False, help="Add model inheritance.")
 @click.option('--app', required=False, help="If base model inherits is in another app.")
+@click.option('--api', is_flag=True, help='Only add api-related files.')
 @click.argument("name", required=True)
 @click.argument("fields", nargs=-1, required=False)
 @click.pass_context
 def model(ctx, name, full, abstract, fields, register_admin,
-          register_inline, test_case, inherits, app, is_managed):
+          register_inline, test_case, inherits, api, app, is_managed):
     """
     Generates a model under the models directory.
     One can specify multiple attributes after the model's name, like so:
@@ -173,6 +193,7 @@ def model(ctx, name, full, abstract, fields, register_admin,
 
     model_fields = helper.create(
         model=name,
+        api=api,
         abstract=abstract,
         fields=fields,
         inherits=inherits,
@@ -227,6 +248,7 @@ def resource(ctx, name, fields, inherits, api, is_managed):
     ctx.invoke(
         model,
         name=name,
+        api=api,
         register_admin=True,
         register_inline=True,
         fields=fields,

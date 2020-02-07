@@ -3,6 +3,7 @@ import re
 import sys
 from os import path
 import fileinput
+from .logger import log_info
 
 
 def walk_up(directory_path):
