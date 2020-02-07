@@ -39,6 +39,7 @@ DEFAULT_MODEL_FIELDS = {
     'image': "ImageField",
     'int': 'IntegerField',
     'integer': 'IntegerField',
+    'ip': 'GenericIPAddressField',
     'ipaddress': 'GenericIPAddressField',
     'many': 'ManyToManyField',
     'manytomany': 'ManyToManyField',
