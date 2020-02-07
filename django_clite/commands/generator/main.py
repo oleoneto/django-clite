@@ -202,22 +202,29 @@ def model(ctx, name, full, abstract, fields, register_admin,
         is_managed=is_managed,
     )
 
+    if api:
+        ctx.invoke(test, name=name, scope="model")
+        ctx.invoke(serializer, name=name)
+        ctx.invoke(viewset, name=name)
+
     if register_admin or full:
         ctx.invoke(admin, name=name, fields=model_fields)
 
     if register_inline or full:
         ctx.invoke(admin, name=name, inline=True)
 
-    if test_case or full:
+    if (test_case or full) and not api:
         ctx.invoke(test, name=name, scope="model")
+
+    if full and not api:
+        ctx.invoke(serializer, name=name)
+        ctx.invoke(viewset, name=name)
 
     if full:
         ctx.invoke(form, name=name)
-        ctx.invoke(serializer, name=name)
         ctx.invoke(template, name=name)
         ctx.invoke(view, name=name, class_type="list")
         ctx.invoke(view, name=name, class_type="detail")
-        ctx.invoke(viewset, name=name)
 
     # Retuning model fields
     return model_fields

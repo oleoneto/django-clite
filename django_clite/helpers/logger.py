@@ -27,6 +27,14 @@ DEFAULT_ERRORS = {
 DEFAULT_MANAGEMENT_ERROR = """The CLI could not decipher your django project.
 Please try to create your app inside a Django project directory."""
 
+DEFAULT_MANAGEMENT_ERROR_HELP = """If your project uses custom configuration, you can pass some context to the CLI:
+    Specify the manage.py directory with the flag: --directory/-d
+    Specify the project name with the flag: --project/-p
+    
+    Example:
+    D create app classroom --project school --directory ../    
+"""
+
 DEFAULT_MANAGEMENT_TIP = """Tip:
 If your project is called `website`, for example, 
 you need to run `D create app app_name` from within `website` or `website/website`.

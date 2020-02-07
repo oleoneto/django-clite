@@ -11,6 +11,8 @@ from django_clite.commands.inspector.main import apps as inspect_apps
 def wrong_place_warning(ctx):
     if (ctx.obj['path'] and ctx.obj['project_name']) is None:
         log_error(DEFAULT_MANAGEMENT_ERROR)
+        log_standard('')
+        log_standard(DEFAULT_MANAGEMENT_ERROR_HELP)
         raise click.Abort
 
 
@@ -36,7 +38,7 @@ def create(ctx, dry, default, verbose):
         verbose=verbose
     )
 
-    p, m, f = find_project_files(os.getcwd())
+    p, m, f = find_project_files(os.getcwd())  # project path, project directory, management_file
 
     ctx.obj['path'] = p
     ctx.obj['file'] = f
@@ -84,8 +86,10 @@ def project(ctx, name, docker, dokku, custom_auth, apps):
 @create.command()
 @click.argument('apps', nargs=-1)
 @click.option('--is-auth', is_flag=True, help="Add User for custom authentication.")
+@click.option('--project_name', '-p', help="Specify name of your project.")
+@click.option('--directory', '-d', help="Specify path to your management.")
 @click.pass_context
-def app(ctx, apps, is_auth):
+def app(ctx, apps, is_auth, project_name, directory):
     """
     Creates new django apps.
 
@@ -107,11 +111,15 @@ def app(ctx, apps, is_auth):
     a DRF router is instantiated in `router.py` and its urls added to each app's urlpatterns by default.
     """
 
-    wrong_place_warning(ctx)
+    __project_name = project
+    __management_file = directory
 
-    project_name = ctx.obj['project_name']
+    if __project_name is None or not project_name:
+        wrong_place_warning(ctx)
+        __project_name = ctx.obj['project_name']
+        __management_file = ctx.obj['management']
 
-    path = os.path.join(ctx.obj['management'], project_name)
+    path = os.path.join(__management_file, __project_name)
 
     helper = CreatorHelper(
         cwd=path,
