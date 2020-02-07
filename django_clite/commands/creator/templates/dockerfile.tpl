@@ -11,15 +11,16 @@ ENV LANG C.UTF-8
 
 # Copy dependencies
 COPY Pipfile Pipfile
-COPY requirements.txt .requirements
+COPY Pipfile.lock Pipfile.lock
 COPY docker-entrypoint.sh /docker-entrypoint.sh
 
 # Install dependencies
 RUN apt-get update \
     && apt-get install -y \
     swig libssl-dev dpkg-dev \
-    && pip install -U pip gunicorn Faker \
-    && pip install -r .requirements \
+    && pip install -U pip pipenv gunicorn Faker \
+    && pipenv lock --requirements > requirements.txt \
+    && pip install -r requirements.txt \
     && chmod +x /docker-entrypoint.sh
 
 
