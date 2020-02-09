@@ -186,7 +186,7 @@ def model(ctx, name, full, unregister_admin, unregister_inline, test_case):
 @click.pass_context
 def resource(ctx, name):
     """
-    Destroys a resource.
+    Destroys a resource and its related modules.
     """
 
     ctx.invoke(
