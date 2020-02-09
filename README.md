@@ -10,12 +10,12 @@ A CLI tool that handles creating and managing Django projects
 
 
 - [Introduction](#django-clite)
-  - [Interactive Docs](#interactive-docs)
-  - [Dependencies](#dependencies)
-  - [Installation](#installation)
-  - [To Do](#to-do)
-  - [Pull requests](#pull-requests)
-  - [LICENSE](#license)
+- [Interactive Docs](#interactive-docs)
+- [Dependencies](#dependencies)
+- [Installation](#installation)
+- [To Do](#to-do)
+- [Pull requests](#pull-requests)
+- [LICENSE](#license)
 
 ## Interactive Docs
 In order to maintain consistency in our documentation of all the different commands and features of the CLI,
