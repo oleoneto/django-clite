@@ -5,6 +5,7 @@ import fileinput
 import subprocess
 from .parser import sanitized_string
 from .templates import rendered_file_template
+from django_clite.helpers.finders import get_app_name
 from django_clite.helpers.finders import get_project_name
 from django_clite.helpers.finders import walk_up
 from .logger import *
@@ -37,6 +38,7 @@ class FSHelper(object):
         self.__project_directory = None
         self.__path_to_management_file = None
         self.__management_file = None
+        self.__app = get_app_name(verbose=verbose)
 
         self.__settings_file = self.find_settings_file()
 
@@ -63,6 +65,10 @@ class FSHelper(object):
 
     ##################################
     # Class properties
+
+    @property
+    def app_name(self):
+        return self.__app
 
     @property
     def directory(self):
@@ -256,19 +262,27 @@ class FSHelper(object):
         return True
 
     def default_destroy_file(self, model, **kwargs):
+
+        if not self.__dry and not self.__force:
+            click.confirm('Are you sure you want to delete this file?', abort=True)
+
         filename = f'{model}.py'
         classname = inflection.camelize(model)
 
-        content = rendered_file_template(
-            path=kwargs.get('templates_directory'),
-            template=kwargs.get('template_import'),
-            context={
-                'classname': classname,
-                'model': model
-            }
-        )
+        try:
+            # Optional import removal
+            content = rendered_file_template(
+                path=kwargs.get('templates_directory'),
+                template=kwargs.get('template_import'),
+                context={
+                    'classname': classname,
+                    'model': model
+                }
+            )
 
-        self.remove_import(content=content)
+            self.remove_import(content=content)
+        except AttributeError or ValueError:
+            pass
 
         return self.destroy_file(
             filename=filename,

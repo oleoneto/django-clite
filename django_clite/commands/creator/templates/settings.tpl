@@ -130,25 +130,9 @@ WSGI_APPLICATION = '{{ project }}.wsgi.application'
 
 # Database
 
-ENGINE = 'django.db.backends.postgresql_psycopg2'
+ENGINE = 'django.db.backends.postgresql'
 
-if "IN_DOCKER" in os.environ:
-
-    DATABASES = {
-        'default': {
-            'ENGINE': ENGINE,
-            'NAME': os.environ.get('DOCKER_DB_NAME'),
-            'USER': os.environ.get('DOCKER_DB_USER'),
-            'PASSWORD': os.environ.get('DOCKER_DB_PASSWORD'),
-            'HOST': "db",
-            'PORT': 5432,
-        }
-    }
-
-    CELERY_BROKER_URL = 'redis://redis:6379/1'
-    CELERY_RESULT_BACKEND = 'redis://redis:6379/1'
-
-elif "DATABASE_URL" in os.environ:
+if "DATABASE_URL" in os.environ:
 
     USER, PASSWORD, HOST, PORT, NAME = re.match("^postgres://(?P<username>.*?)\:(?P<password>.*?)\@(?P<host>.*?)\:(?P<port>\d+)\/(?P<db>.*?)$", os.environ.get("DATABASE_URL", "")).groups()
 
@@ -163,37 +147,42 @@ elif "DATABASE_URL" in os.environ:
         }
     }
 
-    CACHES = {
-        "default": {
-            "BACKEND": "django_redis.cache.RedisCache",
-            "LOCATION": os.environ.get("REDIS_URL", "") + "/1",
-            "OPTIONS": {
-                "CLIENT_CLASS": "django_redis.client.DefaultClient"
-            },
-            "KEY_PREFIX": "{{ project }}"
-        }
-    }
-
-    CELERY_BROKER_URL = os.environ.get("REDIS_URL", "") + "/1"
-
-    CELERY_RESULT_BACKEND = os.environ.get("REDIS_URL", "") + "/1"
-
-    CACHE_TTL = 60 * 15
-
 else:
-
-    CELERY_TASK_ALWAYS_EAGER = True
 
     DATABASES = {
         'default': {
             'ENGINE': ENGINE,
-            'NAME': os.environ.get('LOCAL_DB_NAME'),
-            'USER': os.environ.get('LOCAL_DB_USER'),
-            'HOST': os.environ.get('LOCAL_DB_HOST'),
-            'PASSWORD': os.environ.get('LOCAL_DB_PASSWORD'),
-            'PORT': '5432',
+            'NAME': 'postgres',
+            'USER': 'postgres',
+            'HOST': 'db',
+            'PORT': 5432,
         }
      }
+
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": os.environ.get("REDIS_URL", "") + "/1",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient"
+        },
+        "KEY_PREFIX": "{{ project }}"
+    }
+}
+
+CACHE_TTL = 60 * 15
+
+CELERY_BROKER_URL = os.environ.get("REDIS_URL", "") + "/1"
+
+CELERY_RESULT_BACKEND = os.environ.get("REDIS_URL", "") + "/1"
+
+CELERY_TASK_ALWAYS_EAGER = True
+
+# CELERY_ACCEPT_CONTENT = ['application/json']
+
+# CELERY_TASK_SERIALIZER = 'json'
+
+# CELERY_RESULT_SERIALIZER = 'json'
 
 # Email server backend configuration
 # Use SendGrid to deliver automated email

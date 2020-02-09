@@ -1,30 +1,34 @@
-FROM python:3.7
+# Base image
+FROM python:3.7-slim-stretch
+
+# Working directory
+WORKDIR /app
 
 # Environment variables
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
-RUN apt-get update
+ENV LANG C.UTF-8
 
-# Install some necessary dependencies.
-RUN apt-get install -y swig libssl-dev dpkg-dev netcat gunicorn
-
-RUN pip install -U pip gunicorn
-RUN pip install pipenv
-
-# Create working directory
-RUN mkdir /code
-
-# Copy requirements to working directory
-ADD Pipfile /code/Pipfile
-ADD Pipfile.lock /code/Pipfile.lock
-
-# Set working directory
-WORKDIR /code
+# Copy dependencies
+COPY Pipfile Pipfile
+COPY Pipfile.lock Pipfile.lock
+COPY docker-entrypoint.sh /docker-entrypoint.sh
 
 # Install dependencies
-RUN pipenv lock -r | cat > /code/requirements.txt
-RUN pipenv install --deploy
-RUN pip install -r requirements.txt
+RUN apt-get update \
+    && apt-get install -y \
+    swig libssl-dev dpkg-dev \
+    && pip install -U pip pipenv gunicorn Faker \
+    && pipenv lock --requirements > requirements.txt \
+    && pip install -r requirements.txt \
+    && chmod +x /docker-entrypoint.sh
 
-# Copy project files
-COPY . /code/
+
+# Copy other files to docker container
+COPY . .
+
+# Switch users
+RUN groupadd -r docker && useradd --no-log-init -r -g docker docker
+USER docker
+
+CMD ["python3", "manage.py", "runserver"]

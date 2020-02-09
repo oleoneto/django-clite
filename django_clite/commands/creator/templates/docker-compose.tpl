@@ -2,59 +2,52 @@ version: '3'
 
 services:
   web:
-    container_name: "{{ project }}-web"
+    container_name: "{{ project }}_web"
     labels:
         com.{{ project }}.web.description = "{{ project }}: Web Application"
-    build: ./
-    command: gunicorn {{ project }}.wsgi:application --bind 0.0.0.0:8000 --workers 3
-    ports:
-        - "8093:8000" # host:docker
-    networks:
-        - {{ project }}_network
+    build:
+        context: .
+    volumes:
+        - .:/app
     env_file:
         - .env
+    environment:
+        DJANGO_ENV: docker
+    entrypoint: /docker-entrypoint.sh
+    command: gunicorn {{ project }}.wsgi:application --bind 0.0.0.0:8000 --workers 3
+    ports:
+        - 8007:8000 # host:docker
     depends_on:
         - db
+        - redis
 
 
   db:
-    image: postgres:10.5-alpine
+    container_name: "{{ project }}_db"
+    image: postgres:12-alpine
     labels:
         com.{{ project }}.db.description: "{{ project }}: Database service"
     volumes:
-      - postgres_data:/var/lib/postgresql/data/
-    networks:
-        - {{ project }}_network
-    healthcheck:
-      test: ["CMD-SHELL", "pg_ready -U postgres"]
-      interval: 10s
-      timeout: 83s
-      retries: 40
-    restart: always
-
-
-  nginx:
-    container_name: "{{ project }}-nginx"
-    labels:
-        com.{{ project }}.nginx.description: "{{ project }}: Proxy Server"
-    image: nginx:1.15.0-alpine
+        - ./database:/var/lib/postgresql/data/
     ports:
-      - 1337:80 # host:docker
-    depends_on:
-      - web
+        - 5437:5432 # host:docker
+    healthcheck:
+        test: ["CMD-SHELL", "pg_ready -U postgres"]
+        interval: 10s
+        timeout: 83s
+        retries: 40
+    restart: always
 
 
   redis:
-    restart: always
+    container_name: "{{ project }}_redis"
     image: redis:latest
-    expose:
-      - "6379"
-
-
-networks:
-  {{ project }}_network:
-    driver: bridge
+    labels:
+        com.{{ project }}.redis.description: "{{ project }}: Redis cache service"
+    ports:
+        - 6377:6379 # host:docker
+    restart: always
 
 
 volumes:
-  postgres_data:
+    database:

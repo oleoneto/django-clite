@@ -3,6 +3,7 @@ import re
 import sys
 from os import path
 import fileinput
+from .logger import log_info
 
 
 def walk_up(directory_path):
@@ -140,3 +141,45 @@ def save_to_settings(value, parameter, path):
     settings = find_settings_file(path)
 
     return replace_line(value, parameter, settings)
+
+
+def get_app_name(*args, **kwargs):
+    """
+    Searches current directory for apps.py in order to
+    retrieve the application name from it.
+    """
+
+    # Assume cwd is *app/models
+    # walk up from the directory in search for apps.py and AppConfig
+    base = None
+
+    if kwargs.get('verbose'):
+        log_info(f"Searching for AppConfig at {os.getcwd()}")
+
+    for root, dirs, files in walk_up(os.getcwd()):
+        if "apps.py" in files:
+            base = root
+
+    if not base:
+        if kwargs.get('verbose'):
+            log_info(f"Cannot find for AppConfig for this app.")
+
+        return "app"
+
+    os.chdir(base)
+
+    try:
+        for line in fileinput.input('apps.py'):
+            if "name = " in line:
+                fileinput.close()
+                return line.split(" = ")[-1] \
+                    .lstrip() \
+                    .replace("\n", "") \
+                    .replace("'", "") \
+                    .split('.')[-1]
+        fileinput.close()
+    except FileNotFoundError:
+        pass
+
+    os.chdir(PREVIOUS_WORKING_DIRECTORY)
+    return "app"

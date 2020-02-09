@@ -1,5 +1,6 @@
 # generator:helpers
 from .admin import AdminHelper
+from .fixture import FixtureHelper
 from .form import FormHelper
 from .manager import ManagerHelper
 from .model import ModelHelper

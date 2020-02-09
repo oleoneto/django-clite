@@ -1,8 +1,11 @@
 import uuid
 from django.db import models
+{%- if not api %}
 from django.urls import reverse
+{%- endif %}
+from django.template.defaultfilters import slugify
 from django.utils.translation import gettext_lazy as _
-{%- if is_user_managed %}
+{%- if is_managed %}
 from django.contrib.auth import get_user_model
 {%- endif %}
 {% for model in imports -%}
@@ -17,10 +20,11 @@ class {{ classname }}({% if base %}{{ base[1] }}{% else %}models.Model{% endif %
     {% endfor %}
     # Default fields. Used for record-keeping.
     uuid = models.UUIDField(default=uuid.uuid4, editable=False)
+    slug = models.SlugField(_('slug'), max_length=250, unique=True, editable=False, blank=True)
     created_at = models.DateTimeField(_('created at'), auto_now_add=True, editable=False)
     updated_at = models.DateTimeField(_('updated at'), auto_now=True, editable=False)
 
-    {%- if is_user_managed %}
+    {%- if is_managed %}
     created_by = models.ForeignKey(
             get_user_model(), related_name="created_{{ model_plural }}",
             on_delete=models.PROTECT, editable=False,
@@ -44,10 +48,15 @@ class {{ classname }}({% if base %}{{ base[1] }}{% else %}models.Model{% endif %
         ordering = ['-created_at']
 
     def save(self, *args, **kwargs):
+        # Generate a Medium-like URL slugs:
+        # slugify(f'{__SomeCharField__}{str(self.uuid)[-12:]}')
+        self.slug = slugify(f'{str(self.uuid)[-12:]}')
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return f'{self.uuid}'
-
+        return f'{self.slug}'
+    {% if not api %}
     def get_absolute_url(self):
-        return reverse('{{ model.lower() }}-detail', kwargs={'pk': self.pk})
+        return reverse('{{ model.lower() }}-detail', kwargs={'slug': self.slug})
+    {%- else -%}
+    {%- endif %}

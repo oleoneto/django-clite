@@ -39,7 +39,9 @@ DOKKU_TEMPLATES = {
 
 TOP_LEVEL_TEMPLATES = {
     'CHECKS': 'dokku_checks.tpl',
+    'Dockerfile': 'dockerfile.tpl',
     'docker-compose.yml': 'docker-compose.tpl',
+    'docker-entrypoint.sh': 'docker-entrypoint.tpl',
     'Pipfile': 'Pipfile.tpl',
     'README.md': 'README.tpl',
     '.env': 'env.tpl',
@@ -48,7 +50,6 @@ TOP_LEVEL_TEMPLATES = {
 }
 
 INNER_LEVEL_TEMPLATES = {
-    'Dockerfile': 'dockerfile.tpl',
     'settings_override.py': 'settings.tpl',
     'storage.py': 'storage.tpl',
 }
@@ -206,9 +207,13 @@ class CreatorHelper(FSHelper):
             self.create_package(project=project, package='signals', app=app)
             self.create_package(project=project, package='tests', app=app)
             self.create_package(project=project, package='validators', app=app)
+            self.create_package(project=project, package='permissions', app=app)
         if package == 'serializers':
             self.create_package(project=project, package='tests', app=app)
+        if package == 'templates':
+            self.create_package(project=project, package='tags', app=app)
         if package == 'viewsets':
+            self.create_package(project=project, package='permissions', app=app)
             filename = 'router.py'
             index = TEMPLATES.index('router.tpl')
             template = TEMPLATES[index]
@@ -290,6 +295,12 @@ class CreatorHelper(FSHelper):
             pass
 
         # Create app-specific packages and module
+        if kwargs.get('api'):
+            DEFAULT_APP_PACKAGES.remove('admin')
+            DEFAULT_APP_PACKAGES.remove('forms')
+            DEFAULT_APP_PACKAGES.remove('templates')
+            DEFAULT_APP_PACKAGES.remove('views')
+
         for package in DEFAULT_APP_PACKAGES:
             try:
                 self.create_app_package(

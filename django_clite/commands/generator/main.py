@@ -44,6 +44,7 @@ def generate(ctx, dry, force, verbose):
     ctx.obj['cwd'] = os.getcwd()
     ctx.obj['admin'] = f"{os.getcwd()}/admin/"
     ctx.obj['admin_inlines'] = f"{os.getcwd()}/admin/inlines/"
+    ctx.obj['fixtures'] = f"{os.getcwd()}/fixtures/"
     ctx.obj['forms'] = f"{os.getcwd()}/forms/"
     ctx.obj['migrations'] = f"{os.getcwd()}/migrations/"
     ctx.obj['models'] = f"{os.getcwd()}/models/"
@@ -91,6 +92,28 @@ def admin(ctx, name, inline, fields, stub_permissions):
 
 
 @generate.command()
+@click.argument('name')
+@click.argument("fields", nargs=-1, required=False)
+@click.option('-n', '--number', default=1, help='Number of objects to create in fixture.')
+@click.pass_context
+def fixture(ctx, name, fields, number):
+    """
+    Generates model fixtures.
+    """
+
+    path = ctx.obj.get('fixtures')
+
+    helper = FixtureHelper(
+        cwd=path,
+        dry=ctx.obj.get('dry'),
+        force=ctx.obj.get('force'),
+        verbose=ctx.obj.get('verbose')
+    )
+
+    helper.create(model=name, fields=fields, total=number)
+
+
+@generate.command()
 @click.argument("name", required=True)
 @click.pass_context
 def form(ctx, name):
@@ -135,14 +158,15 @@ def manager(ctx, name):
 @click.option('-f', '--full', is_flag=True, help="Adds all related resources and TestCase")
 @click.option('--register-admin', is_flag=True, help="Register model to admin site.")
 @click.option('--register-inline', is_flag=True, help="Register model to admin site as inline.")
-@click.option('-m', '--is-user-managed', is_flag=True, help="Add created_by and updated_by fields.")
-@click.option('-i', '--inherits', required=False, help="Add model inheritance.")
+@click.option('-m', '--is-managed', is_flag=True, help="Add created_by and updated_by fields.")
+@click.option('-i', '--inherits', '--extends', required=False, help="Add model inheritance.")
 @click.option('--app', required=False, help="If base model inherits is in another app.")
+@click.option('--api', is_flag=True, help='Only add api-related files.')
 @click.argument("name", required=True)
 @click.argument("fields", nargs=-1, required=False)
 @click.pass_context
 def model(ctx, name, full, abstract, fields, register_admin,
-          register_inline, test_case, inherits, app, is_user_managed):
+          register_inline, test_case, inherits, api, app, is_managed):
     """
     Generates a model under the models directory.
     One can specify multiple attributes after the model's name, like so:
@@ -173,13 +197,19 @@ def model(ctx, name, full, abstract, fields, register_admin,
 
     model_fields = helper.create(
         model=name,
+        api=api,
         abstract=abstract,
         fields=fields,
         inherits=inherits,
         scope=app,
         project=ctx.obj['project_name'],
-        is_user_managed=is_user_managed,
+        is_managed=is_managed,
     )
+
+    if api:
+        ctx.invoke(test, name=name, scope="model")
+        ctx.invoke(serializer, name=name)
+        ctx.invoke(viewset, name=name)
 
     if register_admin or full:
         ctx.invoke(admin, name=name, fields=model_fields)
@@ -187,16 +217,18 @@ def model(ctx, name, full, abstract, fields, register_admin,
     if register_inline or full:
         ctx.invoke(admin, name=name, inline=True)
 
-    if test_case or full:
+    if (test_case or full) and not api:
         ctx.invoke(test, name=name, scope="model")
+
+    if full and not api:
+        ctx.invoke(serializer, name=name)
+        ctx.invoke(viewset, name=name)
 
     if full:
         ctx.invoke(form, name=name)
-        ctx.invoke(serializer, name=name)
         ctx.invoke(template, name=name)
         ctx.invoke(view, name=name, class_type="list")
         ctx.invoke(view, name=name, class_type="detail")
-        ctx.invoke(viewset, name=name)
 
     # Retuning model fields
     return model_fields
@@ -205,11 +237,11 @@ def model(ctx, name, full, abstract, fields, register_admin,
 @generate.command()
 @click.argument("name", required=True)
 @click.argument("fields", nargs=-1)
-@click.option('-i', '--inherits', required=False, help="Add model inheritance.")
-@click.option('-m', '--is-user-managed', is_flag=True, help="Add created_by and updated_by fields.")
+@click.option('-i', '--inherits', '--extends', required=False, help="Add model inheritance.")
+@click.option('-m', '--is-managed', is_flag=True, help="Add created_by and updated_by fields.")
 @click.option('--api', is_flag=True, help='Only add api-related files.')
 @click.pass_context
-def resource(ctx, name, fields, inherits, api, is_user_managed):
+def resource(ctx, name, fields, inherits, api, is_managed):
     """
     Generates an app resource.
 
@@ -227,12 +259,13 @@ def resource(ctx, name, fields, inherits, api, is_user_managed):
     ctx.invoke(
         model,
         name=name,
+        api=api,
         register_admin=True,
         register_inline=True,
         fields=fields,
         test_case=True,
         inherits=inherits,
-        is_user_managed=is_user_managed,
+        is_managed=is_managed,
     )
 
     ctx.invoke(serializer, name=name)

@@ -1,5 +1,4 @@
 import os
-import click
 from django_clite.helpers import get_project_name
 from django_clite.helpers import find_project_files
 from django_clite.helpers.logger import *
@@ -11,6 +10,8 @@ from django_clite.commands.inspector.main import apps as inspect_apps
 def wrong_place_warning(ctx):
     if (ctx.obj['path'] and ctx.obj['project_name']) is None:
         log_error(DEFAULT_MANAGEMENT_ERROR)
+        log_standard('')
+        log_standard(DEFAULT_MANAGEMENT_ERROR_HELP)
         raise click.Abort
 
 
@@ -36,7 +37,7 @@ def create(ctx, dry, default, verbose):
         verbose=verbose
     )
 
-    p, m, f = find_project_files(os.getcwd())
+    p, m, f = find_project_files(os.getcwd())  # project path, project directory, management_file
 
     ctx.obj['path'] = p
     ctx.obj['file'] = f
@@ -84,8 +85,11 @@ def project(ctx, name, docker, dokku, custom_auth, apps):
 @create.command()
 @click.argument('apps', nargs=-1)
 @click.option('--is-auth', is_flag=True, help="Add User for custom authentication.")
+@click.option('--project-name', '-p', help="Specify name of your project.")
+@click.option('--directory', '-d', type=click.Path(), help="Specify path to your management.")
+@click.option('--api', is_flag=True, help="Add a special api urls module to your app directory.")
 @click.pass_context
-def app(ctx, apps, is_auth):
+def app(ctx, apps, is_auth, project_name, directory, api):
     """
     Creates new django apps.
 
@@ -107,11 +111,20 @@ def app(ctx, apps, is_auth):
     a DRF router is instantiated in `router.py` and its urls added to each app's urlpatterns by default.
     """
 
-    wrong_place_warning(ctx)
+    # Get project name from arguments
+    __project_name = project_name if project_name else ctx.obj['project_name']
+    __directory_path = directory if directory else ctx.obj['management']
 
-    project_name = ctx.obj['project_name']
+    try:
+        path = os.path.join(__directory_path, __project_name)
+    except TypeError:
+        path = ''
 
-    path = os.path.join(ctx.obj['management'], project_name)
+    if not os.path.exists(path):
+        log_error(DEFAULT_MANAGEMENT_ERROR)
+        log_standard('')
+        log_standard(DEFAULT_MANAGEMENT_ERROR_HELP)
+        raise click.Abort()
 
     helper = CreatorHelper(
         cwd=path,
@@ -134,9 +147,10 @@ def app(ctx, apps, is_auth):
         is_custom_app = (name == auth_application)
 
         helper.create_app(
-            project=project_name,
+            project=__project_name,
             app=name,
-            auth=is_custom_app
+            auth=is_custom_app,
+            api=api,
         )
 
 
