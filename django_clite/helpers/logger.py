@@ -32,7 +32,7 @@ DEFAULT_MANAGEMENT_ERROR_HELP = """If your project uses custom configuration, yo
     Specify the project name with the flag: --project/-p
     
     Example:
-    D create app classroom --project school --directory ../    
+    D create app classroom --project school --directory path/to/management
 """
 
 DEFAULT_MANAGEMENT_TIP = """Tip:

@@ -22,9 +22,10 @@ def ensure_test_directory(cwd):
 
 @click.group()
 @click.option('--dry', '--dry-run', is_flag=True, help="Display output without deleting files")
-@click.confirmation_option(prompt='Are you sure you want to delete this file?')
+@click.option('--force', is_flag=True, help="Override any conflicting files.")
+@click.option('--verbose', is_flag=True, help="Run in verbose mode.")
 @click.pass_context
-def destroy(ctx, dry):
+def destroy(ctx, dry, force, verbose):
     """
     Removes models, serializers, and other resources
     """
@@ -33,6 +34,8 @@ def destroy(ctx, dry):
 
     ctx.ensure_object(dict)
     ctx.obj['dry'] = dry
+    ctx.obj['force'] = force
+    ctx.obj['verbose'] = verbose
     ctx.obj['in_app'] = 'apps.py' in os.listdir('.')
     ctx.obj['cwd'] = os.getcwd()
     ctx.obj['admin'] = f"{os.getcwd()}/admin/"
@@ -64,7 +67,12 @@ def admin(ctx, name, inline):
     if inline:
         path = ctx.obj['admin_inlines']
 
-    h = AdminHelper(cwd=path, dry=ctx.obj['dry'])
+    h = AdminHelper(
+        cwd=path,
+        dry=ctx.obj['dry'],
+        force=ctx.obj['force'],
+        verbose=ctx.obj['verbose']
+    )
 
     h.delete(model=name, inline=inline)
 
@@ -74,12 +82,17 @@ def admin(ctx, name, inline):
 @click.pass_context
 def fixture(ctx, name):
     """
-    Destroys a fixture
+    Destroys a fixture.
     """
 
     path = ctx.obj.get('fixtures')
 
-    helper = FixtureHelper(cwd=path, dry=ctx.obj.get('dry'))
+    helper = FixtureHelper(
+        cwd=path,
+        dry=ctx.obj['dry'],
+        force=ctx.obj['force'],
+        verbose=ctx.obj['verbose']
+    )
 
     helper.delete(model=name)
 
@@ -94,7 +107,12 @@ def form(ctx, name):
 
     path = ctx.obj['forms']
 
-    h = FormHelper(cwd=path, dry=ctx.obj['dry'])
+    h = FormHelper(
+        cwd=path,
+        dry=ctx.obj['dry'],
+        force=ctx.obj['force'],
+        verbose=ctx.obj['verbose']
+    )
 
     h.delete(model=name)
 
@@ -109,7 +127,12 @@ def manager(ctx, name):
 
     path = ctx.obj['managers']
 
-    h = ManagerHelper(cwd=path, dry=ctx.obj['dry'])
+    h = ManagerHelper(
+        cwd=path,
+        dry=ctx.obj['dry'],
+        force=ctx.obj['force'],
+        verbose=ctx.obj['verbose']
+    )
 
     h.delete(model=name)
 
@@ -128,7 +151,12 @@ def model(ctx, name, full, unregister_admin, unregister_inline, test_case):
 
     path = ctx.obj['models']
 
-    h = ModelHelper(cwd=path, dry=ctx.obj['dry'])
+    h = ModelHelper(
+        cwd=path,
+        dry=ctx.obj['dry'],
+        force=ctx.obj['force'],
+        verbose=ctx.obj['verbose']
+    )
 
     ensure_test_directory(path)
 
@@ -148,8 +176,8 @@ def model(ctx, name, full, unregister_admin, unregister_inline, test_case):
         ctx.invoke(serializer, name=name)
         ctx.invoke(test, name=name, scope='serializer')
         ctx.invoke(template, name=name)
-        ctx.invoke(view, name=name, list=True)
-        ctx.invoke(view, name=name, detail=True)
+        ctx.invoke(view, name=name, class_type="list")
+        ctx.invoke(view, name=name, class_type="detail")
         ctx.invoke(viewset, name=name)
 
 
@@ -192,7 +220,12 @@ def serializer(ctx, name):
 
     path = ctx.obj['serializers']
 
-    h = SerializerHelper(cwd=path, dry=ctx.obj['dry'])
+    h = SerializerHelper(
+        cwd=path,
+        dry=ctx.obj['dry'],
+        force=ctx.obj['force'],
+        verbose=ctx.obj['verbose']
+    )
 
     h.delete(model=name)
     
@@ -212,7 +245,12 @@ def view(ctx, name, class_type):
 
     path = ctx.obj['views']
 
-    h = ViewHelper(cwd=path, dry=ctx.obj['dry'])
+    h = ViewHelper(
+        cwd=path,
+        dry=ctx.obj['dry'],
+        force=ctx.obj['force'],
+        verbose=ctx.obj['verbose']
+    )
 
     h.delete(model=name, class_type=class_type)
 
@@ -227,7 +265,12 @@ def viewset(ctx, name):
 
     path = ctx.obj['viewsets']
 
-    h = ViewSetHelper(cwd=path, dry=ctx.obj['dry'])
+    h = ViewSetHelper(
+        cwd=path,
+        dry=ctx.obj['dry'],
+        force=ctx.obj['force'],
+        verbose=ctx.obj['verbose']
+    )
 
     h.delete(model=name)
 
@@ -242,7 +285,12 @@ def template(ctx, name):
 
     path = ctx.obj['templates']
 
-    h = TemplateHelper(cwd=path, dry=ctx.obj['dry'])
+    h = TemplateHelper(
+        cwd=path,
+        dry=ctx.obj['dry'],
+        force=ctx.obj['force'],
+        verbose=ctx.obj['verbose']
+    )
 
     h.delete(model=name)
 
@@ -258,7 +306,12 @@ def test(ctx, name, scope):
 
     path = ctx.obj[f'{scope}s_tests']
 
-    h = TestHelper(cwd=path, dry=ctx.obj['dry'])
+    h = TestHelper(
+        cwd=path,
+        dry=ctx.obj['dry'],
+        force=ctx.obj['force'],
+        verbose=ctx.obj['verbose']
+    )
 
     ensure_test_directory(ctx.obj[f'{scope}s'])
 

@@ -7,11 +7,14 @@ from .logger import log_error
 from .fs import FSHelper
 from .parser import sanitized_string
 from .templates import rendered_file_template
-from .fields import json_field
-from .fields import FieldFactory
+from faker import Faker
+from faker.providers import company, date_time, internet, misc
 
-field_factory = FieldFactory()
-
+fake = Faker()
+fake.add_provider(company)
+fake.add_provider(date_time)
+fake.add_provider(internet)
+fake.add_provider(misc)
 
 DEFAULT_NOT_IN_SCOPE_WARNING = """Cannot find model {} in {} scope. Want to create model?"""
 
@@ -80,6 +83,27 @@ DEFAULT_MODEL_OPTIONS = {
     'UUIDField': 'default=uuid.uuid4, editable=False',
 }
 
+JSON_COMPATIBLE_FIELDS = {
+    'BigIntegerField': 'pyint',
+    'BooleanField': 'pybool',
+    'CharField': 'text',
+    'DateField': 'future_date',
+    'DateTimeField': 'iso8601',
+    'DecimalField': 'pydecimal',
+    'EmailField': 'safe_email',
+    'GenericIPAddressField': 'ipv4',
+    'FileField': 'file_path',
+    'FilePathField': 'file_path',
+    'FloatField': 'pyfloat',
+    'ImageField': 'image_url',
+    'IntegerField': 'pyint',
+    'SlugField': 'slug',
+    'TextField': 'text',
+    'TimeField': 'time',
+    'URLField': 'url',
+    'UUIDField': 'uuid4',
+}
+
 DEFAULT_SPECIAL_INHERITABLE_TYPES = {
     'abstract-user': 'django.contrib.auth.models',
     'abstract-base-user': 'django.contrib.auth.models',
@@ -103,7 +127,6 @@ TEMPLATES = [f for f in os.listdir(TEMPLATE_DIR) if f.endswith('tpl')]
 
 
 class FieldParser(FSHelper):
-
     # Field names and types
     fixture_fields = []
 
@@ -154,6 +177,23 @@ class FieldParser(FSHelper):
 
         return None
 
+    def __handle_fixture(self, field_name, field_type):
+        if field_type in JSON_COMPATIBLE_FIELDS:
+            fixture_template = Template('''"{{ field_name }}": {{ field_value }},''')
+            value = getattr(fake, JSON_COMPATIBLE_FIELDS[field_type])()
+
+            if type(value).__name__ == 'str':
+                value = f'"{value}"'
+
+            if type(value).__name__ == 'bool':
+                value = f'{value}'.lower()
+
+            content = fixture_template.render(
+                field_name=field_name,
+                field_value=value
+            )
+            self.__append_fixture_field(content)
+
     def __handle_field(self, model, field_name, field_type):
         """
         Determines what options are present with each model field.
@@ -164,15 +204,10 @@ class FieldParser(FSHelper):
         :return:
         """
 
-        field_factory = FieldFactory()
+        # Parse field type and name for fixtures
+        self.__handle_fixture(field_name, field_type)
 
-        fixture_template = Template('''"{{ field_name }}": {{ field_value }},''')
-        content = fixture_template.render(
-            field_name=field_name,
-            field_value=getattr(field_factory, field_type)()
-        )
-        self.__append_fixture_field(content)
-
+        # Parse field type and name for model
         if DEFAULT_MODEL_OPTIONS[field_type] is not None:
             template = 'model-field.tpl'
 
@@ -236,7 +271,7 @@ class FieldParser(FSHelper):
             value = value.replace(',', '')
             self.fixture_fields.append(value)
 
-    def parse_fields(self, model, fields, **kwargs):
+    def parse_fields(self, model, fields):
         """
         Parses and saves field data in fields_list for future reference
 
@@ -245,8 +280,6 @@ class FieldParser(FSHelper):
         :param kwargs:
         :return:
         """
-
-        field_factory = FieldFactory()
 
         for field in fields:
             try:

@@ -20,7 +20,7 @@ class FixtureHelper(FieldParser):
         classname = inflection.camelize(model)
 
         if kwargs.get('fields') is not None:
-            self.parse_fields(model, **kwargs)
+            self.parse_fields(model, kwargs.get('fields'))
 
         template = 'fixture.tpl' \
             if not kwargs.get('template') \
@@ -37,26 +37,22 @@ class FixtureHelper(FieldParser):
             }
         )
 
-        log_success(content)
-
-        # self.create_file(
-        #     content=content,
-        #     filename=f'{inflection.pluralize(model)}.json',
-        #     path=self.cwd,
-        # )
+        self.create_file(
+            content=content,
+            filename=f'{inflection.pluralize(model)}.json',
+            path=self.cwd,
+        )
 
     def delete(self, model, **kwargs):
         model = self.check_noun(model)
         classname = inflection.camelize(model)
 
         filename = f"{model}.json"
-        template_import = 'form-import.tpl'
 
         if self.default_destroy_file(
             model=model,
-            templates_directory=TEMPLATE_DIR,
-            template_import=template_import
+            templates_directory=TEMPLATE_DIR
         ):
 
-            resource = f"{classname}Form"
+            resource = f"{classname} fixture"
             log_success(DEFAULT_DELETE_MESSAGE.format(filename, resource))

@@ -97,6 +97,10 @@ def admin(ctx, name, inline, fields, stub_permissions):
 @click.option('-n', '--number', default=1, help='Number of objects to create in fixture.')
 @click.pass_context
 def fixture(ctx, name, fields, number):
+    """
+    Generates model fixtures.
+    """
+
     path = ctx.obj.get('fixtures')
 
     helper = FixtureHelper(

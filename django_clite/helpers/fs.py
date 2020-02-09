@@ -262,19 +262,27 @@ class FSHelper(object):
         return True
 
     def default_destroy_file(self, model, **kwargs):
+
+        if not self.__dry and not self.__force:
+            click.confirm('Are you sure you want to delete this file?', abort=True)
+
         filename = f'{model}.py'
         classname = inflection.camelize(model)
 
-        content = rendered_file_template(
-            path=kwargs.get('templates_directory'),
-            template=kwargs.get('template_import'),
-            context={
-                'classname': classname,
-                'model': model
-            }
-        )
+        try:
+            # Optional import removal
+            content = rendered_file_template(
+                path=kwargs.get('templates_directory'),
+                template=kwargs.get('template_import'),
+                context={
+                    'classname': classname,
+                    'model': model
+                }
+            )
 
-        self.remove_import(content=content)
+            self.remove_import(content=content)
+        except AttributeError or ValueError:
+            pass
 
         return self.destroy_file(
             filename=filename,

@@ -295,6 +295,12 @@ class CreatorHelper(FSHelper):
             pass
 
         # Create app-specific packages and module
+        if kwargs.get('api'):
+            DEFAULT_APP_PACKAGES.remove('admin')
+            DEFAULT_APP_PACKAGES.remove('forms')
+            DEFAULT_APP_PACKAGES.remove('templates')
+            DEFAULT_APP_PACKAGES.remove('views')
+
         for package in DEFAULT_APP_PACKAGES:
             try:
                 self.create_app_package(

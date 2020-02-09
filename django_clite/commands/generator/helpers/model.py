@@ -36,8 +36,8 @@ class ModelHelper(FieldParser):
         table_name = f"{self.app_name}_{inflection.pluralize(model)}"
 
         # Parse model fields by name and type
-        if kwargs['fields'] is not None:
-            self.parse_fields(model, **kwargs)
+        if kwargs.get('fields') is not None:
+            self.parse_fields(model, kwargs.get('fields'))
 
         # Handle SQL views
         # if is_sql:
