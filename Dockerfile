@@ -15,7 +15,6 @@ ENV LANG C.UTF-8
 COPY . .
 
 # Install dependencies
-RUN apk add gcc musl-dev linux-headers
-RUN pip install -e .
+RUN apk add gcc musl-dev linux-headers && pip install -e .
 
 ENTRYPOINT ['D']
