@@ -2,7 +2,7 @@ image: python:3.7.3
 
 pipelines:
   branches:
-    master:
+    development:
       - step:
           caches:
             - pip
@@ -10,7 +10,9 @@ pipelines:
             - pip install pipenv --upgrade
             - pipenv install --deploy --system
             - tox test
-            - pipe: atlassian/pypi-publish:0.2.7
-              variables:
-                PYPI_USERNAME: $PYPI_PRIVATE_USER
-                PYPI_PASSWORD: $PYPI_PRIVATE_PASS
+    master:
+      - step:
+        - atlassian/pypi-publish:0.2.7
+        variables:
+          PYPI_USERNAME: $PYPI_PRIVATE_USER
+          PYPI_PASSWORD: $PYPI_PRIVATE_PASS
