@@ -163,7 +163,7 @@ def load_data(ctx, app, recursive, fixture):
     print(management)
 
 
-# @run.command()
+@run.command()
 @click.option('-a', '--app', type=str, required=False)
 @click.argument('options', nargs=-1, required=False)
 @click.pass_context

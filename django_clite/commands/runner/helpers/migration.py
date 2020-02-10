@@ -1,11 +1,7 @@
 import os
 import subprocess
 from .runner import RunnerHelper
-
-
-DEFAULT_MAKE_MIGRATIONS_COMMAND = ['python3', 'manage.py', 'makemigrations']
-
-DEFAULT_MIGRATE_COMMAND = ['python3', 'manage.py', 'migrate']
+from django_clite.helpers.logger import log_error
 
 
 class MigrationHelper(RunnerHelper):
@@ -14,27 +10,35 @@ class MigrationHelper(RunnerHelper):
     def make_migrations(cls, path, app, options):
         os.chdir(path)
 
-        if app is not None:
-            DEFAULT_MAKE_MIGRATIONS_COMMAND.append(app)
-
-        if options:
-            for option in options:
-                DEFAULT_MAKE_MIGRATIONS_COMMAND.append(option)
-
-        subprocess.check_output(DEFAULT_MAKE_MIGRATIONS_COMMAND)
+        try:
+            management = os.path.join(path, 'manage.py')
+            command = ['python3', management, 'makemigrations']
+            if app is not None:
+                command.append(app)
+            # TODO: determine how to handle manage.py flags
+            #   or whether we should support them, at all.
+            # for option in options:
+            #     command.append(option)
+            subprocess.check_call(command)
+        except subprocess.CalledProcessError:
+            pass
 
     @classmethod
     def migrate(cls, path, app, options):
         os.chdir(path)
 
-        if app is not None:
-            DEFAULT_MIGRATE_COMMAND.append(app)
-
-        if options:
-            for option in options:
-                DEFAULT_MIGRATE_COMMAND.append(option)
-
-        subprocess.check_output(DEFAULT_MIGRATE_COMMAND)
+        try:
+            management = os.path.join(path, 'manage.py')
+            command = ['python3', management, 'migrate']
+            if app is not None:
+                command.append(app)
+            # TODO: determine how to handle manage.py flags
+            #   or whether we should support them, at all.
+            # for option in options:
+            #     command.append(option)
+            subprocess.check_call(command)
+        except subprocess.CalledProcessError:
+            pass
 
     @classmethod
     def run(cls, path, app, options):
