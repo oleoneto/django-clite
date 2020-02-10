@@ -9,10 +9,11 @@ pipelines:
           script:
             - pip install pipenv --upgrade
             - pipenv install --deploy --system
-            - tox test
+            # - tox test # skipping for now. No real tests to run
     master:
       - step:
-        - atlassian/pypi-publish:0.2.7
-        variables:
-          PYPI_USERNAME: $PYPI_PRIVATE_USER
-          PYPI_PASSWORD: $PYPI_PRIVATE_PASS
+          script:
+          - pipe: atlassian/pypi-publish:0.2.7
+            variables:
+             PYPI_USERNAME: $PYPI_PRIVATE_USER
+             PYPI_PASSWORD: $PYPI_PRIVATE_PASS
