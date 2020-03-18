@@ -59,3 +59,9 @@ def log_success(message, **kwargs):
 
 def log_standard(message, **kwargs):
     click.secho(message=message, **kwargs)
+
+
+def log_verbose(header, message):
+    if header:
+        click.secho(f'{header}', bold=True)
+    click.secho(f'{message}', bold=False)

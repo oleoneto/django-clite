@@ -6,6 +6,7 @@ verify_ssl = true
 [dev-packages]
 django-clite = {editable = true,path = "."}
 ipykernel = "*"
+jupyter = "*"
 
 [packages]
 click = "==7.0"

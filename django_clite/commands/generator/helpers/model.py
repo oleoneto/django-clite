@@ -58,6 +58,7 @@ class ModelHelper(FieldParser):
                 'model': model,
                 'model_plural': inflection.pluralize(model),
                 'is_managed': kwargs.get('is_managed'),
+                'soft_delete': kwargs.get('soft_delete'),
             }
         )
 

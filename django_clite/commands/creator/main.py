@@ -1,4 +1,5 @@
 import os
+import inquirer
 from django_clite.helpers import get_project_name
 from django_clite.helpers import find_project_files
 from django_clite.helpers.logger import *
@@ -139,9 +140,14 @@ def app(ctx, apps, is_auth, project_name, directory, api):
         if len(apps) == 1:
             auth_application = apps[0]
         else:
-            auth_application = click.prompt(f"Which app will be used for authentication? {apps}")
-            while auth_application not in apps:
-                auth_application = click.prompt(f"Please choose a valid option: {apps}")
+            questions = [
+                inquirer.List(
+                    'app',
+                    message="Which app will be used for authentication?",
+                    choices=[name for name in apps],
+                ),
+            ]
+            auth_application = inquirer.prompt(questions)['app']
 
     for name in apps:
         is_custom_app = (name == auth_application)

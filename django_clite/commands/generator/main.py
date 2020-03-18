@@ -162,11 +162,12 @@ def manager(ctx, name):
 @click.option('-i', '--inherits', '--extends', required=False, help="Add model inheritance.")
 @click.option('--app', required=False, help="If base model inherits is in another app.")
 @click.option('--api', is_flag=True, help='Only add api-related files.')
+@click.option('-s', '--soft-delete', is_flag=True, help='Add ability to soft-delete records.')
 @click.argument("name", required=True)
 @click.argument("fields", nargs=-1, required=False)
 @click.pass_context
 def model(ctx, name, full, abstract, fields, register_admin,
-          register_inline, test_case, inherits, api, app, is_managed):
+          register_inline, test_case, inherits, api, app, is_managed, soft_delete):
     """
     Generates a model under the models directory.
     One can specify multiple attributes after the model's name, like so:
@@ -204,6 +205,7 @@ def model(ctx, name, full, abstract, fields, register_admin,
         scope=app,
         project=ctx.obj['project_name'],
         is_managed=is_managed,
+        soft_delete=soft_delete
     )
 
     if api:
@@ -240,8 +242,9 @@ def model(ctx, name, full, abstract, fields, register_admin,
 @click.option('-i', '--inherits', '--extends', required=False, help="Add model inheritance.")
 @click.option('-m', '--is-managed', is_flag=True, help="Add created_by and updated_by fields.")
 @click.option('--api', is_flag=True, help='Only add api-related files.')
+@click.option('-s', '--soft-delete', is_flag=True, help='Add ability to soft-delete records.')
 @click.pass_context
-def resource(ctx, name, fields, inherits, api, is_managed):
+def resource(ctx, name, fields, inherits, api, is_managed, soft_delete):
     """
     Generates an app resource.
 
@@ -260,12 +263,13 @@ def resource(ctx, name, fields, inherits, api, is_managed):
         model,
         name=name,
         api=api,
-        register_admin=True,
-        register_inline=True,
+        register_admin=api,
+        register_inline=api,
         fields=fields,
         test_case=True,
         inherits=inherits,
         is_managed=is_managed,
+        soft_delete=soft_delete
     )
 
     ctx.invoke(serializer, name=name)

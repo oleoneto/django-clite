@@ -348,6 +348,9 @@ class CreatorHelper(FSHelper):
         TestHelper(cwd=paths['models_test']).create_auth_user(scope='model')
         TestHelper(cwd=paths['serializers_test']).create_auth_user(scope='serializer')
 
+        # return to application directory
+        os.chdir(base)
+
     def create_settings(self, project, apps=None):
         template = 'settings.tpl'
         filename = 'settings_override.py'

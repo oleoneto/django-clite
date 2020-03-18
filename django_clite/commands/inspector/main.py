@@ -48,10 +48,15 @@ def apps(ctx, paths, no_stdout):
 
 
 @inspect.command()
+@click.option('--paths', is_flag=True, help="Show app paths.")
+@click.option('--no-stdout', is_flag=True, help="Do not print to stdout.")
 @click.pass_context
-def models(ctx):
+def models(ctx, paths, no_stdout):
     """
     Show your project models.
     """
 
-    return ctx.obj['helper'].get_models()
+    return ctx.obj['helper'].get_models(
+        show_paths=paths,
+        no_stdout=no_stdout
+    )
