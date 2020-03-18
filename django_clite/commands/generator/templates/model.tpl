@@ -24,6 +24,17 @@ class {{ classname }}({% if base %}{{ base[1] }}{% else %}models.Model{% endif %
     created_at = models.DateTimeField(_('created at'), auto_now_add=True, editable=False)
     updated_at = models.DateTimeField(_('updated at'), auto_now=True, editable=False)
 
+    {%- if soft_delete %}
+    deleted = models.BooleanField(verbose_name=_('deleted'), default=False, editable=False)
+    deleted_at = models.DateTimeField(verbose_name=_('deleted at'), auto_now=True, editable=False)
+    deleted_by = models.ForeignKey(
+            get_user_model(), related_name="deleted_{{ model_plural }}",
+            on_delete=models.PROTECT, editable=False,
+            verbose_name=_('deleted by'),
+            null=True
+    )
+    {% endif %}
+
     {%- if is_managed %}
     created_by = models.ForeignKey(
             get_user_model(), related_name="created_{{ model_plural }}",
@@ -40,9 +51,8 @@ class {{ classname }}({% if base %}{{ base[1] }}{% else %}models.Model{% endif %
     {%- endif %}
 
     class Meta:
-        {% if abstract %}
-        abstract = True
-        {%- endif %}
+        {%- if abstract %}
+        abstract = True{%- endif %}
         db_table = '{{ db_table.lower() }}'
         indexes = [models.Index(fields=['created_at'])]
         ordering = ['-created_at']
@@ -58,5 +68,4 @@ class {{ classname }}({% if base %}{{ base[1] }}{% else %}models.Model{% endif %
     {% if not api %}
     def get_absolute_url(self):
         return reverse('{{ model.lower() }}-detail', kwargs={'slug': self.slug})
-    {%- else -%}
-    {%- endif %}
+    {%- else -%}{%- endif %}

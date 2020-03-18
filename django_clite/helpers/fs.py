@@ -441,9 +441,12 @@ class FSHelper(object):
         )
 
         for filename, c in levels:
-            if filename in os.listdir(current_dir):
-                code = c
-                path = current_dir
+            try:
+                if filename in os.listdir(current_dir):
+                    code = c
+                    path = current_dir
+            except FileNotFoundError:
+                log_error(f'{current_dir} does not exist.')
 
         if code == 1:
             self.__project_directory = path
@@ -487,11 +490,16 @@ class FSHelper(object):
 
         path = path if path else self.__cwd
 
-        click.echo(DEFAULT_PARSED_CONTENT_LOG.format(
-            filename,
-            path,
-            content
-        ))
+        log_verbose(
+            header=f'{path}{filename}',
+            message=content,
+        )
+
+        # click.echo(DEFAULT_PARSED_CONTENT_LOG.format(
+        #     filename,
+        #     path,
+        #     content
+        # ))
 
     ##################################
 
