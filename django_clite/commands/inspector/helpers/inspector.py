@@ -1,6 +1,6 @@
 import os
 from django_clite.helpers import FSHelper
-from django_clite.helpers.logger import log_info, log_standard
+from django_clite.helpers.logger import log_info, log_standard, log_verbose
 
 
 class InspectorHelper(FSHelper):
@@ -22,11 +22,10 @@ class InspectorHelper(FSHelper):
         for app, path in sorted(current_apps.items()):
 
             if not no_stdout:
-                log_info(app)
-
-            if show_paths:
-                if not no_stdout:
-                    log_standard(f"{path}")
+                log_standard(f'{app}', bold=True)
+                
+                if show_paths:
+                    log_standard(f'{path}\n')
 
         return current_apps
 
@@ -47,7 +46,7 @@ class InspectorHelper(FSHelper):
 
         return current_paths
 
-    def get_models(self):
+    def get_models(self, show_paths=False, no_stdout=False):
         """
         Retrieve models under each app's models package.
 
@@ -74,17 +73,25 @@ class InspectorHelper(FSHelper):
 
             models_directory = path + "/models"
 
-            log_info(app)
-
             for root, dirs, files in os.walk(models_directory):
                 dirs[:] = [d for d in dirs if d not in excluded_dirs]
                 files[:] = [f for f in files if f not in excluded_files]
 
-                for f in files:
-                    models.append({app: f})
-                    log_standard(f)
+                if files:
+                    log_standard(app, bold=True)
 
-            log_standard("---")
+                    if show_paths:
+                        if not no_stdout:
+                            log_standard(f'  {path}', bold=True)
+
+                    for f in sorted(files):
+                        models.append({app: f})
+                        if not no_stdout:
+                            log_verbose(
+                                header=None,
+                                message='    {0:20}'.format(f),
+                            )
+                    log_standard('')
 
         return models
 
