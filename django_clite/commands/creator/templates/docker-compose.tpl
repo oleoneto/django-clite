@@ -4,7 +4,7 @@ services:
   web:
     container_name: "{{ project }}_web"
     labels:
-        com.{{ project }}.web.description = "{{ project }}: Web Application"
+        com.{{ project }}.web.description: "{{ project }}: Web Application"
     build:
         context: .
     volumes:
