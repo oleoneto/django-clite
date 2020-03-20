@@ -1,4 +1,5 @@
 import os
+import fileinput
 from django_clite.helpers import FSHelper
 from django_clite.helpers.logger import log_info, log_standard, log_verbose
 
@@ -27,7 +28,7 @@ class InspectorHelper(FSHelper):
                 if show_paths:
                     log_standard(f'{path}\n')
 
-        return current_apps
+        return sorted(current_apps)
 
     def get_app_paths(self):
         """
@@ -56,7 +57,7 @@ class InspectorHelper(FSHelper):
         models = []
 
         excluded_dirs = [
-            'signals', 'tests', 'helpers',
+            'signals', 'tests', 'helpers', 'abstract', 'abstracts',
             'validators', 'managers', '__pycache__'
         ]
 
@@ -69,6 +70,7 @@ class InspectorHelper(FSHelper):
             for c, _, files in os.walk(self.cwd) if 'apps.py' in files
         }
 
+        # One day... one day I'll refactor this
         for app, path in sorted(current_apps.items()):
 
             models_directory = path + "/models"
@@ -82,17 +84,22 @@ class InspectorHelper(FSHelper):
 
                     if show_paths:
                         if not no_stdout:
-                            log_standard(f'  {path}', bold=True)
+                            log_standard(f'  {models_directory}', bold=True)
 
-                    for f in sorted(files):
-                        models.append({app: f})
-                        if not no_stdout:
-                            log_verbose(
-                                header=None,
-                                message='    {0:20}'.format(f),
-                            )
-                    log_standard('')
+                for file in sorted(files):
+                    models.append({app: file})
+                    model_file = models_directory + f'/{file}'
 
+                    for line in fileinput.input(model_file):
+                        if "class " in line and "Meta:" not in line:
+                            model_name = line.split('class ')[-1].split('(')[0]
+                            if not no_stdout:
+                                log_verbose(
+                                    header=None,
+                                    message='    {0:20}'.format(model_name),
+                                )
+                    fileinput.close()
+                log_standard('')
         return models
 
     def parse_model_attributes(self):
