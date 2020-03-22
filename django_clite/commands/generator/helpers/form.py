@@ -15,6 +15,7 @@ TEMPLATES = [f for f in os.listdir(TEMPLATE_DIR) if f.endswith('tpl')]
 class FormHelper(FSHelper):
 
     def create(self, model, **kwargs):
+        model = sanitized_string(model)
 
         template = 'form.tpl' \
             if not kwargs.get('template') \

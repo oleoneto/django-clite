@@ -1,6 +1,7 @@
 import os
 import inflection
 from django_clite.helpers.logger import *
+from django_clite.helpers import sanitized_string
 from django_clite.helpers import FSHelper
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__)).rsplit('/', 1)[0]
@@ -13,6 +14,7 @@ TEMPLATES = [f for f in os.listdir(TEMPLATE_DIR) if f.endswith('tpl')]
 class AdminHelper(FSHelper):
 
     def create(self, model, fields=None, **kwargs):
+        model = sanitized_string(model)
 
         scope = "Admin"
         template = 'admin.tpl' \
