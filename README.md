@@ -2,11 +2,11 @@
 
 A CLI tool that handles creating and managing Django projects
 
-![PyPI - License](https://img.shields.io/pypi/l/django-clite?style=flat-square)
-![PyPI - Python Version](https://img.shields.io/pypi/pyversions/django-clite?style=flat-square)
-![PyPI](https://img.shields.io/pypi/v/django-clite?style=flat-square)
-![Bitbucket Pipelines](https://img.shields.io/bitbucket/pipelines/oleoneto/django-clite/development?style=flat-square)
-![PyPI - Downloads](https://img.shields.io/pypi/dm/django-clite?style=flat-square)
+![publish](https://github.com/oleoneto/django-clite/workflows/publish/badge.svg?branch=master)
+![PyPI - Package](https://img.shields.io/pypi/v/django-clite)
+![PyPI - Python](https://img.shields.io/pypi/pyversions/django-clite)
+![PyPI - License](https://img.shields.io/pypi/l/django-clite)
+![PyPI - Downloads](https://img.shields.io/pypi/dm/django-clite)
 
 
 - [Introduction](#django-clite)
@@ -46,7 +46,7 @@ djc
 ```
 
 ## To Do
-[Check out our open issues](/issues).
+[Check out our open issues](issues).
 
 ## Pull requests
 Found a bug? See a typo? Have an idea for new command?
