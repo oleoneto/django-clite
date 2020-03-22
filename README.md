@@ -46,7 +46,7 @@ djc
 ```
 
 ## To Do
-[Check out our open issues](issues).
+[Check out our open issues](https://github.com/oleoneto/django-clite/issues).
 
 ## Pull requests
 Found a bug? See a typo? Have an idea for new command?
