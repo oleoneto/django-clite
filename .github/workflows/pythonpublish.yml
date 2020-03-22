@@ -1,6 +1,4 @@
-name: release-and-upload-python-package
-
-uses: actions/create-release@v1
+name: upload-python-package
 
 on:
   release:
