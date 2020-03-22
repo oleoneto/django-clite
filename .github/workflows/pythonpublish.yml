@@ -1,8 +1,9 @@
 name: release-and-upload-python-package
 
 on:
-  release:
-    types: [created]
+  push:
+    branches:
+      - master
 
 jobs:
   deploy:
