@@ -15,6 +15,7 @@ TEMPLATES = [f for f in os.listdir(TEMPLATE_DIR) if f.endswith('tpl')]
 class ViewSetHelper(FSHelper):
 
     def create(self, model, read_only=False):
+        model = sanitized_string(model)
 
         template = 'viewset.tpl'
         template_import = 'viewset-import.tpl'

@@ -99,7 +99,7 @@ class InspectorHelper(FSHelper):
                                     message='    {0:20}'.format(model_name),
                                 )
                     fileinput.close()
-                log_standard('')
+            log_standard('')
         return models
 
     def parse_model_attributes(self):
