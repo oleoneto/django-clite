@@ -5,7 +5,7 @@ from django_clite.helpers import find_project_files
 from django_clite.helpers.logger import *
 from .helpers import *
 from django_clite.commands.inspector.main import InspectorHelper
-from django_clite.commands.inspector.main import apps as inspect_apps
+from django_clite.commands.inspector.main import inspect
 
 
 def wrong_place_warning(ctx):
@@ -183,7 +183,7 @@ def settings(ctx, ignore_apps):
 
     if not ignore_apps:
         ctx.obj['helper'] = InspectorHelper(cwd=ctx.obj['management'])
-        apps = ctx.invoke(inspect_apps, no_stdout=True)
+        apps = ctx.invoke(inspect, scope='apps', no_stdout=True)
         h.create_settings(project=ctx.obj['project_name'], apps=apps)
     else:
         h.create_settings(project=ctx.obj['project_name'])
