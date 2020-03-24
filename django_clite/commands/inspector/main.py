@@ -15,7 +15,7 @@ def wrong_place_warning(ctx):
 @click.option('--paths', is_flag=True, help="Show app paths.")
 @click.option('--no-stdout', is_flag=True, help="Do not print to stdout.")
 @click.argument('scope', required=True, type=click.Choice([
-    'admin', 'fixtures', 'forms', 'managers', 'models', 'serializers', 'viewsets']
+    'apps', 'admin', 'fixtures', 'forms', 'managers', 'models', 'serializers', 'viewsets']
 ))
 @click.pass_context
 def inspect(ctx, scope, paths, no_stdout):
