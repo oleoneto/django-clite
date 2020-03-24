@@ -2,6 +2,7 @@ import os
 import fileinput
 from django_clite.helpers import FSHelper
 from django_clite.helpers.logger import log_info, log_standard, log_verbose
+import re
 
 
 class InspectorHelper(FSHelper):
@@ -47,7 +48,7 @@ class InspectorHelper(FSHelper):
 
         return current_paths
 
-    def get_models(self, show_paths=False, no_stdout=False):
+    def get_classes(self, scope, show_paths=False, no_stdout=False):
         """
         Retrieve models under each app's models package.
 
@@ -58,7 +59,7 @@ class InspectorHelper(FSHelper):
 
         excluded_dirs = [
             'signals', 'tests', 'helpers', 'abstract', 'abstracts',
-            'validators', 'managers', '__pycache__'
+            'validators', 'managers', 'permissions', 'inlines', '__pycache__'
         ]
 
         excluded_files = [
@@ -73,25 +74,29 @@ class InspectorHelper(FSHelper):
         # One day... one day I'll refactor this
         for app, path in sorted(current_apps.items()):
 
-            models_directory = path + "/models"
+            if scope == 'managers':
+                scope = 'models/managers'
 
-            for root, dirs, files in os.walk(models_directory):
+            resource_directory = f'{path}/{scope}'
+
+            for root, dirs, files in os.walk(resource_directory):
                 dirs[:] = [d for d in dirs if d not in excluded_dirs]
                 files[:] = [f for f in files if f not in excluded_files]
 
                 if files and not no_stdout:
+                    log_standard('')
                     log_standard(app, bold=True)
 
                     if show_paths:
                         if not no_stdout:
-                            log_standard(f'  {models_directory}', bold=True)
+                            log_standard(f'  {resource_directory}', bold=True)
 
                 for file in sorted(files):
                     models.append({app: file})
-                    model_file = models_directory + f'/{file}'
+                    model_file = resource_directory + f'/{file}'
 
                     for line in fileinput.input(model_file):
-                        if "class " in line and "Meta:" not in line:
+                        if re.match(r'^class ', line):  # in line and "Meta:" not in line:
                             model_name = line.split('class ')[-1].split('(')[0]
                             if not no_stdout:
                                 log_verbose(
@@ -99,8 +104,4 @@ class InspectorHelper(FSHelper):
                                     message='    {0:20}'.format(model_name),
                                 )
                     fileinput.close()
-            log_standard('')
         return models
-
-    def parse_model_attributes(self):
-        pass

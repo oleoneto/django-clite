@@ -7,10 +7,10 @@ with open("README.md", "r") as f:
 
 setup(
     name="django-clite",
-    version="0.2.11",
+    version="0.3.0",
     author="Leo Neto",
     author_email="leo@ekletik.com",
-    url="https://bitbucket.org/oleoneto/django-clite",
+    url="https://github.com/oleoneto/django-clite",
     description="CLI for managing Django projects",
     long_description=long_description,
     long_description_content_type='text/markdown',
@@ -47,8 +47,8 @@ setup(
     include_package_data=True,
     packages=find_packages(),
     project_urls={
-        "Documentation": "https://bitbucket.org/oleoneto/django-clite/",
-        "Source Code": "https://bitbucket.org/oleoneto/django-clite/",
+        "Documentation": "https://github.com/oleoneto/django-clite/",
+        "Source Code": "https://github.com/oleoneto/django-clite/",
     },
     entry_points={
         'console_scripts': [
