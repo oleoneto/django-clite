@@ -1,11 +1,9 @@
-"""
-urlpatterns for {{ project }}.{{ app }}
-"""
+# {{ project }}:{{ app }}:urls
 
 from django.urls import include, path
-from .viewsets.router import router
+from .views.routes import routes
 
 
 urlpatterns = [
-   path('', include(router.urls)),
-]
+    # path('', my_view, name='')
+] + routes
