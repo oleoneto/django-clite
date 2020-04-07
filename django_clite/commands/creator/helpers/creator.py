@@ -60,6 +60,7 @@ UNWANTED_FILES = {
 }
 
 APP_TEMPLATES = {
+    'api.py': 'api.tpl',
     'urls.py': 'urls.tpl',
     'apps.py': 'apps.tpl'
 }
@@ -212,6 +213,22 @@ class CreatorHelper(FSHelper):
             self.create_package(project=project, package='tests', app=app)
         if package == 'templates':
             self.create_package(project=project, package='tags', app=app)
+        if package == 'views':
+            filename = 'routes.py'
+            index = TEMPLATES.index('routes.tpl')
+            template = TEMPLATES[index]
+
+            content = rendered_file_template(
+                path=TEMPLATE_DIR,
+                template=template,
+                context={'project': project, 'app': app}
+            )
+
+            self.create_file(
+                path=os.getcwd(),
+                filename=filename,
+                content=content,
+            )
         if package == 'viewsets':
             self.create_package(project=project, package='permissions', app=app)
             filename = 'router.py'
