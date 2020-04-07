@@ -18,15 +18,24 @@ class ViewHelper(FSHelper):
         model = self.check_noun(model)
         model = sanitized_string(model)
         classname = inflection.camelize(model)
+        singular = inflection.singularize(classname)
+        plural = inflection.pluralize(classname)
 
         filename = f"{model.lower()}.py"
         template = 'view-function.tpl'
         template_import = 'view-function-import.tpl'
+        view_name = inflection.underscore(singular)
+        route_name = inflection.underscore(model)
 
         if class_type is not None:
             filename = f"{model.lower()}_{class_type}.py"
             template = 'view-class.tpl'
             template_import = 'view-class-import.tpl'
+            view_name = inflection.underscore(singular) + f'-{class_type}'
+            route_name = inflection.underscore(plural)
+
+            if class_type in ['detail', 'update']:
+                route_name += '/<slug:slug>'
 
         content = rendered_file_template(
             path=TEMPLATE_DIR,
@@ -34,7 +43,9 @@ class ViewHelper(FSHelper):
             context={
                 'model': model,
                 'classname': classname,
-                'class_type': class_type
+                'class_type': class_type,
+                'route_name': route_name,
+                'view_name': view_name,
             }
         )
 

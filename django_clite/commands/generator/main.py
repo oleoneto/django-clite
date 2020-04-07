@@ -356,7 +356,7 @@ def test(ctx, name, scope):
 
 @generate.command()
 @click.argument("name", required=True)
-@click.option("-c", "--class-type", type=click.Choice(['create', 'detail', 'list', 'edit', 'update']))
+@click.option("-c", "--class-type", type=click.Choice(['create', 'detail', 'list', 'update']))
 @click.option('--no-template', is_flag=True, default=False, help='Generate related template.')
 @click.pass_context
 def view(ctx, name, class_type, no_template):
@@ -372,8 +372,6 @@ def view(ctx, name, class_type, no_template):
         force=ctx.obj['force'],
         verbose=ctx.obj['verbose']
     )
-
-    class_type = 'form' if class_type == 'edit' else class_type
 
     helper.create(model=name, class_type=class_type)
 
