@@ -73,6 +73,7 @@ credentials.py
 credentials*
 keys*
 *pipelines.yml
+.d_config/
 
 # Flask stuff:
 instance/

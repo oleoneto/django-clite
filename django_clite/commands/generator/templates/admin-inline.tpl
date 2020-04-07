@@ -3,5 +3,5 @@ from ...models import {{ classname }}
 
 
 class {{ classname }}Inline(admin.StackedInline):
-    model = {{ model.capitalize() }}
-    extra = 1
+    model = {{ classname }}
+    extra = 0

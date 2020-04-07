@@ -1,7 +1,10 @@
+import datetime
 from django.shortcuts import HttpResponse
 from django.shortcuts import render
 from django.views.decorators.cache import cache_page
-import datetime
+from django.urls import path
+from .routes import routes
+
 
 """
 Enable caching if needed.
@@ -21,3 +24,8 @@ def {{ model.lower() }}_view(request):
     return HttpResponse(html)
     """
     return render(request, template, context)
+
+
+routes.append(
+    path('{{ view_name }}', {{ model.lower() }}_view, name='{{ view_name }}')
+)
