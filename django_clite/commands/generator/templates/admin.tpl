@@ -4,13 +4,7 @@ from ..models import {{ classname }}
 
 @admin.register({{ classname }})
 class {{ classname }}Admin(admin.ModelAdmin):
-    {% if not permissions and not fields -%}
-    pass
-    {% endif -%}
-
-    {% if fields -%}
-    list_display = {{ fields }}
-    {% endif -%}
+    list_display = {% if fields %}{{ fields }}{% else %}[field.name for field in {{classname}}._meta.fields]{% endif %}
 
     {% if permissions %}
     def has_change_permission(self, request, obj=None):

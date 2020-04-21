@@ -1,4 +1,5 @@
 import os
+import inflection
 from django_clite.helpers.logger import *
 from django_clite.helpers import sanitized_string
 from django_clite.helpers import rendered_file_template
@@ -16,16 +17,24 @@ class TemplateHelper(FSHelper):
     def create(self, model, **kwargs):
 
         model = sanitized_string(model)
+        class_type = kwargs.get('class_type', None)
+        page_title = inflection.camelize(model)
 
         template = 'template.tpl'
         filename = f"{model}.html"
-        if kwargs.get('class_type'):
-            filename = f"{model.lower()}_{kwargs.get('class_type')}.html"
+        if class_type:
+            filename = f"{model.lower()}_{class_type}.html"
+            template = f"template_{class_type}.tpl"
+
+            if class_type == 'list':
+                page_title = inflection.pluralize(model)
 
         content = rendered_file_template(
             path=TEMPLATE_DIR,
             template=template,
-            context={}
+            context={
+                'page_title': page_title
+            }
         )
 
         self.create_file(

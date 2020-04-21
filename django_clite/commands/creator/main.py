@@ -48,12 +48,13 @@ def create(ctx, dry, default, verbose):
 
 @create.command()
 @click.argument('name')
+@click.option('--active-record', is_flag=True, help="Add support for ActiveRecord.")
 @click.option('--docker', is_flag=True, help="Add support for Docker.")
 @click.option('--dokku', is_flag=True, help="Add support for Dokku.")
 @click.option('-a', '--custom-auth', is_flag=True, help="Add support for custom AUTH_USER_MODEL.")
 @click.argument('apps', nargs=-1)
 @click.pass_context
-def project(ctx, name, docker, dokku, custom_auth, apps):
+def project(ctx, name, active_record, docker, dokku, custom_auth, apps):
     """
     Creates a new django project.
 
@@ -77,6 +78,7 @@ def project(ctx, name, docker, dokku, custom_auth, apps):
         project=name,
         apps=apps,
         default=ctx.obj['default'],
+        active_record=active_record,
         docker=docker,
         dokku=dokku,
         custom_auth=custom_auth,

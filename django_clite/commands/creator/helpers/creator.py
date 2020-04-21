@@ -1,5 +1,7 @@
 import os
 import subprocess
+import inflection
+from enum import Enum, auto, unique
 from django_clite.helpers.logger import *
 from django_clite.helpers import FSHelper
 from django_clite.helpers import sanitized_string
@@ -66,6 +68,15 @@ APP_TEMPLATES = {
 }
 
 
+class CustomAppType(Enum):
+
+    def _generate_next_value_(self, start, count, last_values):
+        return inflection.underscore(self)
+
+    Authentication = auto()
+    ActiveRecord = auto()
+
+
 class CreatorHelper(FSHelper):
     """
     Creator Helper
@@ -88,7 +99,7 @@ class CreatorHelper(FSHelper):
         # with the help of `django-admin`
         if not self.is_dry:
             try:
-                log_standard(f"Attempting to create project: {project}")
+                log_verbose(header=f'Attempting to create project: {project}')
                 subprocess.check_output([
                     'django-admin',
                     'startproject',
@@ -167,8 +178,24 @@ class CreatorHelper(FSHelper):
 
                 # Handle authentication app
                 os.chdir(auth_app)
-                self.__handle_custom_auth(project=project, **kwargs)
+                create_custom_app(
+                    project=project,
+                    app=auth_app,
+                    type=CustomAppType.Authentication,
+                    **kwargs
+                )
                 os.chdir(PREVIOUS_WORKING_DIRECTORY)
+
+        # Handle active_record
+        if kwargs.get('active_record'):
+            if self.verbose:
+                log_verbose(header='Record application detected', message='\tConfiguring ActiveRecord')
+
+            self.__create_custom_app(
+                project=project,
+                app='active_record',
+                type=CustomAppType.ActiveRecord
+            )
 
         # cd ../../
         os.chdir(PREVIOUS_WORKING_DIRECTORY)
@@ -196,13 +223,30 @@ class CreatorHelper(FSHelper):
         os.chdir(package)
 
         if self.verbose:
-            log_info(f"Performing customizations for {package}")
+            log_verbose(header=f'Customizations for "{package}":', message='')
 
         self.create_package(project=project, package='helpers', app=app)
         if package == 'admin':
             self.create_package(project=project, package='actions', app=app)
             self.create_package(project=project, package='inlines', app=app)
             self.create_package(project=project, package='permissions', app=app)
+        if package == 'audit':
+            filename = '__init__.py'
+            index = TEMPLATES.index('audit.tpl')
+            template = TEMPLATES[index]
+
+            content = rendered_file_template(
+                path=TEMPLATE_DIR,
+                template=template,
+                context={'project': project, 'app': app}
+            )
+
+            self.create_file(
+                path=os.getcwd(),
+                filename=filename,
+                content=content,
+                force=True,
+            )
         if package == 'models':
             self.create_package(project=project, package='managers', app=app)
             self.create_package(project=project, package='signals', app=app)
@@ -250,7 +294,7 @@ class CreatorHelper(FSHelper):
         os.chdir(PREVIOUS_WORKING_DIRECTORY)
 
         if self.verbose:
-            log_info(f"Finished customizing {package}")
+            log_verbose(header=f'Finished customizing "{package}" package.', message='')
 
     def create_app(self, project, app, auth=False, **kwargs):
         """
@@ -265,7 +309,7 @@ class CreatorHelper(FSHelper):
         app = sanitized_string(app)
 
         if self.verbose:
-            log_info(f"Creating {app} at {os.getcwd()}")
+            log_verbose(header=f'Creating app {app}:', message=f'\tLocation: {os.getcwd()}')
 
         # Create django application
         try:
@@ -282,7 +326,7 @@ class CreatorHelper(FSHelper):
         os.chdir(app)
 
         if self.verbose:
-            log_info(f"Performing customizations for {app}")
+            log_verbose(header='Customizations:', message=f'\t{app}')
 
         # Remove unwanted files
         try:
@@ -292,7 +336,7 @@ class CreatorHelper(FSHelper):
             pass
 
         if self.verbose:
-            log_standard(f"Removed unwanted modules {UNWANTED_FILES}")
+            log_verbose(header="Removed unwanted modules:", message=f'\t{UNWANTED_FILES}')
 
         # Parse templates for apps.py and urls.py
         try:
@@ -318,6 +362,9 @@ class CreatorHelper(FSHelper):
             DEFAULT_APP_PACKAGES.remove('templates')
             DEFAULT_APP_PACKAGES.remove('views')
 
+        if kwargs.get('audit_record'):
+            DEFAULT_APP_PACKAGES.add('audit')
+
         for package in DEFAULT_APP_PACKAGES:
             try:
                 self.create_app_package(
@@ -330,43 +377,18 @@ class CreatorHelper(FSHelper):
 
         if auth:
             if self.verbose:
-                log_info(f"Adding default User model for {app} app")
+                log_verbose(header=f'Adding custom user model in {app}', message='')
 
-            self.__handle_custom_auth(project=project, app=app)
+            self.__create_custom_app(
+                project=project,
+                app=app,
+                type=CustomAppType.Authentication
+            )
 
         os.chdir(PREVIOUS_WORKING_DIRECTORY)
         log_success(DEFAULT_APP_CREATION_LOG.format(app))
 
         return True
-
-    def __handle_custom_auth(self, **kwargs):
-
-        project = kwargs.get('project')
-        app = kwargs.get('app')
-
-        base = os.getcwd()
-
-        paths = {
-            'admin': f'{base}/admin',
-            'forms': f'{base}/forms',
-            'models': f'{base}/models',
-            'serializers': f'{base}/serializers',
-            'models_test': f'{base}/models/tests',
-            'serializers_test': f'{base}/serializers/tests',
-            'viewsets': f'{base}/viewsets'
-        }
-
-        AdminHelper(cwd=paths['admin']).create_auth_user()
-        FormHelper(cwd=paths['forms']).create_auth_user()
-        ModelHelper(cwd=paths['models']).create_auth_user()
-        SerializerHelper(cwd=paths['serializers']).create_auth_user()
-        ViewSetHelper(cwd=paths['viewsets']).create(model='user')
-
-        TestHelper(cwd=paths['models_test']).create_auth_user(scope='model')
-        TestHelper(cwd=paths['serializers_test']).create_auth_user(scope='serializer')
-
-        # return to application directory
-        os.chdir(base)
 
     def create_settings(self, project, apps=None):
         template = 'settings.tpl'
@@ -382,3 +404,30 @@ class CreatorHelper(FSHelper):
             content=content,
             filename=filename,
         )
+
+    def __create_custom_app(self, project, app, base=os.getcwd(), **kwargs):
+
+        paths = {
+            'admin': f'{base}/admin',
+            'forms': f'{base}/forms',
+            'models': f'{base}/models',
+            'serializers': f'{base}/serializers',
+            'models_test': f'{base}/models/tests',
+            'serializers_test': f'{base}/serializers/tests',
+            'viewsets': f'{base}/viewsets'
+        }
+
+        if kwargs.get('type'):
+            if kwargs.get('type') == CustomAppType.Authentication:
+                AdminHelper(cwd=paths['admin']).create_auth_user()
+                FormHelper(cwd=paths['forms']).create_auth_user()
+                ModelHelper(cwd=paths['models']).create_auth_user()
+                SerializerHelper(cwd=paths['serializers']).create_auth_user()
+                ViewSetHelper(cwd=paths['viewsets']).create(model='user')
+                TestHelper(cwd=paths['models_test']).create_auth_user(scope='model')
+                TestHelper(cwd=paths['serializers_test']).create_auth_user(scope='serializer')
+
+                # return to application directory
+                os.chdir(base)
+            elif kwargs.get('type') == CustomAppType.ActiveRecord:
+                self.create_app(project=project, app=app, active_record=True)

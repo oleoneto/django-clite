@@ -6,6 +6,9 @@ from django_clite.helpers import get_project_name
 from django_clite.helpers import find_project_files
 
 
+SUPPORTED_VIEW_TYPES = ['create', 'detail', 'list', 'update']
+
+
 def not_an_app_directory_warning():
     if not ('apps.py' in os.listdir('.')):
         log_error("Not inside an app directory")
@@ -178,6 +181,8 @@ def model(ctx, name, full, abstract, fields, register_admin,
     If the model is to be added to admin.site one can optionally opt in by specifying the --register-admin flag.
     """
 
+    name = ModelHelper.check_noun(name)
+
     # Ensure --app is used only if --inherits is used
     if app and not inherits:
         log_error("You've specified an app inheritance scope but did not specify the model to inherit from.")
@@ -228,7 +233,8 @@ def model(ctx, name, full, abstract, fields, register_admin,
 
     if full:
         ctx.invoke(form, name=name)
-        ctx.invoke(template, name=name)
+        ctx.invoke(template, name=name, class_type='list')
+        ctx.invoke(template, name=name, class_type='detail')
         ctx.invoke(view, name=name, class_type="list")
         ctx.invoke(view, name=name, class_type="detail")
 
@@ -259,6 +265,8 @@ def resource(ctx, name, fields, inherits, api, is_managed, soft_delete):
     in order to prevent these files from being created.
     """
 
+    name = ModelHelper.check_noun(name)
+
     ctx.invoke(
         model,
         name=name,
@@ -278,7 +286,8 @@ def resource(ctx, name, fields, inherits, api, is_managed, soft_delete):
 
     if not api:
         ctx.invoke(form, name=name)
-        ctx.invoke(template, name=name)
+        ctx.invoke(template, name=name, class_type='list')
+        ctx.invoke(template, name=name, class_type='detail')
         ctx.invoke(view, name=name, class_type='list', no_template=True)
 
 
@@ -311,7 +320,7 @@ def serializer(ctx, name):
 
 @generate.command()
 @click.argument("name", required=True)
-@click.option("-c", "--class-type", type=click.Choice(['create', 'detail', 'list', 'edit', 'update']))
+@click.option("-c", "--class-type", type=click.Choice(SUPPORTED_VIEW_TYPES))
 @click.pass_context
 def template(ctx, name, class_type):
     """
@@ -356,7 +365,7 @@ def test(ctx, name, scope):
 
 @generate.command()
 @click.argument("name", required=True)
-@click.option("-c", "--class-type", type=click.Choice(['create', 'detail', 'list', 'update']))
+@click.option("-c", "--class-type", type=click.Choice(SUPPORTED_VIEW_TYPES))
 @click.option('--no-template', is_flag=True, default=False, help='Generate related template.')
 @click.pass_context
 def view(ctx, name, class_type, no_template):

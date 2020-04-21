@@ -44,7 +44,7 @@ class InspectorHelper(FSHelper):
             if 'apps.py' in files
         ])
 
-        [log_info(path) for path in current_paths]
+        [log_verbose(header=path, message=None) for path in current_paths]
 
         return current_paths
 

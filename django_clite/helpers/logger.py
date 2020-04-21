@@ -61,7 +61,8 @@ def log_standard(message, **kwargs):
     click.secho(message=message, **kwargs)
 
 
-def log_verbose(header, message):
+def log_verbose(header, message=None, **kwargs):
     if header:
-        click.secho(f'{header}', bold=True)
-    click.secho(f'{message}', bold=False)
+        click.secho(message=f'{header}', bold=True, fg='blue', **kwargs)
+    if message:
+        click.secho(message=f'{message}', bold=False, **kwargs)

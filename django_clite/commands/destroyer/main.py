@@ -4,6 +4,9 @@ from .helpers import *
 from django_clite.helpers.logger import log_error
 
 
+SUPPORTED_VIEW_TYPES = ['create', 'detail', 'list', 'update']
+
+
 def not_an_app_directory_warning():
     if not ('apps.py' in os.listdir('.')):
         log_error("Not inside an app directory")
@@ -149,6 +152,8 @@ def model(ctx, name, full, unregister_admin, unregister_inline, test_case):
     Destroys a model.
     """
 
+    name = ModelHelper.check_noun(name)
+
     path = ctx.obj['models']
 
     h = ModelHelper(
@@ -175,7 +180,8 @@ def model(ctx, name, full, unregister_admin, unregister_inline, test_case):
         ctx.invoke(form, name=name)
         ctx.invoke(serializer, name=name)
         ctx.invoke(test, name=name, scope='serializer')
-        ctx.invoke(template, name=name)
+        ctx.invoke(template, name=name, class_type='list')
+        ctx.invoke(template, name=name, class_type='detail')
         ctx.invoke(view, name=name, class_type="list")
         ctx.invoke(view, name=name, class_type="detail")
         ctx.invoke(viewset, name=name)
@@ -188,6 +194,8 @@ def resource(ctx, name):
     """
     Destroys a resource and its related modules.
     """
+
+    name = ModelHelper.check_noun(name)
 
     ctx.invoke(
         model,
@@ -203,7 +211,9 @@ def resource(ctx, name):
 
     ctx.invoke(form, name=name)
 
-    ctx.invoke(template, name=name)
+    if not ctx.invoke(template, name=name, class_type='list'):
+        ctx.invoke(template, name=name, class_type='detail')
+        ctx.invoke(template, name=name)
 
     if not ctx.invoke(view, name=name, class_type='list'):
         ctx.invoke(view, name=name, class_type='detail')
@@ -236,7 +246,7 @@ def serializer(ctx, name):
 
 @destroy.command()
 @click.argument('name')
-@click.option("-c", "--class-type", type=click.Choice(['list', 'detail']))
+@click.option("-c", "--class-type", type=click.Choice(SUPPORTED_VIEW_TYPES))
 @click.pass_context
 def view(ctx, name, class_type):
     """
@@ -277,8 +287,9 @@ def viewset(ctx, name):
 
 @destroy.command()
 @click.argument('name')
+@click.option("-c", "--class-type", type=click.Choice(SUPPORTED_VIEW_TYPES))
 @click.pass_context
-def template(ctx, name):
+def template(ctx, name, class_type):
     """
     Destroys a template.
     """
@@ -292,7 +303,7 @@ def template(ctx, name):
         verbose=ctx.obj['verbose']
     )
 
-    h.delete(model=name)
+    h.delete(model=name, class_type=class_type)
 
 
 @destroy.command()

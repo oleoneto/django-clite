@@ -46,7 +46,8 @@ class FSHelper(object):
 
         os.chdir(self.__cwd)
 
-    def check_noun(self, noun):
+    @staticmethod
+    def check_noun(noun):
         """
         Checks whether a noun is plural or singular and gives
         the option to change the noun from plural to singular.
@@ -187,15 +188,16 @@ class FSHelper(object):
         )
 
         if self.__verbose:
-            log_info(f"Created package {package} at {os.getcwd()}")
+            log_verbose(header=None, message=f'\tCreated package {package} at {os.getcwd()}')
 
         os.chdir(PREVIOUS_WORKING_DIRECTORY)
         return _
 
-    def create_file(self, content, filename, path=None):
+    def create_file(self, content, filename, force=False, path=None):
         """
         :param content: content for created file
         :param filename: name for created file
+        :param force: overrides an existing file with the same name
         :param path: location of created file
         :return: True if file is created. False otherwise
         """
@@ -223,7 +225,7 @@ class FSHelper(object):
             file.close()
             os.chdir(path)
         except FileExistsError:
-            if self.__force or click.confirm(DEFAULT_OVERRIDE_WARNING.format(filename)):
+            if (force or self.__force) or click.confirm(DEFAULT_OVERRIDE_WARNING.format(filename)):
                 with open(filename, 'w') as file:
                     file.write(content)
                     file.write('\n')
@@ -232,7 +234,7 @@ class FSHelper(object):
             return False
 
         if self.verbose:
-            log_info(f"Created {filename} at {path}")
+            log_verbose(header=None, message=f'\tCreated {filename} at {path}')
 
         return True
 
@@ -257,7 +259,7 @@ class FSHelper(object):
                 return False
 
         if self.verbose:
-            log_info(f"Removed {filename} from {path}")
+            log_verbose(header=None, message=f'Removed {filename} from {path}')
 
         return True
 
@@ -361,7 +363,7 @@ class FSHelper(object):
                         print(line, end='')
 
                 if self.verbose:
-                    log_info(f"Removed: {content} from {path}/{filename}")
+                    log_verbose(header=f'\n\tRemoved: {content} from {path}/{filename}')
 
             except FileNotFoundError:
                 raise click.Abort
@@ -400,7 +402,7 @@ class FSHelper(object):
             )
 
             if self.verbose:
-                log_info(f"Created file {file} from {template}")
+                log_verbose(header=None, message=f"\tCreated file {file} from {template}")
 
         return True
 
