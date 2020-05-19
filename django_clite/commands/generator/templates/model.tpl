@@ -68,4 +68,4 @@ class {{ classname }}({% if base %}{{ base[1] }}{% else %}models.Model{% endif %
     {% if not api %}
     def get_absolute_url(self):
         return reverse('{{ model.lower() }}-detail', kwargs={'slug': self.slug})
-    {%- else -%}{%- endif %}
+    {%- else -%}{%- endif -%}

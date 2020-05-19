@@ -26,11 +26,8 @@ def ensure_test_directory(cwd):
 
 
 @click.group()
-@click.option('--dry', is_flag=True, help="Display output without creating files.")
-@click.option('--force', is_flag=True, help="Override any conflicting files.")
-@click.option('--verbose', is_flag=True, help="Run in verbose mode.")
 @click.pass_context
-def generate(ctx, dry, force, verbose):
+def generate(ctx):
     """
     Adds models, routes, and other resources
     """
@@ -40,9 +37,6 @@ def generate(ctx, dry, force, verbose):
 
     p, m, f = find_project_files(os.getcwd())
 
-    ctx.obj['dry'] = dry
-    ctx.obj['force'] = force
-    ctx.obj['verbose'] = verbose
     ctx.obj['in_app'] = 'apps.py' in os.listdir('.')
     ctx.obj['cwd'] = os.getcwd()
     ctx.obj['admin'] = f"{os.getcwd()}/admin/"

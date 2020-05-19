@@ -25,17 +25,17 @@ class ViewHelper(FSHelper):
         template = 'view-function.tpl'
         template_import = 'view-function-import.tpl'
         view_name = inflection.underscore(singular)
-        route_name = inflection.underscore(model)
+        route_name = f'{inflection.underscore(model)}/'
 
         if class_type is not None:
             filename = f"{model.lower()}_{class_type}.py"
             template = 'view-class.tpl'
             template_import = 'view-class-import.tpl'
             view_name = inflection.underscore(singular) + f'-{class_type}'
-            route_name = inflection.underscore(plural)
+            route_name = f'{inflection.underscore(plural)}/'
 
             if class_type in ['detail', 'update']:
-                route_name += '/<slug:slug>'
+                route_name += '<slug:slug>'
 
         content = rendered_file_template(
             path=TEMPLATE_DIR,

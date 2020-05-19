@@ -24,11 +24,8 @@ def ensure_test_directory(cwd):
 
 
 @click.group()
-@click.option('--dry', '--dry-run', is_flag=True, help="Display output without deleting files")
-@click.option('--force', is_flag=True, help="Override any conflicting files.")
-@click.option('--verbose', is_flag=True, help="Run in verbose mode.")
 @click.pass_context
-def destroy(ctx, dry, force, verbose):
+def destroy(ctx):
     """
     Removes models, serializers, and other resources
     """
@@ -36,9 +33,6 @@ def destroy(ctx, dry, force, verbose):
         not_an_app_directory_warning()
 
     ctx.ensure_object(dict)
-    ctx.obj['dry'] = dry
-    ctx.obj['force'] = force
-    ctx.obj['verbose'] = verbose
     ctx.obj['in_app'] = 'apps.py' in os.listdir('.')
     ctx.obj['cwd'] = os.getcwd()
     ctx.obj['admin'] = f"{os.getcwd()}/admin/"

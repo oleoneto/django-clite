@@ -176,7 +176,10 @@ class FSHelper(object):
         project = sanitized_string(project)
         package = sanitized_string(package)
 
-        content = f'# {project}:{kwargs.get("app")}:{package}'
+        if kwargs.get('app'):
+            content = f'# {project}:{kwargs.get("app")}:{package}'
+        else:
+            content = f'# {project}:{package}'
 
         os.mkdir(package)
         os.chdir(package)
@@ -238,7 +241,7 @@ class FSHelper(object):
 
         return True
 
-    def destroy_file(self, filename, path=None):
+    def destroy_file(self, filename, path=None, **kwargs):
         """
         :param filename: name of file to be destroyed
         :param path: location of file to be destroyed
@@ -368,7 +371,7 @@ class FSHelper(object):
             except FileNotFoundError:
                 raise click.Abort
 
-    def parse_templates(self, parings, names, directory, folders=None, **kwargs):
+    def parse_templates(self, parings, names, directory, folders=None, force=False, **kwargs):
         """
         :param parings: mapping of file and template names
         :param names: names of templates to be parsed
@@ -399,6 +402,7 @@ class FSHelper(object):
                 path=os.getcwd(),
                 filename=file,
                 content=content,
+                force=force,
             )
 
             if self.verbose:

@@ -232,14 +232,11 @@ def update_setting(ctx, key, value):
 
 @click.group()
 @click.option('--create-config', is_flag=True, help='Create Dockerfile and docker-compose.yml')
-@click.option('--verbose', is_flag=True, help='Run in verbose mode.')
 @click.pass_context
-def docker(ctx, verbose, create_config):
+def docker(ctx, create_config):
     """
     Run Docker-related options for your project.
     """
-
-    ctx.obj['verbose'] = verbose
 
     ctx.obj['docker'] = DockerHelper(cwd=ctx.obj['management'])
 

@@ -6,14 +6,12 @@ from django_clite.helpers.logger import *
 from django_clite.helpers import FSHelper
 from django_clite.helpers import sanitized_string
 from django_clite.helpers import rendered_file_template
-from django_clite.commands.generator.helpers import (
-    AdminHelper,
-    FormHelper,
-    ModelHelper,
-    SerializerHelper,
-    TestHelper,
-    ViewSetHelper
-)
+from django_clite.commands.generator.helpers import AdminHelper
+from django_clite.commands.generator.helpers import FormHelper
+from django_clite.commands.generator.helpers import ModelHelper
+from django_clite.commands.generator.helpers import SerializerHelper
+from django_clite.commands.generator.helpers import TestHelper
+from django_clite.commands.generator.helpers import ViewSetHelper
 
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__)).rsplit('/', 1)[0]
@@ -32,6 +30,28 @@ DEFAULT_APP_PACKAGES = {
     'templates', 'views', 'viewsets'
 }
 
+REUSABLE_APP = {
+    'README.rst': 'README_rst.tpl',
+    'MANIFEST.in': 'MANIFEST.tpl',
+    'LICENSE': 'LICENSE.tpl',
+    'setup.cfg': 'setup_cfg.tpl',
+    'setup.py': 'setup.tpl',
+}
+
+SETTINGS = {
+    'settings.py': 'settings.tpl'
+}
+
+# CLI_TEMPLATES = {
+#     '.config.json': 'cli-config_json.tpl'
+# }
+
+DOCKER_TEMPLATES = {
+    'Dockerfile': 'dockerfile.tpl',
+    'docker-compose.yml': 'docker-compose.tpl',
+    'docker-entrypoint.sh': 'docker-entrypoint.tpl',
+}
+
 DOKKU_TEMPLATES = {
     'app.json': 'app_json.tpl',
     'CHECKS': 'dokku_checks.tpl',
@@ -39,21 +59,31 @@ DOKKU_TEMPLATES = {
     'Procfile': 'procfile.tpl',
 }
 
-TOP_LEVEL_TEMPLATES = {
-    'CHECKS': 'dokku_checks.tpl',
-    'Dockerfile': 'dockerfile.tpl',
-    'docker-compose.yml': 'docker-compose.tpl',
-    'docker-entrypoint.sh': 'docker-entrypoint.tpl',
-    'Pipfile': 'Pipfile.tpl',
-    'README.md': 'README.tpl',
+HEROKU_TEMPLATES = {
+    'Procfile': 'procfile.tpl',
+}
+
+ENV_TEMPLATES = {
     '.env': 'env.tpl',
     '.env-example': 'env.tpl',
+}
+
+GIT_TEMPLATES = {
+    'README.md': 'README.tpl',
     '.gitignore': 'gitignore.tpl',
 }
 
-INNER_LEVEL_TEMPLATES = {
-    'settings_override.py': 'settings.tpl',
+CELERY_TEMPLATES = {
+    '__init__.py': 'celery.tpl',
+    'tasks.py': 'celery_tasks.tpl',
+}
+
+STORAGES_TEMPLATES = {
     'storage.py': 'storage.tpl',
+}
+
+SETTINGS_TEMPLATES = {
+    'settings.py': 'settings.tpl',
 }
 
 UNWANTED_FILES = {
@@ -73,7 +103,7 @@ class CustomAppType(Enum):
     def _generate_next_value_(self, start, count, last_values):
         return inflection.underscore(self)
 
-    Authentication = auto()
+    Authentication = 'auto()'
     ActiveRecord = auto()
 
 
@@ -88,15 +118,57 @@ class CreatorHelper(FSHelper):
     def __init__(self, cwd, dry=False, force=False, default=False, verbose=False):
         super(CreatorHelper, self).__init__(cwd, dry, force, default, verbose)
 
-    def create_project(self, project, apps, **kwargs):
+    def __celery(self, project):
+        # Add celery to proj/proj/__init__.py
+        os.chdir(project)
+        os.chdir(project)
+        self.parse_templates(
+            parings={'__init__.py': 'celery_init.tpl'},
+            names=TEMPLATES,
+            directory=TEMPLATE_DIR,
+            force=True,
+            context={'project': project}
+        )
+        os.chdir(PREVIOUS_WORKING_DIRECTORY)
+        os.chdir(PREVIOUS_WORKING_DIRECTORY)
+
+    def __git(self, project, origin):
+        os.chdir(project)
+
+        if not self.is_dry:
+            self.create_repository()
+            subprocess.check_output(['git', 'remote', 'add', 'origin', origin])
+            log_success(f'Successfully added origin {origin}')
+            return True
+        log_success("Skipping adding remote origin")
+        return False
+
+        # Return to top of project directory
+        os.chdir(PREVIOUS_WORKING_DIRECTORY)
+
+    def __project(self, project, presets=[], **kwargs):
         """
-        Creates a project structure and its dependent packages
+        Creates a django project with or without customizations
+
+        :param project: django project name
+        :param presets: default options for django project
+        :return: None
         """
 
         project = sanitized_string(project)
 
-        # Generating project directory
-        # with the help of `django-admin`
+        supported_presets = {
+            'celery': CELERY_TEMPLATES,
+            'custom_settings': SETTINGS_TEMPLATES,
+            'custom_storage': STORAGES_TEMPLATES,
+            'dockerized': DOCKER_TEMPLATES,
+            'dokku': DOKKU_TEMPLATES,
+            'environments': ENV_TEMPLATES,
+            'git': GIT_TEMPLATES,
+            'heroku': HEROKU_TEMPLATES,
+        }
+
+        # Generating project directory with the help of `django-admin`
         if not self.is_dry:
             try:
                 log_verbose(header=f'Attempting to create project: {project}')
@@ -109,100 +181,72 @@ class CreatorHelper(FSHelper):
                 log_error(DEFAULT_ERRORS['project'])
                 raise click.Abort
 
-        # Customize django project directory
-        os.chdir(project)
+            if presets:
+                # Customize django project directory
+                os.chdir(project)
 
-        # Create top-level directories and top-level files
-        folders = ['dokku', 'dummy']
+                for preset in presets:
+                    depth = 0
 
-        if kwargs.get('default') or kwargs.get('dokku'):
-            self.parse_templates(
-                parings=TOP_LEVEL_TEMPLATES,
-                names=TEMPLATES,
-                directory=TEMPLATE_DIR,
-                folders=folders,
-                context={
-                    'project': project,
-                    'timeout': 60,
-                    'wait': 20,
-                    'web': 1,
-                }
-            )
+                    if preset == 'celery':
+                        os.chdir(project)
+                        self.create_package(project=project, package='celery')
+                        os.chdir('celery')
+                        depth += 2
 
-            # Customize Dokku configuration
-            os.chdir('dokku')
-            self.parse_templates(
-                parings=DOKKU_TEMPLATES,
-                names=TEMPLATES,
-                directory=TEMPLATE_DIR,
-                context={
-                    'project': project,
-                    'timeout': 60,
-                    'wait': 20,
-                    'web': 1,
-                }
-            )
-            os.chdir(PREVIOUS_WORKING_DIRECTORY)
+                    if preset in ['custom_settings', 'custom_storage']:
+                        os.chdir(project)
+                        depth += 1
 
-        # Customize project package
-        os.chdir(project)
-        self.parse_templates(
-            parings=INNER_LEVEL_TEMPLATES,
-            names=TEMPLATES,
-            directory=TEMPLATE_DIR,
-            context={
-                'project': project,
-                'apps': apps,
-            }
-        )
+                    # Parse templates
+                    self.parse_templates(
+                        parings=supported_presets[preset],
+                        names=TEMPLATES,
+                        directory=TEMPLATE_DIR,
+                        force=True,
+                        context={
+                            'project': project,
+                            'timeout': 60,
+                            'wait': 20,
+                            'web': 1,
+                            **kwargs
+                        }
+                    )
 
-        # Create project apps inside the inner package
-        if apps is not None:
-            for app in apps:
-                self.create_app(project=project, app=app)
+                    for d in range(depth):
+                        os.chdir(PREVIOUS_WORKING_DIRECTORY)
 
-        # Create optional `custom-auth`
-        auth_app = 'authentication'
-        if kwargs.get('custom_auth'):
-            if self.create_app(
-                project=project,
-                app=auth_app,
-                auth=True
-            ):
-
-                auth_app_path = os.getcwd()
-                log_error(auth_app_path)
-
-                log_error("Cannot create authentication app.")
-                log_error(os.getcwd())
-
-                # Handle authentication app
-                os.chdir(auth_app)
-                create_custom_app(
-                    project=project,
-                    app=auth_app,
-                    type=CustomAppType.Authentication,
-                    **kwargs
-                )
+                # Return to top of project directory
                 os.chdir(PREVIOUS_WORKING_DIRECTORY)
 
-        # Handle active_record
-        if kwargs.get('active_record'):
-            if self.verbose:
-                log_verbose(header='Record application detected', message='\tConfiguring ActiveRecord')
+    def __custom_app(self, project, app, base, **kwargs):
 
-            self.__create_custom_app(
-                project=project,
-                app='active_record',
-                type=CustomAppType.ActiveRecord
-            )
+        paths = {
+            'admin': f'{base}/admin',
+            'forms': f'{base}/forms',
+            'models': f'{base}/models',
+            'serializers': f'{base}/serializers',
+            'models_test': f'{base}/models/tests',
+            'serializers_test': f'{base}/serializers/tests',
+            'viewsets': f'{base}/viewsets'
+        }
 
-        # cd ../../
-        os.chdir(PREVIOUS_WORKING_DIRECTORY)
-        os.chdir(PREVIOUS_WORKING_DIRECTORY)
+        t = kwargs.get('type')
 
-        # Create git repository
-        self.create_repository()
+        if t == CustomAppType.Authentication:
+            AdminHelper(cwd=paths['admin']).create_auth_user()
+            FormHelper(cwd=paths['forms']).create_auth_user()
+            ModelHelper(cwd=paths['models']).create_auth_user()
+            SerializerHelper(cwd=paths['serializers']).create_auth_user()
+            ViewSetHelper(cwd=paths['viewsets']).create(model='user')
+            TestHelper(cwd=paths['models_test']).create_auth_user(scope='model')
+            TestHelper(cwd=paths['serializers_test']).create_auth_user(scope='serializer')
+
+            # return to application directory
+            os.chdir(base)
+
+        if t == CustomAppType.ActiveRecord:
+            self.create_app(project=project, app=app, active_record=True)
 
     def create_app_package(self, package, project, app):
         """
@@ -379,9 +423,10 @@ class CreatorHelper(FSHelper):
             if self.verbose:
                 log_verbose(header=f'Adding custom user model in {app}', message='')
 
-            self.__create_custom_app(
+            self.__custom_app(
                 project=project,
                 app=app,
+                base=os.getcwd(),
                 type=CustomAppType.Authentication
             )
 
@@ -390,10 +435,55 @@ class CreatorHelper(FSHelper):
 
         return True
 
-    def create_settings(self, project, apps=None):
-        template = 'settings.tpl'
-        filename = 'settings_override.py'
+    def create_project(self, presets, project, apps, **kwargs):
+        """
+        Creates a project structure and its dependent packages
+        """
 
+        # Create project
+        self.__project(project, presets, **kwargs)
+
+        # Add customizations for celery
+        if 'celery' in presets:
+            self.__celery(project)
+        
+        # Add apps to django project
+        if apps:
+            for app in apps:
+                os.chdir(project)
+                os.chdir(project)
+
+                self.create_app(project=project, app=app)
+
+                os.chdir(PREVIOUS_WORKING_DIRECTORY)
+                os.chdir(PREVIOUS_WORKING_DIRECTORY)
+
+        # Add special apps to django project
+        if kwargs.get('default_apps'):
+            for app in kwargs.get('default_apps'):
+                auth = app == 'authentication'
+                active_record = app == 'active_record'
+
+                os.chdir(project)
+                os.chdir(project)
+
+                self.create_app(
+                    project=project,
+                    app=app,
+                    auth=auth,
+                    active_record=active_record
+                )
+
+                os.chdir(PREVIOUS_WORKING_DIRECTORY)
+                os.chdir(PREVIOUS_WORKING_DIRECTORY)
+
+        # Create git repository
+        if 'git' in presets:
+            self.__git(project, origin=kwargs.get('origin'))
+
+        return True
+ 
+    def create_scoped_file(self, project, template, filename, apps=None):
         content = rendered_file_template(
             path=TEMPLATE_DIR,
             template=template,
@@ -404,30 +494,3 @@ class CreatorHelper(FSHelper):
             content=content,
             filename=filename,
         )
-
-    def __create_custom_app(self, project, app, base=os.getcwd(), **kwargs):
-
-        paths = {
-            'admin': f'{base}/admin',
-            'forms': f'{base}/forms',
-            'models': f'{base}/models',
-            'serializers': f'{base}/serializers',
-            'models_test': f'{base}/models/tests',
-            'serializers_test': f'{base}/serializers/tests',
-            'viewsets': f'{base}/viewsets'
-        }
-
-        if kwargs.get('type'):
-            if kwargs.get('type') == CustomAppType.Authentication:
-                AdminHelper(cwd=paths['admin']).create_auth_user()
-                FormHelper(cwd=paths['forms']).create_auth_user()
-                ModelHelper(cwd=paths['models']).create_auth_user()
-                SerializerHelper(cwd=paths['serializers']).create_auth_user()
-                ViewSetHelper(cwd=paths['viewsets']).create(model='user')
-                TestHelper(cwd=paths['models_test']).create_auth_user(scope='model')
-                TestHelper(cwd=paths['serializers_test']).create_auth_user(scope='serializer')
-
-                # return to application directory
-                os.chdir(base)
-            elif kwargs.get('type') == CustomAppType.ActiveRecord:
-                self.create_app(project=project, app=app, active_record=True)

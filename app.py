@@ -27,9 +27,12 @@ class AliasedGroup(click.Group):
 
 
 @click.command(cls=AliasedGroup)
+@click.option('--dry', is_flag=True, help="Display output without creating files.")
+@click.option('--force', is_flag=True, help="Override any conflicting files.")
+@click.option('--verbose', is_flag=True, help="Run in verbose mode.")
 @click.version_option()
 @click.pass_context
-def main(ctx):
+def main(ctx, dry, force, verbose):
     """
     django-clite: by Leo Neto
 
@@ -53,6 +56,10 @@ def main(ctx):
 
     ctx.ensure_object(dict)
 
+    ctx.obj['dry'] = dry
+    ctx.obj['force'] = force
+    ctx.obj['verbose'] = verbose
+
     # Note for contributors:
     #
     # File system helper included in cli context.
@@ -66,4 +73,7 @@ main.add_command(run)
 main.add_command(inspect)
 
 if __name__ == '__main__':
-    main()
+    try:
+        main()
+    except:
+        pass
