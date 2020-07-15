@@ -7,7 +7,7 @@ with open("README.md", "r") as f:
 
 setup(
     name="django-clite",
-    version="0.5.0",
+    version="0.9.0",
     author="Leo Neto",
     author_email="leo@ekletik.com",
     url="https://github.com/oleoneto/django-clite",
@@ -34,15 +34,16 @@ setup(
     license="BSD",
     install_requires=[
         'Click==7.0',
-        'click-repl==0.1.6',
-        'jinja2',
-        'inflection',
         'django>=2.2.4',
-        'tox',
-        'pytest==5.3.0',
-        'faker',
-        'inquirer',
+        'faker>=4.1.0',
+        'jinja2>=2.11.2',
+        'inquirer>=2.6.3',
+        'inflection>=0.4.0',
     ],
+    extra_require={
+        'click-repl==0.1.6',
+        'pytest',
+    },
     zip_safe=False,
     include_package_data=True,
     packages=find_packages(),
@@ -51,11 +52,11 @@ setup(
         "Source Code": "https://github.com/oleoneto/django-clite/",
     },
     entry_points={
+        'cli.commands': '',
         'console_scripts': [
-            'D=app:main',
-            'djc=app:main',
-            'django-clite=app:main',
+            'D=cli.app:cli',
+            'django-clite=cli.app:cli',
         ]
     },
-    scripts=['app.py']
+    scripts=['cli/app.py']
 )
