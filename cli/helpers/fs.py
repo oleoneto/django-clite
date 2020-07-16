@@ -8,6 +8,7 @@ from .templates import rendered_file_template
 from cli.helpers.finders import get_app_name
 from cli.helpers.finders import get_project_name
 from cli.helpers.finders import walk_up
+from cli.helpers.templates import get_template, get_templates, get_template_path
 from .logger import *
 
 

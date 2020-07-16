@@ -4,5 +4,6 @@ from cli.commands.run.main import create_compose
 
 def test_create_settings():
     runner = CliRunner()
-    result = runner.invoke(create_compose)
+    with runner.isolated_filesystem():
+        result = runner.invoke(create_compose)
     assert result.exit_code == 0

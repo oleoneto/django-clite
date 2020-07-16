@@ -2,7 +2,7 @@
 from .logger import *
 from .field_parser import FieldParser
 from .parser import sanitized_string
-from .templates import rendered_file_template
+from .templates import rendered_file_template, get_template, get_templates
 from .fs import FSHelper
 from .finders import (
     find_project_files,

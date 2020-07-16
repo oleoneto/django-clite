@@ -8,6 +8,7 @@ from cli.helpers.logger import *
 from cli.commands.inspect.main import InspectorHelper
 from cli.commands.inspect.main import inspect
 from cli.commands.generate.main import not_an_app_directory_warning
+from cli.commands.create.helpers.app import AppHelper
 from cli.commands.create.helpers.creator import CreatorHelper
 from cli.commands.create.presets import extra_apps
 from cli.commands.create.presets import installable_apps
@@ -73,10 +74,18 @@ def inquire_project_presets(project_name, default=False):
 
 
 def inquire_installable_apps(default=False):
-    # Add apps to INSTALLED_APPS
-
     apps = []
     middleware = []
+
+    if default:
+        apps = [a for a in installable_apps.DEFAULTS]
+        middleware = [
+            app for a in installable_apps.INSTALLABLE_APPS
+            if a in installable_apps.DEFAULTS
+            for app in installable_apps.INSTALLABLE_APPS[a]['middleware']
+        ]
+        return apps, middleware
+
     if click.confirm('Would you like to add apps to your INSTALLED_APPS?'):
         installed_apps_questions = [
             inquirer.Checkbox(
@@ -87,7 +96,7 @@ def inquire_installable_apps(default=False):
 
         # Determine installed apps
         app_answers = inquirer.prompt(installed_apps_questions)['install']
-        installed_apps = [
+        apps = [
             app for a in installable_apps.INSTALLABLE_APPS
             if a in app_answers
             for app in installable_apps.INSTALLABLE_APPS[a]['apps']
@@ -156,28 +165,29 @@ def project(ctx, name, apps, defaults):
     project_presets = inquire_project_presets(project_name=name, default=defaults)
 
     # project app settings
-    project_apps, project_middleware = inquire_installable_apps()
+    project_apps, project_middleware = inquire_installable_apps(default=defaults)
 
     # docker settings
-    x_docker = inquire_docker_options()
+    # x_docker = inquire_docker_options()
 
     # Create project
-    helper.create_project(
+    return helper.create_project(
         project=name,
         apps=apps,
+        settings_apps=project_apps,
+        settings_middleware=project_middleware,
         **project_presets,
-        # installable_apps=installed_apps,
-        # installable_middleware=installed_middleware,
     )
 
 
 @create.command(name='apps')
 @click.argument('apps', nargs=-1)
 @click.option('--project-name', '-p', help="Specify name of your project.")
+@click.option('--package', is_flag=True, help="Specify that the app can be installed as a package.")
 @click.option('--directory', '-d', type=click.Path(), help="Specify path to your project's management file.")
 @click.option('--api', is_flag=True, help="Add a special api urls module to your app directory.")
 @click.pass_context
-def applications(ctx, apps, project_name, directory, api):
+def applications(ctx, apps, project_name, package, directory, api):
     """
     Creates new django apps.
 
@@ -208,16 +218,20 @@ def applications(ctx, apps, project_name, directory, api):
     except TypeError:
         path = ''
 
-    if not os.path.exists(path):
+    if package:
+        path = os.getcwd()
+        __project_name = 'django-package'
+    elif not os.path.exists(path):
         log_error(DEFAULT_MANAGEMENT_ERROR)
         log_standard('')
         log_standard(DEFAULT_MANAGEMENT_ERROR_HELP)
         raise click.Abort()
 
-    helper = CreatorHelper(
+    helper = AppHelper(
         cwd=path,
         dry=ctx.obj['dry'],
-        verbose=ctx.obj['verbose']
+        verbose=ctx.obj['verbose'],
+        package=package,
     )
 
     auth_application = None
@@ -229,6 +243,8 @@ def applications(ctx, apps, project_name, directory, api):
             app=name,
             api=api,
         )
+
+        click.echo(f"Successfully created app: {name}")
 
 
 @create.command()

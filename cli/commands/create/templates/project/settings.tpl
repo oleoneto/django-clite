@@ -54,9 +54,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.sites',
 
-    {% if installable_apps %} # Apps installed with django-clite{% for app in installable_apps %}
+    {% if installable_apps %}# Apps installed from cli{% for app in installable_apps %}
     '{{ app }}',{% endfor %}{% endif %}
-
     {% if apps %}# {{ project }} apps{% for app in apps %}
     '{{ project }}.{{ app }}.apps.{{ app.capitalize() }}Config',{% endfor %}{% endif %}
 ]
