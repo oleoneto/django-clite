@@ -2,6 +2,7 @@ import click
 import os
 import subprocess
 import inflection
+from datetime import datetime
 from enum import Enum, auto
 from cli.helpers.logger import *
 from cli.helpers import FSHelper
@@ -262,6 +263,7 @@ class AppHelper(FSHelper):
                     context={
                         'project': project,
                         'app': app,
+                        'app_namespace': app,
                         **kwargs,
                     }
                 )

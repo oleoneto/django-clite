@@ -7,12 +7,12 @@ from cli.helpers import find_project_files
 from cli.helpers.logger import *
 from cli.commands.inspect.main import InspectorHelper
 from cli.commands.inspect.main import inspect
-from cli.commands.generate.main import not_an_app_directory_warning
 from cli.commands.create.helpers.app import AppHelper
 from cli.commands.create.helpers.creator import CreatorHelper
 from cli.commands.create.presets import extra_apps
 from cli.commands.create.presets import installable_apps
 from cli.commands.create.presets import presets
+# from cli.commands.generate.main import not_an_app_directory_warning
 
 
 def wrong_place_warning(ctx):
@@ -121,6 +121,50 @@ def inquire_docker_options(default=False):
     return values
 
 
+def inquire_app_presets(app, default=False):
+
+    remotes = {
+        'github': 'git@github.com',
+        'gitlab': 'git@gitlab.com',
+        'bitbucket': 'git@bitbucket.org',
+    }
+
+    # ------------------------------------------
+    # Default installation
+    if default:
+        return {
+            'remote': remotes['github'],
+            'author': os.environ.get('USER'),
+            'user': os.environ.get('USER'),
+            'repository': app,
+            'origin': f"{remotes['github']}:{os.environ.get('USER')}/{app}.git",
+            'url': f"https://{remotes['github']}.com/{os.environ.get('USER')}/{app}",
+            'year': datetime.year,
+        }
+    # ------------------------------------------
+
+    # ------------------------------------------
+    # Customized installation
+    # ------------------------------------------
+    project_questions = [
+        inquirer.List('remote', message='remote', choices=[r for r in remotes], carousel=True),
+        inquirer.Text('author', message='package author', default=os.environ.get('USER')),
+        inquirer.Text('user', message='repository user/organization', default=os.environ.get('USER')),
+        inquirer.Text('repository', message='repository name', default=app),
+        inquirer.Text('url', mesage='', default=f"https://{remotes['github']}.com/{os.environ.get('USER')}/{app}"),
+    ]
+
+    # Get answers
+    answers = inquirer.prompt(project_questions)
+
+    # Remote origin URL
+    answers['origin'] = f"{remotes[answers['remote']]}:{answers['user']}/{answers['repository']}.git"
+
+    answers['year'] = datetime.year
+
+    return answers
+
+
 @click.group()
 @click.pass_context
 def create(ctx):
@@ -186,8 +230,9 @@ def project(ctx, name, apps, defaults):
 @click.option('--package', is_flag=True, help="Specify that the app can be installed as a package.")
 @click.option('--directory', '-d', type=click.Path(), help="Specify path to your project's management file.")
 @click.option('--api', is_flag=True, help="Add a special api urls module to your app directory.")
+@click.option('--defaults', is_flag=True, help="Apply defaults to project")
 @click.pass_context
-def applications(ctx, apps, project_name, package, directory, api):
+def applications(ctx, apps, project_name, package, directory, api, defaults):
     """
     Creates new django apps.
 
@@ -237,11 +282,12 @@ def applications(ctx, apps, project_name, package, directory, api):
     auth_application = None
 
     for name in apps:
-
+        options = inquire_app_presets(name, default=defaults)
         helper.create_app(
             project=__project_name,
             app=name,
             api=api,
+            **options,
         )
 
         click.echo(f"Successfully created app: {name}")

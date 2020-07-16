@@ -1,14 +1,14 @@
-# {{ package_name }}
+# {{ app }}
 
 {{ package_description }}
 
-![PyPI - License](https://img.shields.io/pypi/l/{{ package_name }})
-![PyPI - Version](https://img.shields.io/pypi/v/{{ package_name }})
-![PyPI - Python Version](https://img.shields.io/pypi/pyversions/{{ package_name }})
-![PyPI - Downloads](https://img.shields.io/pypi/dm/{{ package_name }})
+![PyPI - License](https://img.shields.io/pypi/l/{{ app }})
+![PyPI - Version](https://img.shields.io/pypi/v/{{ app }})
+![PyPI - Python Version](https://img.shields.io/pypi/pyversions/{{ app }})
+![PyPI - Downloads](https://img.shields.io/pypi/dm/{{ app }})
 
 #### Dependencies
-Use of **{{ package_name }}** requires:
+Use of **{{ app }}** requires:
 -
 
 Those apps will need to be installed in the ``INSTALLED_APPS`` tuple of your django project.
@@ -19,11 +19,11 @@ The app is split into the following models:
 -
 
 #### Installation
-1. Add **{{ package_name }}** to your `INSTALLED_APPS` setting like this::
+1. Add **{{ app }}** to your `INSTALLED_APPS` setting like this::
 ```python
     INSTALLED_APPS = [
         # other apps...
-        '{{ package_name }}',
+        '{{ app }}',
     ]
 ```
 
@@ -31,18 +31,18 @@ Alternatively, you can also add this app like so::
 ```python
     INSTALLED_APPS = [
         # other apps...
-        '{{ package_name }}.apps.{{ package_classname }}Config',
+        '{{ app }}.apps.{{ app_classname }}Config',
     ]
 ```
 
 2. Include the polls URLconf in your project urls.py like this::
 ```python
-    path('{{ package_namespace }}/', include('{{ package_name }}.urls', namespace='{{ package_name }}')),
+    path('{{ app_namespace }}/', include('{{ app }}.urls', namespace='{{ app }}')),
 ```
 
 2.1. Optionally, you can also add the api endpoints in your project urls.py like so::
 ```python
-    path('api/', include('{{ package_name }}.api', namespace='{{ package_name }}_api')),
+    path('api/', include('{{ app }}.api', namespace='{{ app }}_api')),
 ```
 
 3. Run ``python manage.py migrate`` to create the app models.
@@ -50,21 +50,21 @@ Alternatively, you can also add this app like so::
 4. Start the development server and visit [`http://127.0.0.1:8000/admin/`](http://127.0.0.1:8000/admin/)
    to start a add chat groups and messages (you'll need the Admin app enabled).
 
-5. Visit [`http://127.0.0.1:8000/{{ package_namespace }}/`](http://127.0.0.1:8000/{{ package_namespace }}/) to use the app.
+5. Visit [`http://127.0.0.1:8000/{{ app_namespace }}/`](http://127.0.0.1:8000/{{ app_namespace }}/) to use the app.
 You should have the following urls added to your url schemes:
 ```
-    http://127.0.0.1:8000/{{ package_namespace }}/
+    http://127.0.0.1:8000/{{ app_namespace }}/
     # list missing urls here...
 ```
 
 5.1. If you've included the api urls as well, you can visit the endpoints by visiting::
 ```
-    http://127.0.0.1:8000/api/{{ package_namespace }}
+    http://127.0.0.1:8000/api/{{ app_namespace }}
     # list missing urls here...
 ```
 
 ## License
-**{{ package_name }}** is [{{ package_license }}-licensed](LICENSE.md).
+**{{ app }}** is [{{ license }}-licensed](LICENSE.md).
 
 ------
 

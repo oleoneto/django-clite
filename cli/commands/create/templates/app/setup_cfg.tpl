@@ -1,12 +1,12 @@
 [metadata]
-name = {{ package_name }}
-version = {{ package_version }}
-description = {{ package_description }}
+name = {{ app }}
+version = {{ version }}
+description = {{ description }}
 long_description = file: README.md
-url = {{ package_url }}
-author = {{ package_author }}
-author_email = {{ package_email }}
-license = {{ package_license }}
+url = {{ url }}
+author = {{ author }}
+author_email = {{ email }}
+license = {{ license }}
 keywords = django
 classifiers =
     Environment :: Web Environment

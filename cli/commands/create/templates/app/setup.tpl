@@ -15,14 +15,14 @@ def get_version(package):
     return re.search("__version__ = ['\"]([^'\"]+)['\"]", init_py).group(1)
 
 
-version = get_version('{{ package }}')
+version = get_version('{{ app }}')
 
 setup(
-    name='{{ package }}',
-    url='{{ package_url }}',
-    author='{{ package_author }}',
-    author_email='{{ package_author_email }}',
-    description='{{ package_description }}',
+    name='{{ app }}',
+    url='{{ url }}',
+    author='{{ author }}',
+    author_email='{{ email }}',
+    description='{{ description }}',
     long_description=read('README.md'),
     long_description_content_type='text/markdown',
 )
