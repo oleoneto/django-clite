@@ -1,3 +1,5 @@
+import re
+import os
 from setuptools import find_packages, setup
 
 
@@ -5,9 +7,19 @@ with open("README.md", "r") as f:
     long_description = f.read()
 
 
+def get_version(package):
+    """
+    Return package version as listed in `__version__` in `init.py`.
+    """
+    init_py = open(os.path.join(package, '__init__.py')).read()
+    return re.search("__version__ = ['\"]([^'\"]+)['\"]", init_py).group(1)
+
+
+version = get_version('cli')
+
 setup(
     name="django-clite",
-    version="0.9.0",
+    version=version,
     author="Leo Neto",
     author_email="leo@ekletik.com",
     url="https://github.com/oleoneto/django-clite",

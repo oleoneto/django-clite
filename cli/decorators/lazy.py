@@ -3,12 +3,11 @@
 from functools import wraps
 
 
-def lazy(func):
-
-    @wraps(func)
+def lazy(f):
+    @wraps(f)
     def wrapped_lazy_func(*args, **kwargs):
-        wrapped = lambda x: func(*args, **kwargs)
-        wrapped.__name__ = "lazy-" + func.__name__
+        wrapped = lambda x: f(*args, **kwargs)
+        wrapped.__name__ = "lazy-" + f.__name__
         return wrapped
 
     return wrapped_lazy_func
