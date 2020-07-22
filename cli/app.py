@@ -37,7 +37,7 @@ def cli(ctx, dry, force, verbose):
     #   3. Any sub-commands of your command should be added to the top-most command in the package's main.py module.
     #
     #   Access your command like so:
-    #   `django-clite my-command my-sub-command`
+    #   `django-clite my-command my-command-sub-command`
     #
     #   If you would like to skip a plugin/command from being auto-discovered,
     #   simply rename the package by either prepending or appending any number of underscores (_).
@@ -45,4 +45,7 @@ def cli(ctx, dry, force, verbose):
 
 
 if __name__ == '__main__':
-    cli()
+    try:
+        cli()
+    except (KeyboardInterrupt, SystemExit):
+        click.echo('Exited!')
