@@ -7,12 +7,15 @@ import re
 
 class InspectorHelper(FSHelper):
 
-    def get_apps(self, show_paths=False, no_stdout=False):
+    def __init__(self, cwd, dry=False, force=False, default=False, verbose=False):
+        super(InspectorHelper, self).__init__(cwd=cwd, dry=dry, force=force, default=default, verbose=verbose)
+
+    def get_apps(self, show_paths=False, suppress_output=False):
         """
         Traverse file system in search for AppConfig files.
 
         :param show_paths: Toggle showing the path to each app
-        :param no_stdout: Toggle printing to stdout
+        :param suppress_output: Toggle printing to stdout
         :return: dictionary of app names and paths
         """
 
@@ -23,9 +26,9 @@ class InspectorHelper(FSHelper):
 
         for app, path in sorted(current_apps.items()):
 
-            if not no_stdout:
+            if not suppress_output:
                 log_standard(f'{app}', bold=True)
-                
+
                 if show_paths:
                     log_standard(f'{path}\n')
 
@@ -48,7 +51,7 @@ class InspectorHelper(FSHelper):
 
         return current_paths
 
-    def get_classes(self, scope, show_paths=False, no_stdout=False):
+    def get_classes(self, scope, show_paths=False, suppress_output=False):
         """
         Retrieve models under each app's models package.
 
@@ -94,12 +97,12 @@ class InspectorHelper(FSHelper):
                 dirs[:] = [d for d in dirs if d not in excluded_dirs]
                 files[:] = [f for f in files if f not in excluded_files]
 
-                if files and not no_stdout:
+                if files and not suppress_output:
                     log_standard('')
                     log_standard(app, bold=True)
 
                     if show_paths:
-                        if not no_stdout:
+                        if not suppress_output:
                             log_standard(f'  {resource_directory}', bold=True)
 
                 for file in sorted(files):
@@ -109,7 +112,7 @@ class InspectorHelper(FSHelper):
                     for line in fileinput.input(model_file):
                         if re.match(r'^class ', line):  # in line and "Meta:" not in line:
                             model_name = line.split('class ')[-1].split('(')[0]
-                            if not no_stdout:
+                            if not suppress_output:
                                 log_verbose(
                                     header=None,
                                     message='    {0:20}'.format(model_name),

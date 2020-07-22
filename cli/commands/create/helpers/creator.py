@@ -5,9 +5,10 @@ from cli.helpers.logger import *
 from cli.helpers import FSHelper
 from cli.helpers import sanitized_string
 from cli.helpers import rendered_file_template
+from cli.helpers.errors import DEFAULT_ERRORS
+from cli.helpers.errors import PROJECT_CREATION_ERROR
 from cli.decorators import watch_templates
 from cli.commands.create.helpers.app import AppHelper
-from django.core.management import call_command
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__)).rsplit('/', 1)[0]
 
@@ -19,9 +20,9 @@ SETTINGS = {
     'settings.py': 'settings.tpl'
 }
 
-# CLI_TEMPLATES = {
-#     '.config.json': 'cli-config_json.tpl'
-# }
+CLI_TEMPLATES = {
+    '.config.json': 'cli-config_json.tpl',
+}
 
 DOCKER_TEMPLATES = {
     'Dockerfile': 'dockerfile.tpl',
@@ -37,6 +38,7 @@ DOKKU_TEMPLATES = {
 }
 
 HEROKU_TEMPLATES = {
+    'Procfile': 'procfile.tpl',
     'requirements.txt': 'requirements.tpl',
 }
 
@@ -165,6 +167,23 @@ class CreatorHelper(FSHelper):
                 'startproject',
                 project
             ])
+            try:
+                # Parse templates
+                self.parse_templates(
+                    parings=CLI_TEMPLATES,
+                    names=self.TEMPLATE_FILES,
+                    directory=self.TEMPLATES_DIRECTORY,
+                    force=True,
+                    context={
+                        'project': project,
+                        'timeout': 60,
+                        'wait': 20,
+                        'web': 1,
+                        **kwargs
+                    }
+                )
+            except (KeyError, TypeError) as e:
+                log_error(PROJECT_CREATION_ERROR)
         except subprocess.CalledProcessError:
             log_error(DEFAULT_ERRORS['project'])
             raise click.Abort
