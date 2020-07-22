@@ -16,15 +16,37 @@ PREVIOUS_WORKING_DIRECTORY = '..'
 
 
 def wrong_place_warning(ctx):
-    if (ctx.obj['path'] and ctx.obj['project']) is None:
-        log_error(DEFAULT_MANAGEMENT_ERROR)
-        log_standard('')
-        log_standard(DEFAULT_MANAGEMENT_ERROR_HELP)
+    try:
+        if (ctx.obj['path'] and ctx.obj['project']) is None:
+            log_error(DEFAULT_MANAGEMENT_ERROR)
+            log_standard('')
+            log_standard(DEFAULT_MANAGEMENT_ERROR_HELP)
+            raise click.Abort
+    except (AttributeError, KeyError) as e:
         raise click.Abort
 
 
 def not_in_project(ctx):
-    return (ctx.obj['path'] and ctx.obj['project']) is None
+    try:
+        return (ctx.obj['path'] and ctx.obj['project']) is None
+    except (AttributeError, KeyError) as e:
+        return True
+
+
+def not_an_app_directory_warning():
+    if not ('apps.py' in os.listdir('.')):
+        log_error("Not inside an app directory")
+        raise click.Abort
+
+
+def ensure_test_directory(cwd):
+    if 'tests' in os.listdir(cwd):
+        pass
+    else:
+        try:
+            os.mkdir('tests')
+        except FileExistsError:
+            pass
 
 
 class FSHelper(object):

@@ -27,6 +27,8 @@ DEFAULT_ERRORS = {
 DEFAULT_MANAGEMENT_ERROR = """The CLI could not decipher your django project.
 Please try to create your app inside a Django project directory."""
 
+DEFAULT_DIRECTORY_ERROR = """The CLI could not decipher your django project."""
+
 DEFAULT_MANAGEMENT_APP_ERROR_PROMPT = """The CLI could not find your django project. Proceed anyways?"""
 
 DEFAULT_MANAGEMENT_ERROR_HELP = """If your project uses custom configuration, you can pass some context to the CLI:

@@ -8,6 +8,8 @@ from .finders import replace_line
 from .finders import save_to_settings
 from .finders import walk_up
 from .fs import FSHelper
+from .fs import ensure_test_directory
+from .fs import not_an_app_directory_warning
 from .fs import not_in_project
 from .fs import wrong_place_warning
 from .logger import log_error
@@ -30,6 +32,7 @@ from .logger import (
     DEFAULT_OVERRIDE_WARNING,
     DEFAULT_PARSED_CONTENT_LOG,
 )
+from .paths import add_app_package_paths_to_context
 from .parser import sanitized_string
 from .templates import get_template
 from .templates import get_templates
