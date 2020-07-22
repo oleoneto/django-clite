@@ -1,18 +1,30 @@
 # helpers:file_system
+import click
 import os
 import inflection
 import fileinput
 import subprocess
-from .parser import sanitized_string
-from .templates import rendered_file_template
 from cli.helpers.finders import get_app_name
 from cli.helpers.finders import get_project_name
 from cli.helpers.finders import walk_up
-from cli.helpers.templates import get_template, get_templates, get_template_path
-from .logger import *
+from cli.helpers.logger import *
+from cli.helpers.parser import sanitized_string
+from cli.helpers.templates import rendered_file_template
 
 
 PREVIOUS_WORKING_DIRECTORY = '..'
+
+
+def wrong_place_warning(ctx):
+    if (ctx.obj['path'] and ctx.obj['project']) is None:
+        log_error(DEFAULT_MANAGEMENT_ERROR)
+        log_standard('')
+        log_standard(DEFAULT_MANAGEMENT_ERROR_HELP)
+        raise click.Abort
+
+
+def not_in_project(ctx):
+    return (ctx.obj['path'] and ctx.obj['project']) is None
 
 
 class FSHelper(object):
