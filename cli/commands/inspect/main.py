@@ -1,15 +1,11 @@
 import click
 import os
-from cli.commands.inspect.helpers import InspectorHelper
 from cli.helpers import get_project_name
 from cli.helpers import find_project_files
-from cli.helpers.logger import *
-
-
-def wrong_place_warning(ctx):
-    if (ctx.obj['path'] and ctx.obj['project_name']) is None:
-        log_error(DEFAULT_MANAGEMENT_ERROR)
-        raise click.Abort
+from cli.helpers import not_in_project
+from cli.helpers.logger import log_error
+from cli.helpers.logger import DEFAULT_DIRECTORY_ERROR
+from cli.commands.inspect.helpers import InspectorHelper
 
 
 @click.command(name='show')
@@ -31,20 +27,25 @@ def inspect(ctx, scope, paths, no_stdout):
     ctx.obj['path'] = p
     ctx.obj['file'] = f
     ctx.obj['management'] = m
-    ctx.obj['project_name'] = get_project_name(f)
+    ctx.obj['project'] = get_project_name(f)
 
-    wrong_place_warning(ctx)
+    if not_in_project(ctx):
+        log_error(DEFAULT_DIRECTORY_ERROR)
+        raise click.Abort
 
-    helper = InspectorHelper(cwd=m)
+    try:
+        helper = InspectorHelper(cwd=m)
 
-    if scope == 'apps':
-        return helper.get_apps(
+        if scope == 'apps':
+            return helper.get_apps(
+                show_paths=paths,
+                no_stdout=no_stdout
+            )
+
+        return helper.get_classes(
+            scope=scope,
             show_paths=paths,
             no_stdout=no_stdout
         )
-
-    return helper.get_classes(
-        scope=scope,
-        show_paths=paths,
-        no_stdout=no_stdout
-    )
+    except (AttributeError, FileNotFoundError, KeyError, TypeError) as e:
+        log_error('An error occurred while running the command!')

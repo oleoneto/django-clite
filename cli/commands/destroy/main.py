@@ -1,6 +1,7 @@
 import click
-import os
-from cli.helpers.logger import log_error
+from cli.helpers import add_app_package_paths_to_context
+from cli.helpers import ensure_test_directory
+from cli.helpers import not_an_app_directory_warning
 from cli.commands.generate.helpers import AdminHelper
 from cli.commands.generate.helpers import FixtureHelper
 from cli.commands.generate.helpers import FormHelper
@@ -16,22 +17,6 @@ from cli.commands.generate.helpers import ViewSetHelper
 SUPPORTED_VIEW_TYPES = ['create', 'detail', 'list', 'update']
 
 
-def not_an_app_directory_warning():
-    if not ('apps.py' in os.listdir('.')):
-        log_error("Not inside an app directory")
-        raise click.Abort
-
-
-def ensure_test_directory(cwd):
-    if 'tests' in os.listdir(cwd):
-        pass
-    else:
-        try:
-            os.mkdir('tests')
-        except FileExistsError:
-            pass
-
-
 @click.group()
 @click.pass_context
 def destroy(ctx):
@@ -42,21 +27,8 @@ def destroy(ctx):
         not_an_app_directory_warning()
 
     ctx.ensure_object(dict)
-    ctx.obj['in_app'] = 'apps.py' in os.listdir('.')
-    ctx.obj['cwd'] = os.getcwd()
-    ctx.obj['admin'] = f"{os.getcwd()}/admin/"
-    ctx.obj['admin_inlines'] = f"{os.getcwd()}/admin/inlines/"
-    ctx.obj['fixtures'] = f"{os.getcwd()}/fixtures/"
-    ctx.obj['forms'] = f"{os.getcwd()}/forms/"
-    ctx.obj['models'] = f"{os.getcwd()}/models/"
-    ctx.obj['models_tests'] = f"{os.getcwd()}/models/tests/"
-    ctx.obj['managers'] = f"{os.getcwd()}/models/managers/"
-    ctx.obj['serializers'] = f"{os.getcwd()}/serializers/"
-    ctx.obj['serializers_tests'] = f"{os.getcwd()}/serializers/tests/"
-    ctx.obj['tests'] = f"{os.getcwd()}/tests/"
-    ctx.obj['templates'] = f"{os.getcwd()}/templates/"
-    ctx.obj['views'] = f"{os.getcwd()}/views/"
-    ctx.obj['viewsets'] = f"{os.getcwd()}/viewsets/"
+
+    add_app_package_paths_to_context(context=ctx)
 
 
 @destroy.command()

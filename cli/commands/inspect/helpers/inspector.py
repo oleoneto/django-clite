@@ -58,12 +58,23 @@ class InspectorHelper(FSHelper):
         models = []
 
         excluded_dirs = [
-            'signals', 'tests', 'helpers', 'abstract', 'abstracts',
-            'validators', 'managers', 'permissions', 'inlines', '__pycache__'
+            '__pycache__',
+            'abstract',
+            'abstracts',
+            'helpers',
+            'inlines',
+            'managers',
+            'mixins',
+            'permissions',
+            'signals',
+            'tests',
+            'validators',
         ]
 
         excluded_files = [
-            "__init__.py"
+            '__init__.py',
+            'requires.py'
+            'router.py',
         ]
 
         current_apps = {

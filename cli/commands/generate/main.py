@@ -1,5 +1,12 @@
-import os
 import click
+import os
+from cli.helpers import add_app_package_paths_to_context
+from cli.helpers import ensure_test_directory
+from cli.helpers import find_project_files
+from cli.helpers import get_project_name
+from cli.helpers import not_an_app_directory_warning
+from cli.helpers.logger import log_error
+from cli.helpers.logger import log_standard
 from cli.commands.generate.helpers.admin import AdminHelper
 from cli.commands.generate.helpers.fixture import FixtureHelper
 from cli.commands.generate.helpers.form import FormHelper
@@ -10,28 +17,9 @@ from cli.commands.generate.helpers.template import TemplateHelper
 from cli.commands.generate.helpers.test import TestHelper
 from cli.commands.generate.helpers.view import ViewHelper
 from cli.commands.generate.helpers.viewset import ViewSetHelper
-from cli.helpers.logger import log_error, log_standard
-from cli.helpers import get_project_name
-from cli.helpers import find_project_files
 
 
 SUPPORTED_VIEW_TYPES = ['create', 'detail', 'list', 'update']
-
-
-def not_an_app_directory_warning():
-    if not ('apps.py' in os.listdir('.')):
-        log_error("Not inside an app directory")
-        raise click.Abort
-
-
-def ensure_test_directory(cwd):
-    if 'tests' in os.listdir(cwd):
-        pass
-    else:
-        try:
-            os.mkdir('tests')
-        except FileExistsError:
-            pass
 
 
 @click.group()
@@ -50,22 +38,7 @@ def generate(ctx, directory):
 
     p, m, f = find_project_files(path)
 
-    ctx.obj['in_app'] = 'apps.py' in os.listdir('.')
-    ctx.obj['cwd'] = os.getcwd()
-    ctx.obj['admin'] = f"{os.getcwd()}/admin/"
-    ctx.obj['admin_inlines'] = f"{os.getcwd()}/admin/inlines/"
-    ctx.obj['fixtures'] = f"{os.getcwd()}/fixtures/"
-    ctx.obj['forms'] = f"{os.getcwd()}/forms/"
-    ctx.obj['migrations'] = f"{os.getcwd()}/migrations/"
-    ctx.obj['models'] = f"{os.getcwd()}/models/"
-    ctx.obj['models_tests'] = f"{os.getcwd()}/models/tests/"
-    ctx.obj['managers'] = f"{os.getcwd()}/models/managers"
-    ctx.obj['serializers'] = f"{os.getcwd()}/serializers/"
-    ctx.obj['serializers_tests'] = f"{os.getcwd()}/serializers/tests/"
-    ctx.obj['tests'] = f"{os.getcwd()}/tests/"
-    ctx.obj['templates'] = f"{os.getcwd()}/templates/"
-    ctx.obj['views'] = f"{os.getcwd()}/views/"
-    ctx.obj['viewsets'] = f"{os.getcwd()}/viewsets/"
+    add_app_package_paths_to_context(context=ctx)
 
     if f is not None:
         ctx.obj['project_name'] = get_project_name(f)
@@ -88,17 +61,25 @@ def admin(ctx, name, inline, fields, stub_permissions):
 
     fields = [f for f in fields]
 
-    if inline:
-        path = ctx.obj['admin_inlines']
+    try:
+        if inline:
+            path = ctx.obj['admin_inlines']
 
-    helper = AdminHelper(
-        cwd=path,
-        dry=ctx.obj['dry'],
-        force=ctx.obj['force'],
-        verbose=ctx.obj['verbose']
-    )
+        helper = AdminHelper(
+            cwd=path,
+            dry=ctx.obj['dry'],
+            force=ctx.obj['force'],
+            verbose=ctx.obj['verbose']
+        )
 
-    helper.create(model=name, fields=fields, inline=inline, permissions=stub_permissions)
+        helper.create(
+            model=name,
+            fields=fields,
+            inline=inline,
+            permissions=stub_permissions,
+        )
+    except (KeyboardInterrupt, SystemExit):
+        log_error('Exited!')
 
 
 @generate.command()
@@ -274,28 +255,31 @@ def resource(ctx, name, fields, inherits, api, is_managed, soft_delete):
 
     name = ModelHelper.check_noun(name)
 
-    ctx.invoke(
-        model,
-        name=name,
-        api=api,
-        register_admin=api,
-        register_inline=api,
-        fields=fields,
-        test_case=True,
-        inherits=inherits,
-        is_managed=is_managed,
-        soft_delete=soft_delete
-    )
-
-    ctx.invoke(serializer, name=name)
-
-    ctx.invoke(viewset, name=name)
-
-    if not api:
-        ctx.invoke(form, name=name)
-        ctx.invoke(template, name=name, class_type='list')
-        ctx.invoke(template, name=name, class_type='detail')
-        ctx.invoke(view, name=name, class_type='list', no_template=True)
+    try:
+        ctx.invoke(
+            model,
+            name=name,
+            api=api,
+            register_admin=api,
+            register_inline=api,
+            fields=fields,
+            test_case=True,
+            inherits=inherits,
+            is_managed=is_managed,
+            soft_delete=soft_delete
+        )
+    
+        ctx.invoke(serializer, name=name)
+    
+        ctx.invoke(viewset, name=name)
+    
+        if not api:
+            ctx.invoke(form, name=name)
+            ctx.invoke(template, name=name, class_type='list')
+            ctx.invoke(template, name=name, class_type='detail')
+            ctx.invoke(view, name=name, class_type='list', no_template=True)
+    except (KeyboardInterrupt, SystemExit) as e:
+        log_error('Exited!')
 
 
 @generate.command()
