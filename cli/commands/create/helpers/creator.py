@@ -7,6 +7,7 @@ from cli.helpers import sanitized_string
 from cli.helpers import rendered_file_template
 from cli.decorators import watch_templates
 from cli.commands.create.helpers.app import AppHelper
+from django.core.management import call_command
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__)).rsplit('/', 1)[0]
 
@@ -36,7 +37,7 @@ DOKKU_TEMPLATES = {
 }
 
 HEROKU_TEMPLATES = {
-    'Procfile': 'procfile.tpl',
+    'requirements.txt': 'requirements.tpl',
 }
 
 ENV_TEMPLATES = {
@@ -87,16 +88,19 @@ class CreatorHelper(FSHelper):
 
         directory = os.getcwd()
 
-        self.parse_templates(
-            parings={'__init__.py': 'celery_init.tpl'},
-            names=self.TEMPLATE_FILES,
-            directory=self.TEMPLATES_DIRECTORY,
-            force=True,
-            context={'project': project}
-        )
+        try:
+            self.parse_templates(
+                parings={'__init__.py': 'celery_init.tpl'},
+                names=self.TEMPLATE_FILES,
+                directory=self.TEMPLATES_DIRECTORY,
+                force=True,
+                context={'project': project}
+            )
 
-        self.change_directory(PREVIOUS_WORKING_DIRECTORY)
-        self.change_directory(PREVIOUS_WORKING_DIRECTORY)
+            self.change_directory(PREVIOUS_WORKING_DIRECTORY)
+            self.change_directory(PREVIOUS_WORKING_DIRECTORY)
+        except Exception as e:
+            log_error(e)
 
         return directory
 
@@ -121,7 +125,7 @@ class CreatorHelper(FSHelper):
         self.change_directory(PREVIOUS_WORKING_DIRECTORY)
         return True
 
-    def __project(self, project, presets=None, settings_apps=None, settings_middleware=None, **kwargs):
+    def __project(self, project, presets=None, **kwargs):
         """
         Creates a django project with or without customizations
 
@@ -130,12 +134,10 @@ class CreatorHelper(FSHelper):
         :return: None
         """
 
+        directory = None
+
         if presets is None:
             presets = []
-        if settings_apps is None:
-            settings_apps = []
-        if settings_middleware is None:
-            settings_middleware = []
 
         project = sanitized_string(project)
 
@@ -147,7 +149,7 @@ class CreatorHelper(FSHelper):
             'dokku': DOKKU_TEMPLATES,
             'environments': ENV_TEMPLATES,
             'git': GIT_TEMPLATES,
-            # 'heroku': HEROKU_TEMPLATES,
+            'heroku': HEROKU_TEMPLATES,
         }
 
         if self.is_dry:
@@ -170,6 +172,7 @@ class CreatorHelper(FSHelper):
         if presets:
             # Customize django project directory
             self.change_directory(project)
+            directory = os.getcwd()
 
             for preset in presets:
                 depth = 0
@@ -184,42 +187,45 @@ class CreatorHelper(FSHelper):
                     self.change_directory(project)
                     depth += 1
 
-                # Parse templates
-                self.parse_templates(
-                    parings=supported_presets[preset],
-                    names=self.TEMPLATE_FILES,
-                    directory=self.TEMPLATES_DIRECTORY,
-                    force=True,
-                    context={
-                        'project': project,
-                        'installable_apps': settings_apps,
-                        'installable_middleware': settings_middleware,
-                        'timeout': 60,
-                        'wait': 20,
-                        'web': 1,
-                        **kwargs
-                    }
-                )
-
-                for d in range(depth):
-                    self.change_directory(PREVIOUS_WORKING_DIRECTORY)
+                try:
+                    # Parse templates
+                    self.parse_templates(
+                        parings=supported_presets[preset],
+                        names=self.TEMPLATE_FILES,
+                        directory=self.TEMPLATES_DIRECTORY,
+                        force=True,
+                        context={
+                            'project': project,
+                            'timeout': 60,
+                            'wait': 20,
+                            'web': 1,
+                            **kwargs
+                        }
+                    )
+    
+                    for d in range(depth):
+                        self.change_directory(PREVIOUS_WORKING_DIRECTORY)
+                except Exception as e:
+                    log_error(e)
 
             # Return to top of project directory
             self.change_directory(PREVIOUS_WORKING_DIRECTORY)
 
-    def create_project(self, presets, project, apps, **kwargs):
+        return directory
+
+    def create_project(self, project, apps, presets, **kwargs):
         """
         Creates a project structure and customizes it
 
-        :param presets: list of project defaults/presets
         :param project: name of django projects
-        :param apps: list of project apps
-        :param kwargs:
-        :return:
+        :param apps: project apps
+        :param presets: list of project defaults/presets
+        :param kwargs: extra options
+        :return: path to project directory
         """
 
         # Create project
-        self.__project(project, presets, **kwargs)
+        directory = self.__project(project, presets, **kwargs)
 
         # Add customizations for celery
         if 'celery' in presets:
@@ -259,7 +265,7 @@ class CreatorHelper(FSHelper):
         if 'git' in presets:
             self.__git(project, origin=kwargs.get('origin'))
 
-        return True
+        return directory
 
     def create_file_in_context(self, project, template, filename, apps=None):
         """
@@ -272,7 +278,7 @@ class CreatorHelper(FSHelper):
         :return:
         """
         content = rendered_file_template(
-            path=TEMPLATE_DIR,
+            path=self.TEMPLATES_DIR,
             template=template,
             context={'project': project, 'apps': apps}
         )

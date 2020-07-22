@@ -34,17 +34,13 @@ DEFAULT_APP_PACKAGES = {
     'viewsets',
 }
 
-REUSABLE_APP = {
-    'README.rst': 'README_rst.tpl',
-    'MANIFEST.in': 'MANIFEST.tpl',
-    'LICENSE': 'LICENSE.tpl',
-    'setup.cfg': 'setup_cfg.tpl',
-    'setup.py': 'setup.tpl',
-}
-
 UNWANTED_FILES = {
-    'apps.py', 'admin.py', 'models.py',
-    'tests.py', 'views.py', '__init__.py'
+    'apps.py',
+    'admin.py',
+    'models.py',
+    'tests.py',
+    'views.py',
+    '__init__.py'
 }
 
 APP_TEMPLATES = {
@@ -52,6 +48,7 @@ APP_TEMPLATES = {
     'urls.py': 'urls.tpl',
     'apps.py': 'apps.tpl',
     'requires.py': 'requires.tpl',
+    '__init__.py': 'init.tpl',
 }
 
 APP_PACKAGE_FILES = {
@@ -159,7 +156,12 @@ class AppHelper(FSHelper):
             content = rendered_file_template(
                 path=self.TEMPLATES_DIRECTORY,
                 template=template,
-                context={'project': project, 'app': app}
+                context={
+                    'app': app,
+                    'classname': inflection.camelize(app),
+                    'package': package,
+                    'project': project,
+                }
             )
 
             self.create_file(
@@ -186,7 +188,12 @@ class AppHelper(FSHelper):
             content = rendered_file_template(
                 path=self.TEMPLATES_DIRECTORY,
                 template=template,
-                context={'project': project, 'app': app}
+                context={
+                    'app': app,
+                    'classname': inflection.camelize(app),
+                    'package': self.package,
+                    'project': project,
+                }
             )
 
             self.create_file(
@@ -203,7 +210,11 @@ class AppHelper(FSHelper):
             content = rendered_file_template(
                 path=self.TEMPLATES_DIRECTORY,
                 template=template,
-                context={'project': project, 'app': app}
+                context={
+                    'app': app,
+                    'package': self.package,
+                    'project': project,
+                }
             )
 
             self.create_file(
@@ -228,7 +239,7 @@ class AppHelper(FSHelper):
         :return: True if app is created. False otherwise
         """
 
-        project = sanitized_string(project)
+        project = '' if not project else sanitized_string(project)
         app = sanitized_string(app)
 
         if self.is_dry:
@@ -255,26 +266,29 @@ class AppHelper(FSHelper):
             return False
 
         # Add license, setup.py, and other files
-        try:
-            for filename, template in APP_PACKAGE_FILES.items():
-                content = rendered_file_template(
-                    path=self.TEMPLATES_DIRECTORY,
-                    template=template,
-                    context={
-                        'project': project,
-                        'app': app,
-                        'app_namespace': app,
-                        **kwargs,
-                    }
-                )
+        if self.package:
+            try:
+                for filename, template in APP_PACKAGE_FILES.items():
+                    content = rendered_file_template(
+                        path=self.TEMPLATES_DIRECTORY,
+                        template=template,
+                        context={
+                            'app': app,
+                            'app_namespace': app,
+                            'classname': inflection.camelize(app),
+                            'package': self.package,
+                            'project': project,
+                            **kwargs,
+                        }
+                    )
 
-                self.create_file(
-                    path=os.getcwd(),
-                    filename=filename,
-                    content=content
-                )
-        except OSError:
-            pass
+                    self.create_file(
+                        path=os.getcwd(),
+                        filename=filename,
+                        content=content
+                    )
+            except OSError:
+                pass
 
         # Perform app customizations
         self.change_directory(app)
@@ -298,7 +312,12 @@ class AppHelper(FSHelper):
                 content = rendered_file_template(
                     path=self.TEMPLATES_DIRECTORY,
                     template=template,
-                    context={'project': project, 'app': app}
+                    context={
+                        'app': app,
+                        'classname': inflection.camelize(app),
+                        'package': self.package,
+                        'project': project,
+                    }
                 )
 
                 self.create_file(
