@@ -5,4 +5,4 @@ EXTRA_APPS = [
     'authentication'
 ]
 
-DEFAULTS = EXTRA_APPS[1]
+DEFAULTS = []
