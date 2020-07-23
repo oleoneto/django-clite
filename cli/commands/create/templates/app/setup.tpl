@@ -18,6 +18,7 @@ def get_version(package):
 version = get_version('{{ app }}')
 
 setup(
+    version=version,
     name='{{ app }}',
     url='{{ url }}',
     author='{{ author }}',
