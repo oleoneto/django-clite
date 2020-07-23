@@ -1,6 +1,7 @@
 import os
 import subprocess
 import inflection
+from datetime import datetime
 from enum import Enum, auto
 from cli.helpers.logger import *
 from cli.helpers import FSHelper
@@ -277,6 +278,7 @@ class AppHelper(FSHelper):
                             'classname': inflection.camelize(app),
                             'package': self.package,
                             'project': project,
+                            'year': datetime.today().year,
                             **kwargs,
                         }
                     )
