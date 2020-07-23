@@ -306,7 +306,7 @@ class CreatorHelper(FSHelper):
         :return:
         """
         content = rendered_file_template(
-            path=self.TEMPLATES_DIR,
+            path=self.TEMPLATES_DIRECTORY,
             template=template,
             context={'project': project, 'apps': apps}
         )
