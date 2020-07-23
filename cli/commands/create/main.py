@@ -162,7 +162,7 @@ def create_settings(ctx, ignore_apps, override_file):
 
     try:
         wrong_place_warning(ctx)
-        project_name = ctx.obj['project_name']
+        project_name = ctx.obj['project']
         path = os.path.join(ctx.obj['management'], project_name)
     
         h = CreatorHelper(
@@ -175,14 +175,14 @@ def create_settings(ctx, ignore_apps, override_file):
             ctx.obj['helper'] = InspectorHelper(cwd=ctx.obj['management'])
             apps = ctx.invoke(inspect, scope='apps', no_stdout=True)
             h.create_file_in_context(
-                project=ctx.obj['project_name'],
+                project=ctx.obj['project'],
                 template='settings.tpl',
                 filename='settings_override.py',
                 apps=apps
             )
         else:
             h.create_file_in_context(
-                project=ctx.obj['project_name'],
+                project=ctx.obj['project'],
                 template='settings.tpl',
                 filename='settings_override.py',
             )
