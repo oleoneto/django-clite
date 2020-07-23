@@ -1,10 +1,14 @@
 version: '3'
 
+volumes:
+    database:
+
+
 services:
-  web:
+  app:
     container_name: "{{ project }}_web"
     labels:
-        com.{{ project }}.web.description: "{{ project }}: Web Application"
+        com.app.description: "{{ project }}: Web Application"
     build:
         context: .
     volumes:
@@ -18,15 +22,15 @@ services:
     ports:
         - 8007:8000 # host:docker
     depends_on:
-        - db
+        - database
         - redis
 
 
-  db:
-    container_name: "{{ project }}_db"
+  database:
+    container_name: "{{ project }}_database"
     image: postgres:12-alpine
     labels:
-        com.{{ project }}.db.description: "{{ project }}: Database service"
+        com.database.description: "{{ project }}: Database service"
     volumes:
         - ./database:/var/lib/postgresql/data/
     ports:
@@ -43,11 +47,35 @@ services:
     container_name: "{{ project }}_redis"
     image: redis:latest
     labels:
-        com.{{ project }}.redis.description: "{{ project }}: Redis cache service"
+        com.redis.description: "{{ project }}: Redis cache service"
     ports:
         - 6377:6379 # host:docker
     restart: always
 
 
-volumes:
-    database:
+  celery_worker:
+    container_name: "{{ project }}_celery_worker"
+    labels:
+        com.celery.description: "{{ project }}: Celery Worker"
+    build:
+      context: .
+    command: celery worker --app {{ project }} --concurrency=20 -linfo -E
+    depends_on:
+      - redis
+    env_file:
+      - .env
+    restart: on-failure
+    stop_grace_period: 5s
+
+
+  vault:
+    container_name: "{{ project }}_vault"
+    labels:
+        com.vault.description: "{{ project }}: Project Vault"
+    image: vault
+    ports:
+      - 7200:8200
+    restart: always
+
+
+# These settings are provided for development purposes only. Not suitable for production.

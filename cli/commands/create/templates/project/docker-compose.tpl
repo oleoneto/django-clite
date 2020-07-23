@@ -1,7 +1,12 @@
 version: '3'
 
+{% if 'database' in services %}
+volumes:
+    database:
+{% endif %}
+
 services:
-  web:
+  app:
     container_name: "{{ project }}_web"
     labels:
         com.{{ project }}.web.description: "{{ project }}: Web Application"
@@ -17,18 +22,19 @@ services:
     command: gunicorn {{ project }}.wsgi:application --bind 0.0.0.0:{{ port }} --workers {{ workers }}
     ports:
         - 8007:8000 # host:docker
-    {% if depends_on %}
+    {%- if services %}
     depends_on:
-        {% for service in depends_on %}- {{ service }}{% endfor %}
+        {%- for service in services %}
+        - {{ service }}{% endfor %}
     {% endif %}
 
 
-  {% if database %}
-  db:
-    container_name: "{{ project }}_db"
+  {%- if 'database' in services %}
+  database:
+    container_name: "{{ project }}_database"
     image: postgres:12-alpine
     labels:
-        com.{{ project }}.db.description: "{{ project }}: Database service"
+        com.database.description: "{{ project }}: Database service"
     volumes:
         - ./database:/var/lib/postgresql/data/
     ports:
@@ -41,19 +47,22 @@ services:
     restart: always
   {% endif %}
 
-  {% if redis %}
+  {%- if 'redis' in services %}
   redis:
     container_name: "{{ project }}_redis"
     image: redis:latest
     labels:
-        com.{{ project }}.redis.description: "{{ project }}: Redis cache service"
+        com.redis.description: "{{ project }}: Redis cache service"
     ports:
         - 6377:6379 # host:docker
     restart: always
   {% endif %}
-  {% if celery %}
+
+  {%- if 'celery' in services %}
   celery_worker:
     container_name: "{{ project }}_celery_worker"
+    labels:
+        com.celery.description: "{{ project }}: Celery Worker"
     build:
       context: .
     command: celery worker --app {{ project }} --concurrency=20 -linfo -E
@@ -65,8 +74,16 @@ services:
     stop_grace_period: 5s
   {% endif %}
 
+  {%- if 'vault' in services %}
+  vault:
+    container_name: "{{ project }}_vault"
+    labels:
+        com.vault.description: "{{ project }}: Project Vault"
+    image: vault
+    ports:
+      - 7200:8200
+    restart: always
+  {% endif %}
 
-{% if database %}
-volumes:
-    database:
-{% endif %}
+
+# These settings are provided for development purposes only. Not suitable for production.

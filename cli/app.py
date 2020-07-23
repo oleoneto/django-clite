@@ -47,5 +47,5 @@ def cli(ctx, dry, force, verbose):
 if __name__ == '__main__':
     try:
         cli()
-    except (KeyboardInterrupt, SystemExit):
-        click.echo('Exited!')
+    except (KeyboardInterrupt, SystemExit) as e:
+        click.echo(f'Exited! {repr(e)}')

@@ -184,7 +184,7 @@ class CreatorHelper(FSHelper):
                     }
                 )
             except (KeyError, TypeError, ValueError) as e:
-                log_error(f'{TEMPLATE_NOT_FOUND_ERROR} Error: {repr(e)}')
+                log_error(f'{TEMPLATE_NOT_FOUND_ERROR} {repr(e)}')
         except subprocess.CalledProcessError:
             log_error(DEFAULT_ERRORS['project'])
             raise click.Abort
@@ -226,7 +226,7 @@ class CreatorHelper(FSHelper):
                     for d in range(depth):
                         self.change_directory(PREVIOUS_WORKING_DIRECTORY)
                 except (KeyError, TypeError, ValueError) as e:
-                    log_error(f'{TEMPLATE_NOT_FOUND_ERROR}, Error: {repr(e)}')
+                    log_error(f'{TEMPLATE_NOT_FOUND_ERROR} {repr(e)}')
 
             # Return to top of project directory
             self.change_directory(PREVIOUS_WORKING_DIRECTORY)

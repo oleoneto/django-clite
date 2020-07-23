@@ -10,8 +10,9 @@ from cli.commands.inspect.main import inspect
 from cli.commands.create.helpers.app import AppHelper
 from cli.commands.create.helpers.creator import CreatorHelper
 from cli.commands.create.helpers import inquire_app_presets
-from cli.commands.create.helpers import inquire_installable_apps
+from cli.commands.create.helpers import inquire_docker_options
 from cli.commands.create.helpers import inquire_project_presets
+# from cli.commands.create.helpers import inquire_installable_apps
 
 
 @click.group()
@@ -56,27 +57,28 @@ def create_project(ctx, name, apps, defaults):
         helper = ctx.obj['helper']
 
         # project presets
-        project_presets = inquire_project_presets(project_name=name, default=defaults)
+        presets = inquire_project_presets(project_name=name, default=defaults)
     
         # project app settings
         # settings_apps, settings_middleware = inquire_installable_apps(default=defaults)
     
         # docker settings
-        # x_docker = inquire_docker_options()
-    
+        services = {} if 'dockerized' not in presets['presets'] else inquire_docker_options(default=defaults)
+
         # Create project
         d = helper.create_project(
             project=name,
             apps=apps,
+            **presets,
+            **services,
             # settings_apps=settings_apps,
             # settings_middleware=settings_middleware,
-            **project_presets,
         )
 
         # apps = ctx.invoke(inspect, scope='apps', no_stdout=True)
         # resources = ctx.invoke(inspect, scope='models', no_stdout=True)
-    except (KeyboardInterrupt, SystemExit) as e:
-        log_error('Exited!')
+    except (KeyboardInterrupt, SystemExit, Exception) as e:
+        log_error(f'Exited! {repr(e)}')
 
 
 @create.command(name='apps')
@@ -144,11 +146,11 @@ def create_applications(ctx, apps, project, package, directory, api, defaults):
         log_error('Exited!')
 
 
-@create.command()
+@create.command(name='settings')
 @click.option('--ignore-apps', is_flag=True, help="Do not add project apps to INSTALLED_APPS.")
 @click.option('--override-file', is_flag=True, help="Override contents of current settings.py module")
 @click.pass_context
-def settings(ctx, ignore_apps, override_file):
+def create_settings(ctx, ignore_apps, override_file):
     """
     Create settings file for project.
     """
@@ -180,4 +182,4 @@ def settings(ctx, ignore_apps, override_file):
                 filename='settings_override.py',
             )
     except (KeyboardInterrupt, SystemExit, Exception) as e:
-        log_error('Exited!')
+        log_error(f'Exited! {repr(e)}')
