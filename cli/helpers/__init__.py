@@ -14,6 +14,7 @@ from .fs import FSHelper
 from .fs import ensure_test_directory
 from .fs import not_an_app_directory_warning
 from .fs import not_in_project
+from .fs import not_in_project_warning
 from .fs import wrong_place_warning
 from .logger import log_error
 from .logger import log_info

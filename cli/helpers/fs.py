@@ -4,9 +4,12 @@ import os
 import inflection
 import fileinput
 import subprocess
+from cli.helpers.errors import PROJECT_DIRECTORY_NOT_FOUND_ERROR
+from cli.helpers.errors import PROJECT_DIRECTORY_NOT_FOUND_ERROR_HELP
 from cli.helpers.finders import get_app_name
 from cli.helpers.finders import get_project_name
 from cli.helpers.finders import walk_up
+from cli.helpers.finders import find_project_files
 from cli.helpers.logger import *
 from cli.helpers.parser import sanitized_string
 from cli.helpers.templates import rendered_file_template
@@ -18,9 +21,9 @@ PREVIOUS_WORKING_DIRECTORY = '..'
 def wrong_place_warning(ctx):
     try:
         if (ctx.obj['path'] and ctx.obj['project']) is None:
-            log_error(DEFAULT_MANAGEMENT_ERROR)
+            log_error(PROJECT_DIRECTORY_NOT_FOUND_ERROR)
             log_standard('')
-            log_standard(DEFAULT_MANAGEMENT_ERROR_HELP)
+            log_standard(PROJECT_DIRECTORY_NOT_FOUND_ERROR_HELP)
             raise click.Abort
     except (AttributeError, KeyError) as e:
         raise click.Abort
@@ -33,8 +36,20 @@ def not_in_project(ctx):
         return True
 
 
+def not_in_project_warning():
+    if '--help' in click.get_os_args():
+        pass
+    else:
+        path, management, file = find_project_files(os.getcwd())
+        if not management:
+            log_error(PROJECT_DIRECTORY_NOT_FOUND_ERROR)
+            raise click.Abort
+
+
 def not_an_app_directory_warning():
-    if not ('apps.py' in os.listdir('.')):
+    if '--help' in click.get_os_args():
+        pass
+    elif not ('apps.py' in os.listdir('.')):
         log_error("Not inside an app directory")
         raise click.Abort
 

@@ -14,3 +14,13 @@ PROJECT_DIRECTORY_NOT_FOUND_ERROR = """The CLI could not decipher your django pr
 
 PROJECT_MANAGEMENT_NOT_FOUND_ERROR = """The CLI could not decipher your django project.
 Please try to create your app inside a Django project directory."""
+
+TEMPLATE_NOT_FOUND_ERROR = """Attempting to load a missing template caused an error."""
+
+PROJECT_DIRECTORY_NOT_FOUND_ERROR_HELP = """If your project uses custom configuration, you can pass some context to the CLI:
+    Specify the manage.py directory with the flag: --directory/-d
+    Specify the project name with the flag: --project/-p
+
+    Example:
+    D create app classroom --project school --directory path/to/management
+"""
