@@ -9,7 +9,7 @@
   {% for app in apps %}
     {
         "{{ app.name }}": {
-            "path": "{{ app.path }}",
+            "path": "{{ app['path'] }}",
             "models": []
         }
     },

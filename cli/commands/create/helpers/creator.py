@@ -1,15 +1,17 @@
 import click
 import os
 import subprocess
+from datetime import datetime
 from cli.helpers.logger import *
 from cli.helpers import FSHelper
 from cli.helpers import sanitized_string
 from cli.helpers import rendered_file_template
-from cli.helpers.errors import DEFAULT_ERRORS
 from cli.helpers.errors import PROJECT_CREATION_ERROR
 from cli.helpers.errors import TEMPLATE_NOT_FOUND_ERROR
 from cli.decorators import watch_templates
 from cli.commands.create.helpers.app import AppHelper
+
+now = datetime.now
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__)).rsplit('/', 1)[0]
 
@@ -143,6 +145,7 @@ class CreatorHelper(FSHelper):
             presets = []
 
         project = sanitized_string(project)
+        self.project_name = project
 
         supported_presets = {
             'celery': CELERY_TEMPLATES,
@@ -186,7 +189,7 @@ class CreatorHelper(FSHelper):
             except (KeyError, TypeError, ValueError) as e:
                 log_error(f'{TEMPLATE_NOT_FOUND_ERROR} {repr(e)}')
         except subprocess.CalledProcessError:
-            log_error(DEFAULT_ERRORS['project'])
+            log_error(PROJECT_CREATION_ERROR)
             raise click.Abort
 
         if presets:
@@ -246,6 +249,11 @@ class CreatorHelper(FSHelper):
 
         # Create project
         directory = self.__project(project, presets, **kwargs)
+        FSHelper.config['project'] = {
+            'name': project,
+            'path': directory,
+            'created_at': now().strftime("%d/%m/%Y %H:%M:%S"),
+        }
 
         # Add customizations for celery
         if 'celery' in presets:

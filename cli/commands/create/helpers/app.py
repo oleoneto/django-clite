@@ -16,6 +16,8 @@ from cli.commands.generate.helpers import TestHelper
 from cli.commands.generate.helpers import ViewSetHelper
 from cli.decorators import watch_templates
 
+now = datetime.now
+
 BASE_DIR = os.path.dirname(os.path.abspath(__file__)).rsplit('/', 1)[0]
 
 CURRENT_WORKING_DIRECTORY = '.'
@@ -236,7 +238,7 @@ class AppHelper(FSHelper):
         :param app: name of django app
         :param auth: app is used for authentication
         :param kwargs:
-        :return: True if app is created. False otherwise
+        :return: app directory. None if an error occurred.
         """
 
         project = '' if not project else sanitized_string(project)
@@ -293,6 +295,13 @@ class AppHelper(FSHelper):
 
         # Perform app customizations
         self.change_directory(app)
+        directory = os.getcwd()
+        FSHelper.config['apps'].append({
+            'app': app,
+            'path': directory,
+            'created_at': now().strftime("%d/%m/%Y %H:%M:%S"),
+            'updated_at': now().strftime("%d/%m/%Y %H:%M:%S"),
+        })
 
         if self.verbose:
             log_verbose(header='Customizations:', message=f'\t{app}')
@@ -363,4 +372,4 @@ class AppHelper(FSHelper):
         self.change_directory(PREVIOUS_WORKING_DIRECTORY)
         log_success(DEFAULT_APP_CREATION_LOG.format(app))
 
-        return True
+        return directory

@@ -66,7 +66,7 @@ def create_project(ctx, name, apps, defaults):
         services = {} if 'dockerized' not in presets['presets'] else inquire_docker_options(default=defaults)
 
         # Create project
-        d = helper.create_project(
+        helper.create_project(
             project=name,
             apps=apps,
             **presets,
@@ -74,6 +74,9 @@ def create_project(ctx, name, apps, defaults):
             # settings_apps=settings_apps,
             # settings_middleware=settings_middleware,
         )
+
+        # Add info to .cli_config.json
+        helper.write_cli_config()
 
         # apps = ctx.invoke(inspect, scope='apps', no_stdout=True)
         # resources = ctx.invoke(inspect, scope='models', no_stdout=True)
@@ -142,6 +145,8 @@ def create_applications(ctx, apps, project, package, directory, api, defaults):
             )
     
             click.echo(f"Successfully created app: {name}")
+
+        print(helper.config)
     except (KeyboardInterrupt, SystemExit, Exception) as e:
         log_error('Exited!')
 

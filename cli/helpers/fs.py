@@ -1,8 +1,9 @@
 # helpers:file_system
 import click
 import os
-import inflection
 import fileinput
+import inflection
+import json
 import subprocess
 from cli.helpers.errors import PROJECT_DIRECTORY_NOT_FOUND_ERROR
 from cli.helpers.errors import PROJECT_DIRECTORY_NOT_FOUND_ERROR_HELP
@@ -71,6 +72,12 @@ class FSHelper(object):
     Use this helper to handle all things related to
     searching, creating, and deleting files.
     """
+
+    # Store helper context and project configuration
+    config = {
+        'project': {},
+        'apps': [],
+    }
 
     def __init__(self, cwd, dry=False, force=False, default=False, verbose=False):
         """
@@ -429,6 +436,7 @@ class FSHelper(object):
         :param names: names of templates to be parsed
         :param directory: template files directory
         :param folders: project folders to create
+        :param force: force template parsing
         :param kwargs: context and other arguments
         :return: True if templates are parsed
         """
@@ -471,6 +479,20 @@ class FSHelper(object):
             return True
         log_success("Skipping creation of git repository with --dry enabled")
         return False
+
+    def write_cli_config(self):
+        # Create or update .cli.config for this project
+        if self.is_dry:
+            if self.verbose:
+                log_standard(f'Skipping writing to .cli.config with --dry enabled')
+
+        if self.project_name:
+            with open(f'{self.cwd}/{self.project_name}/.cli.config', 'w') as file:
+                json.dump(self.config, file, indent=4, separators=(',', ': '))
+            file.close()
+
+            if self.verbose:
+                log_standard(f'Updated .cli.config file for this project')
 
     ##################################
     # Move around
