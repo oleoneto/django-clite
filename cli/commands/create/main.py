@@ -59,19 +59,22 @@ def create_project(ctx, name, apps, defaults):
         project_presets = inquire_project_presets(project_name=name, default=defaults)
     
         # project app settings
-        settings_apps, settings_middleware = inquire_installable_apps(default=defaults)
+        # settings_apps, settings_middleware = inquire_installable_apps(default=defaults)
     
         # docker settings
         # x_docker = inquire_docker_options()
     
         # Create project
-        return helper.create_project(
+        d = helper.create_project(
             project=name,
             apps=apps,
-            settings_apps=settings_apps,
-            settings_middleware=settings_middleware,
+            # settings_apps=settings_apps,
+            # settings_middleware=settings_middleware,
             **project_presets,
         )
+
+        # apps = ctx.invoke(inspect, scope='apps', no_stdout=True)
+        # resources = ctx.invoke(inspect, scope='models', no_stdout=True)
     except (KeyboardInterrupt, SystemExit) as e:
         log_error('Exited!')
 
@@ -137,7 +140,7 @@ def create_applications(ctx, apps, project, package, directory, api, defaults):
             )
     
             click.echo(f"Successfully created app: {name}")
-    except (KeyboardInterrupt, SystemExit) as e:
+    except (KeyboardInterrupt, SystemExit, Exception) as e:
         log_error('Exited!')
 
 
@@ -176,5 +179,5 @@ def settings(ctx, ignore_apps, override_file):
                 template='settings.tpl',
                 filename='settings_override.py',
             )
-    except (KeyboardInterrupt, SystemExit) as e:
+    except (KeyboardInterrupt, SystemExit, Exception) as e:
         log_error('Exited!')

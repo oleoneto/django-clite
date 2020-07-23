@@ -14,14 +14,16 @@ services:
     environment:
         DJANGO_ENV: docker
     entrypoint: /docker-entrypoint.sh
-    command: gunicorn {{ project }}.wsgi:application --bind 0.0.0.0:8000 --workers 3
+    command: gunicorn {{ project }}.wsgi:application --bind 0.0.0.0:{{ port }} --workers {{ workers }}
     ports:
         - 8007:8000 # host:docker
+    {% if depends_on %}
     depends_on:
-        - db
-        - redis
+        {% for service in depends_on %}- {{ service }}{% endfor %}
+    {% endif %}
 
 
+  {% if database %}
   db:
     container_name: "{{ project }}_db"
     image: postgres:12-alpine
@@ -37,8 +39,9 @@ services:
         timeout: 83s
         retries: 40
     restart: always
+  {% endif %}
 
-
+  {% if redis %}
   redis:
     container_name: "{{ project }}_redis"
     image: redis:latest
@@ -47,7 +50,23 @@ services:
     ports:
         - 6377:6379 # host:docker
     restart: always
+  {% endif %}
+  {% if celery %}
+  celery_worker:
+    container_name: "{{ project }}_celery_worker"
+    build:
+      context: .
+    command: celery worker --app {{ project }} --concurrency=20 -linfo -E
+    depends_on:
+      - redis
+    env_file:
+      - .env
+    restart: on-failure
+    stop_grace_period: 5s
+  {% endif %}
 
 
+{% if database %}
 volumes:
     database:
+{% endif %}

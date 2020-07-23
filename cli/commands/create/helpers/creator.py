@@ -7,6 +7,7 @@ from cli.helpers import sanitized_string
 from cli.helpers import rendered_file_template
 from cli.helpers.errors import DEFAULT_ERRORS
 from cli.helpers.errors import PROJECT_CREATION_ERROR
+from cli.helpers.errors import TEMPLATE_NOT_FOUND_ERROR
 from cli.decorators import watch_templates
 from cli.commands.create.helpers.app import AppHelper
 
@@ -182,8 +183,8 @@ class CreatorHelper(FSHelper):
                         **kwargs
                     }
                 )
-            except (KeyError, TypeError) as e:
-                log_error(PROJECT_CREATION_ERROR)
+            except (KeyError, TypeError, ValueError) as e:
+                log_error(f'{TEMPLATE_NOT_FOUND_ERROR} Error: {repr(e)}')
         except subprocess.CalledProcessError:
             log_error(DEFAULT_ERRORS['project'])
             raise click.Abort
@@ -224,8 +225,8 @@ class CreatorHelper(FSHelper):
     
                     for d in range(depth):
                         self.change_directory(PREVIOUS_WORKING_DIRECTORY)
-                except Exception as e:
-                    log_error(e)
+                except (KeyError, TypeError, ValueError) as e:
+                    log_error(f'{TEMPLATE_NOT_FOUND_ERROR}, Error: {repr(e)}')
 
             # Return to top of project directory
             self.change_directory(PREVIOUS_WORKING_DIRECTORY)
