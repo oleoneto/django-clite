@@ -64,8 +64,10 @@ You should have the following urls added to your url schemes:
 ```
 
 ## License
-**{{ app }}** is [{{ license }}-licensed](LICENSE.md).
+**{{ app }}**. [Check out the license](LICENSE).
 
 ------
 
 Built with [django-clite](https://github.com/oleoneto/django-clite).
+
+Maintained by {{ user }}

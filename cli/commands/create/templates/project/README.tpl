@@ -54,7 +54,7 @@ Use `.env-example` to specify the keys that must be set in order for your applic
 ---
 
 ### Pull requests
-Found a bug or have a feature request? [Contribute](/pulls)
+Found a bug or have a feature request? Open an issue or submit a PR.
 
 ---
 
