@@ -220,7 +220,7 @@ class FSHelper(object):
 
         scope = kwargs.get('scope') if kwargs.get('scope') else ''
         resource = f"{classname}{scope}"
-        log_success(DEFAULT_CREATE_MESSAGE.format(filename, resource))
+        log_success(f"Successfully created {filename}")
 
     def create_package(self, project, package, **kwargs):
         """

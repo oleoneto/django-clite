@@ -1,16 +1,15 @@
 import os
 import inflection
+from cli.decorators import watch_templates
 from cli.helpers.logger import *
 from cli.helpers import sanitized_string
 from cli.helpers import FieldParser
 
+
 BASE_DIR = os.path.dirname(os.path.abspath(__file__)).rsplit('/', 1)[0]
 
-TEMPLATE_DIR = os.path.join(BASE_DIR, 'templates')
 
-TEMPLATES = [f for f in os.listdir(TEMPLATE_DIR) if f.endswith('tpl')]
-
-
+@watch_templates(os.path.join(BASE_DIR, 'templates'))
 class ModelHelper(FieldParser):
 
     def create(self, model, is_sql=False, **kwargs):
@@ -45,7 +44,7 @@ class ModelHelper(FieldParser):
 
         self.default_create(
             model,
-            templates_directory=TEMPLATE_DIR,
+            templates_directory=self.TEMPLATES_DIRECTORY,
             template=template,
             template_import=template_import,
             context={
@@ -59,6 +58,7 @@ class ModelHelper(FieldParser):
                 'model_plural': inflection.pluralize(model),
                 'is_managed': kwargs.get('is_managed'),
                 'soft_delete': kwargs.get('soft_delete'),
+                **self.notes,
             }
         )
 
@@ -76,7 +76,7 @@ class ModelHelper(FieldParser):
 
         if self.default_destroy_file(
             model=model,
-            templates_directory=TEMPLATE_DIR,
+            templates_directory=self.TEMPLATES_DIRECTORY,
             template_import=template_import
         ):
 

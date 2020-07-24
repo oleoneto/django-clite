@@ -7,16 +7,18 @@ from cli.helpers import get_project_name
 from cli.helpers import not_an_app_directory_warning
 from cli.helpers.logger import log_error
 from cli.helpers.logger import log_standard
-from cli.commands.generate.helpers.admin import AdminHelper
-from cli.commands.generate.helpers.fixture import FixtureHelper
-from cli.commands.generate.helpers.form import FormHelper
-from cli.commands.generate.helpers.manager import ManagerHelper
-from cli.commands.generate.helpers.model import ModelHelper
-from cli.commands.generate.helpers.serializer import SerializerHelper
-from cli.commands.generate.helpers.template import TemplateHelper
-from cli.commands.generate.helpers.test import TestHelper
-from cli.commands.generate.helpers.view import ViewHelper
-from cli.commands.generate.helpers.viewset import ViewSetHelper
+from cli.commands.generate.helpers import AdminHelper
+from cli.commands.generate.helpers import FixtureHelper
+from cli.commands.generate.helpers import FormHelper
+from cli.commands.generate.helpers import ManagerHelper
+from cli.commands.generate.helpers import ModelHelper
+from cli.commands.generate.helpers import SerializerHelper
+from cli.commands.generate.helpers import SignalHelper
+from cli.commands.generate.helpers import TemplateHelper
+from cli.commands.generate.helpers import TemplateTagHelper
+from cli.commands.generate.helpers import TestHelper
+from cli.commands.generate.helpers import ViewHelper
+from cli.commands.generate.helpers import ViewSetHelper
 
 
 SUPPORTED_VIEW_TYPES = ['create', 'detail', 'list', 'update']
@@ -268,16 +270,19 @@ def resource(ctx, name, fields, inherits, api, is_managed, soft_delete):
             is_managed=is_managed,
             soft_delete=soft_delete
         )
-    
+
+        ctx.invoke(admin, name=name)
+
+        ctx.invoke(admin, name=name, inline=True)
+
         ctx.invoke(serializer, name=name)
-    
+
         ctx.invoke(viewset, name=name)
-    
+
         if not api:
             ctx.invoke(form, name=name)
-            ctx.invoke(template, name=name, class_type='list')
-            ctx.invoke(template, name=name, class_type='detail')
-            ctx.invoke(view, name=name, class_type='list', no_template=True)
+            ctx.invoke(view, name=name, class_type='list')
+            ctx.invoke(view, name=name, class_type='detail')
     except (KeyboardInterrupt, SystemExit) as e:
         log_error('Exited!')
 
@@ -311,6 +316,26 @@ def serializer(ctx, name):
 
 @generate.command()
 @click.argument("name", required=True)
+@click.pass_context
+def signal(ctx, name):
+    """
+    Generates a signal.
+    """
+
+    path = ctx.obj['signals']
+
+    helper = SignalHelper(
+        cwd=path,
+        dry=ctx.obj['dry'],
+        force=ctx.obj['force'],
+        verbose=ctx.obj['verbose'],
+    )
+
+    helper.create(name=name)
+
+
+@generate.command()
+@click.argument("name", required=True)
 @click.option("-c", "--class-type", type=click.Choice(SUPPORTED_VIEW_TYPES))
 @click.pass_context
 def template(ctx, name, class_type):
@@ -328,6 +353,26 @@ def template(ctx, name, class_type):
     )
 
     helper.create(model=name, class_type=class_type)
+
+
+@generate.command(name='tag')
+@click.argument("name", required=True)
+@click.pass_context
+def templatetag(ctx, name):
+    """
+    Generates a template tag.
+    """
+
+    path = ctx.obj['templatetags']
+
+    helper = TemplateTagHelper(
+        cwd=path,
+        dry=ctx.obj['dry'],
+        force=ctx.obj['force'],
+        verbose=ctx.obj['verbose'],
+    )
+
+    helper.create(name=name)
 
 
 @generate.command()

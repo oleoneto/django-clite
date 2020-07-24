@@ -18,6 +18,10 @@ fake.add_provider(misc)
 
 DEFAULT_NOT_IN_SCOPE_WARNING = """Cannot find model {} in {} scope. Want to create model?"""
 
+RELATIONSHIP_TYPES = ['ForeignKey', 'ManyToManyField', 'OneToOneField']
+
+SPECIAL_RELATIONSHIP = ['get_user_model()']
+
 # Abbreviation, Django field type
 DEFAULT_MODEL_FIELDS = {
     'belongsto': "ForeignKey",
@@ -68,14 +72,14 @@ DEFAULT_MODEL_OPTIONS = {
     'DurationField': '',
     'EmailField': '',
     'GenericIPAddressField': '',
-    'FileField': "blank=True, upload_to='uploads/{}/'",
+    'FileField': "blank=True, upload_to='uploads/{{path}}/'",
     'FilePathField': '',
     'FloatField': '',
-    'ForeignKey': "{}, related_name='{}', on_delete=models.PROTECT",
-    'ImageField': "blank=True, upload_to='uploads/{}/'",
+    'ForeignKey': "{{name}}, related_name='{{related_name}}', on_delete=models.PROTECT",
+    'ImageField': "blank=True, upload_to='uploads/{{path}}/'",
     'IntegerField': '',
-    'ManyToManyField': '{}, blank=True',
-    'OneToOneField': "{}, related_name='{}', on_delete=models.CASCADE",
+    'ManyToManyField': "{{name}}, blank=True",
+    'OneToOneField': "{{name}}, related_name='{{related_name}}', on_delete=models.CASCADE",
     'SlugField': 'unique=True',
     'TextField': 'blank=True',
     'TimeField': 'auto_now=True',
@@ -145,6 +149,9 @@ class FieldParser(FSHelper):
     # List of fields for admin model
     admin_fields_list = []
 
+    # Template directives
+    notes = {}
+
     ####################################
 
     def __handle_tokens(self, field):
@@ -210,39 +217,24 @@ class FieldParser(FSHelper):
         # Parse field type and name for model
         if DEFAULT_MODEL_OPTIONS[field_type] is not None:
             template = 'model-field.tpl'
+            name = None
+            related_name = None
 
-            if field_type == "ForeignKey":
-                options = DEFAULT_MODEL_OPTIONS[field_type].format(
-                    field_name.capitalize(),
-                    inflection.pluralize(model.lower())
-                )
-                self.find_resource_in_scope(field_name)
-                self.append_import(field_name)
+            if field_type in RELATIONSHIP_TYPES:
+                name = 'get_user_model()' if field_name == 'user' else field_name.capitalize()
+                related_name = inflection.pluralize(model.lower()) if field_type == 'ForeignKey' \
+                    else inflection.singularize(model)
 
-            elif field_type == "OneToOneField":
-                options = DEFAULT_MODEL_OPTIONS[field_type].format(
-                    field_name.capitalize(),
-                    inflection.singularize(model)
-                )
-                self.find_resource_in_scope(field_name)
-                self.append_import(field_name)
+                # Add import if field is to be imported
+                if name not in SPECIAL_RELATIONSHIP:
+                    self.find_resource_in_scope(field_name)
+                    self.append_import(field_name)
 
-            elif field_type == "ManyToManyField":
-                options = DEFAULT_MODEL_OPTIONS[field_type].format(
-                    field_name.capitalize()
-                )
-                self.find_resource_in_scope(field_name)
-                self.append_import(field_name)
-
-            elif field_type == "FileField" or "ImageField":
-                options = DEFAULT_MODEL_OPTIONS[field_type].format(inflection.pluralize(field_name))
-
-            else:
-                options = DEFAULT_MODEL_OPTIONS[field_type]
-
-                # Save model for admin list
-                log_error(field_name)
-                log_error(field_type)
+            options = Template(DEFAULT_MODEL_OPTIONS[field_type]).render(
+                name=name,
+                related_name=related_name,
+                path=inflection.pluralize(field_name),
+            )
 
             if field_type not in UNSUPPORTED_ADMIN_FIELD_TYPES:
                 self.__append_admin_field(field_name)
@@ -286,6 +278,9 @@ class FieldParser(FSHelper):
                 field_name, field_type = self.__handle_tokens(field)
 
                 if field_type is not None and field_name is not None:
+                    if field_name == 'user' and field_type in RELATIONSHIP_TYPES:
+                        self.notes['imports_user'] = True
+
                     field_content = self.__handle_field(
                         field_type=field_type,
                         field_name=field_name,

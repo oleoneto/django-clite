@@ -5,7 +5,9 @@ from .form import FormHelper
 from .manager import ManagerHelper
 from .model import ModelHelper
 from .serializer import SerializerHelper
+from .signal import SignalHelper
 from .template import TemplateHelper
+from .templatetag import TemplateTagHelper
 from .test import TestHelper
 from .view import ViewHelper
 from .viewset import ViewSetHelper
