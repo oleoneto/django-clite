@@ -1,26 +1,21 @@
-# {{ if project }}{{ project }}:{% endif %}{{ app }}:routes
-
+# {{ if project }}{{ project }}:{% endif %}{{ app }}:urls
 """
-Import routes into each view module and append the path to the list:
-# {{ project }}/{{ app }}/views.my_view.py
+Import urlpatterns into each view module and append the path to the list:
+# {{ if project }}{{ project }}/{% endif %}{{ app }}/views.my_view.py
 from django.urls import path
-from {{ if project }}{{ project }}.{% endif %}{{ app }}.views.routes import routes
+from {{ if project }}{{ project }}.{% endif %}{{ app }}.views.urls import urlpatterns
 
 def my_view(request):
-    ...
+    # code here...
 
-routes.append(
+urlpatterns.append(
     path('', my_view, name='my-view')
 )
 
 
 Append the whole list to your urlpatterns:
 # {{ project }}/{{ app }}/urls.py
-from {{ if project }}{{ project }}.{% endif %}{{ app }}.views.routes import routes
-
-urlpatterns = [
-    ...
-] + routes
+from {{ if project }}{{ project }}.{% endif %}{{ app }}.views.urls import urlpatterns
 """
 
-routes = []
+urlpatterns = []

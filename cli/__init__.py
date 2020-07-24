@@ -7,7 +7,7 @@ import os
 
 __version__ = '0.13.0'
 __license__ = 'BSD 3-Clause'
-__copyright__ = 'Copyright 2020 Leo Neto'
+__copyright__ = 'Copyright 2019 Leo Neto'
 
 COMMANDS_FOLDER = os.path.join(os.path.dirname(__file__), 'commands')
 

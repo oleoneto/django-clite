@@ -183,7 +183,7 @@ class AppHelper(FSHelper):
         if package == 'templates':
             self.create_package(project=project, package='tags', app=app)
         if package == 'views':
-            filename = 'routes.py'
+            filename = 'urls.py'
             index = self.TEMPLATE_FILES.index('routes.tpl')
             template = self.TEMPLATE_FILES[index]
 
