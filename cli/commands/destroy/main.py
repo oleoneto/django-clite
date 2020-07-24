@@ -237,6 +237,8 @@ def view(ctx, name, class_type):
         verbose=ctx.obj['verbose']
     )
 
+    ctx.invoke(template, name=name, class_type=class_type)
+
     h.delete(model=name, class_type=class_type)
 
 

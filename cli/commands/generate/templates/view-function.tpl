@@ -3,7 +3,7 @@ from django.shortcuts import HttpResponse
 from django.shortcuts import render
 from django.views.decorators.cache import cache_page
 from django.urls import path
-from .routes import routes
+from .url import urlpatterns
 
 
 """
@@ -26,6 +26,6 @@ def {{ model.lower() }}_view(request):
     return render(request, template, context)
 
 
-routes.append(
+urlpatterns.append(
     path('{{ view_name }}', {{ model.lower() }}_view, name='{{ view_name }}')
 )

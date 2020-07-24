@@ -47,8 +47,12 @@ class TemplateHelper(FSHelper):
 
     def delete(self, model, **kwargs):
         model = self.check_noun(model)
+        class_type = kwargs.get('class_type', None)
 
         filename = f"{model.lower()}.html"
+
+        if class_type:
+            filename = f"{model.lower()}_{class_type}.html"
 
         if self.destroy_file(filename=filename, **kwargs):
             log_success(f"Successfully deleted {filename} template.")
