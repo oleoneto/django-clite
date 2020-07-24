@@ -9,7 +9,7 @@ In your project's urls.py file (the one close to settings.py) do so:
 from django.urls import include, path
 urlpatterns = [
    # Your other url patterns...
-   path('{{ app }}', include('{{ project }}.{{ app }}.urls'))
+   path('{{ app }}', include('{{ if project }}{{ project }}.{% endif %}{{ app }}.urls'))
 ]
 
 """

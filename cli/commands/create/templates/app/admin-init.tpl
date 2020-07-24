@@ -1,4 +1,4 @@
-# {{ project }}:{{ app }}:admin
+# {{ if project }}{{ project }}:{% endif %}{{ app }}:admin
 from django.contrib import admin
 
 admin.site.site_header = '{{ project }}'

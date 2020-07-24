@@ -1,4 +1,4 @@
-# {{ project }}:{{ app }}:api
+# {{ if project }}{{ project }}:{% endif %}{{ app }}:api
 
 from django.urls import include, path
 from .viewsets.router import router

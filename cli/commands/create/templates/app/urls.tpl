@@ -1,4 +1,4 @@
-# {{ project }}:{{ app }}:urls
+# {{ if project }}{{ project }}:{% endif %}{{ app }}:urls
 
 from django.urls import include, path
 from .views.routes import routes
@@ -6,5 +6,6 @@ from .views.routes import routes
 app_name = "{{ app }}"
 
 urlpatterns = [
-    # path('', my_view, name='')
+    # path('', func_view, name=''),
+    # path('', ClassView.as_view(), name=''),
 ] + routes

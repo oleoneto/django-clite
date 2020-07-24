@@ -1,4 +1,4 @@
-# {{ project }}:{{ app }}:requires
+# {{ if project }}{{ project }}:{% endif %}{{ app }}:requires
 
 """
 A list of all the apps this package requires to be installed in INSTALLED_APPS
