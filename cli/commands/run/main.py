@@ -4,6 +4,7 @@ from cli.helpers.logger import log_error
 from cli.helpers import find_project_files
 from cli.helpers import get_project_name
 from cli.helpers import save_to_settings
+from cli.helpers import not_in_project_warning
 from cli.commands.run.helpers import (
     BuildHelper,
     EnvironmentHelper,
@@ -15,19 +16,6 @@ from cli.commands.run.helpers import (
 DEFAULT_MISSING_ARGS_ERROR = 'Missing arguments: {}.'
 
 DEFAULT_TOO_MANY_ARGS_ERROR = 'Too many arguments passed.'
-
-
-def not_an_app_directory_warning():
-    if not ('apps.py' in os.listdir('.')):
-        log_error("Not inside an app directory")
-        raise click.Abort
-
-
-def not_in_project_warning():
-    path, management, file = find_project_files(os.getcwd())
-    if not management:
-        log_error('Cannot find manage.py in directory')
-        raise click.Abort
 
 
 @click.group()
