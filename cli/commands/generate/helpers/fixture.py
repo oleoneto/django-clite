@@ -1,17 +1,16 @@
 import os
 import inflection
+from cli.decorators import watch_templates
 from cli.helpers.logger import *
 from cli.helpers import sanitized_string
 from cli.helpers import rendered_file_template
 from cli.helpers import FieldParser
 
+
 BASE_DIR = os.path.dirname(os.path.abspath(__file__)).rsplit('/', 1)[0]
 
-TEMPLATE_DIR = os.path.join(BASE_DIR, 'templates')
 
-TEMPLATES = [f for f in os.listdir(TEMPLATE_DIR) if f.endswith('tpl')]
-
-
+@watch_templates(os.path.join(BASE_DIR, 'templates'))
 class FixtureHelper(FieldParser):
 
     def create(self, model, **kwargs):
@@ -27,7 +26,7 @@ class FixtureHelper(FieldParser):
             else kwargs.get('template')
 
         content = rendered_file_template(
-            path=TEMPLATE_DIR,
+            path=self.TEMPLATES_DIRECTORY,
             template=template,
             context={
                 'total': int(kwargs.get('total')),
@@ -51,7 +50,7 @@ class FixtureHelper(FieldParser):
 
         if self.default_destroy_file(
             model=model,
-            templates_directory=TEMPLATE_DIR
+            templates_directory=self.TEMPLATES_DIRECTORY
         ):
 
             resource = f"{classname} fixture"

@@ -5,7 +5,7 @@ from django.urls import reverse
 {%- endif %}
 from django.template.defaultfilters import slugify
 from django.utils.translation import gettext_lazy as _
-{%- if is_managed %}
+{%- if imports_user or is_managed %}
 from django.contrib.auth import get_user_model
 {%- endif %}
 {% for model in imports -%}

@@ -31,7 +31,9 @@ DEFAULT_APP_PACKAGES = {
     'middleware',
     'models',
     'serializers',
+    'tasks',
     'templates',
+    'templatetags',
     'views',
     'viewsets',
 }
@@ -180,8 +182,6 @@ class AppHelper(FSHelper):
             self.create_package(project=project, package='permissions', app=app)
         if package == 'serializers':
             self.create_package(project=project, package='tests', app=app)
-        if package == 'templates':
-            self.create_package(project=project, package='tags', app=app)
         if package == 'views':
             filename = 'urls.py'
             index = self.TEMPLATE_FILES.index('routes.tpl')

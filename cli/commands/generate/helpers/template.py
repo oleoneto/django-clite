@@ -1,17 +1,16 @@
 import os
 import inflection
+from cli.decorators import watch_templates
 from cli.helpers.logger import *
 from cli.helpers import sanitized_string
 from cli.helpers import rendered_file_template
 from cli.helpers import FSHelper
 
+
 BASE_DIR = os.path.dirname(os.path.abspath(__file__)).rsplit('/', 1)[0]
 
-TEMPLATE_DIR = os.path.join(BASE_DIR, 'templates')
 
-TEMPLATES = [f for f in os.listdir(TEMPLATE_DIR) if f.endswith('tpl')]
-
-
+@watch_templates(os.path.join(BASE_DIR, 'templates'))
 class TemplateHelper(FSHelper):
 
     def create(self, model, **kwargs):
@@ -30,7 +29,7 @@ class TemplateHelper(FSHelper):
                 page_title = inflection.pluralize(model)
 
         content = rendered_file_template(
-            path=TEMPLATE_DIR,
+            path=self.TEMPLATES_DIRECTORY,
             template=template,
             context={
                 'page_title': page_title

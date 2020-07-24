@@ -1,17 +1,16 @@
 import os
 import inflection
+from cli.decorators import watch_templates
 from cli.helpers.logger import *
 from cli.helpers import sanitized_string
 from cli.helpers import rendered_file_template
 from cli.helpers import FSHelper
 
+
 BASE_DIR = os.path.dirname(os.path.abspath(__file__)).rsplit('/', 1)[0]
 
-TEMPLATE_DIR = os.path.join(BASE_DIR, 'templates')
 
-TEMPLATES = [f for f in os.listdir(TEMPLATE_DIR) if f.endswith('tpl')]
-
-
+@watch_templates(os.path.join(BASE_DIR, 'templates'))
 class ViewHelper(FSHelper):
 
     def create(self, model, class_type, **kwargs):
@@ -38,7 +37,7 @@ class ViewHelper(FSHelper):
                 route_name += '<slug:slug>'
 
         content = rendered_file_template(
-            path=TEMPLATE_DIR,
+            path=self.TEMPLATES_DIRECTORY,
             template=template,
             context={
                 'model': model,
@@ -46,11 +45,12 @@ class ViewHelper(FSHelper):
                 'class_type': class_type,
                 'route_name': route_name,
                 'view_name': view_name,
+                'object_name': plural if class_type == 'list' else singular,
             }
         )
 
         import_content = rendered_file_template(
-            path=TEMPLATE_DIR,
+            path=self.TEMPLATES_DIRECTORY,
             template=template_import,
             context={
                 'model': model,
@@ -64,16 +64,16 @@ class ViewHelper(FSHelper):
             content=import_content
         )
 
-        self.create_file(
+        if self.create_file(
             path=self.cwd,
             filename=filename,
             content=content
-        )
+        ):
 
-        resource = f"{model}_view."
-        if class_type:
-            resource = f"{classname}{class_type.capitalize()}View."
-        log_success(DEFAULT_CREATE_MESSAGE.format(filename, resource))
+            resource = f"{model}_view."
+            if class_type:
+                resource = f"{classname}{class_type.capitalize()}View."
+            log_success(DEFAULT_CREATE_MESSAGE.format(filename, resource))
 
     def delete(self, model, class_type, **kwargs):
         model = self.check_noun(model)
@@ -87,7 +87,7 @@ class ViewHelper(FSHelper):
             template_import = 'view-class-import.tpl'
 
         content = rendered_file_template(
-            path=TEMPLATE_DIR,
+            path=self.TEMPLATES_DIRECTORY,
             template=template_import,
             context={
                 'model': model,

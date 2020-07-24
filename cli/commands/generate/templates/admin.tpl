@@ -6,7 +6,7 @@ from ..models import {{ classname }}
 class {{ classname }}Admin(admin.ModelAdmin):
     list_display = {% if fields %}{{ fields }}{% else %}[field.name for field in {{classname}}._meta.fields]{% endif %}
 
-    {% if permissions %}
+    {%- if permissions %}
     def has_change_permission(self, request, obj=None):
         return request.user.is_superuser
 

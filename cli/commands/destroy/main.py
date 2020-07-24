@@ -8,7 +8,9 @@ from cli.commands.generate.helpers import FormHelper
 from cli.commands.generate.helpers import ManagerHelper
 from cli.commands.generate.helpers import ModelHelper
 from cli.commands.generate.helpers import SerializerHelper
+from cli.commands.generate.helpers import SignalHelper
 from cli.commands.generate.helpers import TemplateHelper
+from cli.commands.generate.helpers import TemplateTagHelper
 from cli.commands.generate.helpers import TestHelper
 from cli.commands.generate.helpers import ViewHelper
 from cli.commands.generate.helpers import ViewSetHelper
@@ -172,6 +174,11 @@ def resource(ctx, name):
 
     name = ModelHelper.check_noun(name)
 
+    ctx.invoke(admin, name=name)
+    ctx.invoke(admin, name=name, inline=True)
+
+    ctx.invoke(form, name=name)
+
     ctx.invoke(
         model,
         name=name,
@@ -182,17 +189,11 @@ def resource(ctx, name):
 
     ctx.invoke(serializer, name=name)
 
+    ctx.invoke(view, name=name, class_type='list')
+    ctx.invoke(view, name=name, class_type='detail')
+    ctx.invoke(view, name=name)
+
     ctx.invoke(viewset, name=name)
-
-    ctx.invoke(form, name=name)
-
-    if not ctx.invoke(template, name=name, class_type='list'):
-        ctx.invoke(template, name=name, class_type='detail')
-        ctx.invoke(template, name=name)
-
-    if not ctx.invoke(view, name=name, class_type='list'):
-        ctx.invoke(view, name=name, class_type='detail')
-        ctx.invoke(view, name=name)
 
 
 @destroy.command()
@@ -217,6 +218,26 @@ def serializer(ctx, name):
     ensure_test_directory(path)
 
     ctx.invoke(test, name=name, scope='serializer')
+
+
+@destroy.command()
+@click.argument("name", required=True)
+@click.pass_context
+def signal(ctx, name):
+    """
+    Generates a signal.
+    """
+
+    path = ctx.obj['signals']
+
+    helper = TemplateTagHelper(
+        cwd=path,
+        dry=ctx.obj['dry'],
+        force=ctx.obj['force'],
+        verbose=ctx.obj['verbose'],
+    )
+
+    helper.delete(name=name)
 
 
 @destroy.command()
@@ -281,6 +302,26 @@ def template(ctx, name, class_type):
     )
 
     h.delete(model=name, class_type=class_type)
+
+
+@destroy.command(name='tag')
+@click.argument("name", required=True)
+@click.pass_context
+def templatetag(ctx, name):
+    """
+    Destroys a template tag.
+    """
+
+    path = ctx.obj['templatetags']
+
+    helper = TemplateTagHelper(
+        cwd=path,
+        dry=ctx.obj['dry'],
+        force=ctx.obj['force'],
+        verbose=ctx.obj['verbose'],
+    )
+
+    helper.delete(name=name)
 
 
 @destroy.command()
