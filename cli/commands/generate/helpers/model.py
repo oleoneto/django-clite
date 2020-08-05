@@ -1,23 +1,19 @@
-import os
 import inflection
-from cli.decorators import watch_templates
 from cli.helpers.logger import *
 from cli.helpers import sanitized_string
 from cli.helpers import FieldParser
+from cli.commands.generate.helpers.generator import Generator
 
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__)).rsplit('/', 1)[0]
+class ModelHelper(FieldParser, Generator):
 
-
-@watch_templates(os.path.join(BASE_DIR, 'templates'))
-class ModelHelper(FieldParser):
-
-    def create(self, model, is_sql=False, **kwargs):
+    def create(self, model, **kwargs):
         model = sanitized_string(model)
         template = 'model.tpl' \
             if not kwargs.get('template') \
             else kwargs.get('template')
         template_import = 'model-import.tpl'
+        is_sql = kwargs.get('is_sql', False)
 
         # Get name of the parent class for this model (if any)
         base_model = self.check_noun(kwargs['inherits']) if kwargs['inherits'] else None

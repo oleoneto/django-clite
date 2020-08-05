@@ -1,13 +1,13 @@
-{% raw %}
-{% load cache %}
-
+{%- raw %}
 {% comment %}
     Describe the template here.
 {% endcomment %}
 
-{% block body %}
-    <h2>{{ object }}</h2>
-{% endblock body %}
+{% block content %}
+    <div class="container">
+        <h2 class="title">{{ object }}</h2>
 
-{% block scripts %}{% endblock scripts %}
-{% endraw %}
+        <div class="content"></div>
+    </div>
+{% endblock %}
+{% endraw -%}

@@ -1,33 +1,38 @@
 import inflection
+from cli.helpers.logger import *
 from cli.helpers import sanitized_string
-from cli.helpers.logger import log_error
 from cli.commands.generate.helpers.generator import Generator
 
 
-class SignalHelper(Generator):
+class IndexHelper(Generator):
 
     def create(self, model, **kwargs):
-        name = sanitized_string(model)
-        related_model = kwargs.get('related_model', None)
-        if related_model:
-            related_model = inflection.camelize(sanitized_string(related_model))
-
-        template = 'signal.tpl'
-        template_import = 'generic-import.tpl'
+        model = sanitized_string(model)
+        template = 'index.tpl'
+        template_import = 'index-import.tpl'
+        classname = inflection.camelize(model)
+        text_template = kwargs.get('template')
 
         self.default_create(
-            model=name,
+            model=model,
             templates_directory=self.TEMPLATES_DIRECTORY,
             template=template,
             template_import=template_import,
-            context={'name': name, 'related_model': related_model}
+            context={
+                'model': model,
+                'classname': classname,
+                'app': self.app_name,
+                'template': text_template,
+            }
         )
+
+        # TODO: Generate template files
 
     def delete(self, model, **kwargs):
         name = sanitized_string(model)
 
         filename = f'{name}.py'
-        template_import = 'generic-import.tpl'
+        template_import = 'index-import.tpl'
 
         if self.default_destroy_file(
             model=name,

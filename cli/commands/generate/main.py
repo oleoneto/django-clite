@@ -1,7 +1,6 @@
 import click
 import os
 from cli.helpers import add_app_package_paths_to_context
-from cli.helpers import ensure_test_directory
 from cli.helpers import find_project_files
 from cli.helpers import get_project_name
 from cli.helpers import not_an_app_directory_warning
@@ -10,6 +9,7 @@ from cli.helpers.logger import log_standard
 from cli.commands.generate.helpers import AdminHelper
 from cli.commands.generate.helpers import FixtureHelper
 from cli.commands.generate.helpers import FormHelper
+from cli.commands.generate.helpers import IndexHelper
 from cli.commands.generate.helpers import ManagerHelper
 from cli.commands.generate.helpers import ModelHelper
 from cli.commands.generate.helpers import SerializerHelper
@@ -21,7 +21,14 @@ from cli.commands.generate.helpers import ViewHelper
 from cli.commands.generate.helpers import ViewSetHelper
 
 
-SUPPORTED_VIEW_TYPES = ['create', 'detail', 'list', 'update']
+SUPPORTED_VIEW_TYPES = [
+    'create',
+    'detail',
+    'list',
+    'update',
+    'template',
+    'form',
+]
 
 
 @click.group()
@@ -189,8 +196,6 @@ def model(ctx, name, full, abstract, fields, register_admin,
         verbose=ctx.obj['verbose']
     )
 
-    ensure_test_directory(path)
-
     model_fields = helper.create(
         model=name,
         api=api,
@@ -287,6 +292,27 @@ def resource(ctx, name, fields, inherits, api, is_managed, soft_delete):
         log_error('Exited!')
 
 
+@generate.command(name='index')
+@click.argument('name', required=True)
+@click.option('-t', 'template', help='Template file associated with this search index')
+@click.pass_context
+def search_index(ctx, name, template):
+    """
+    Generates a search index for a given model.
+    """
+
+    path = ctx.obj['search_indexes']
+
+    helper = IndexHelper(
+        cwd=path,
+        dry=ctx.obj['dry'],
+        force=ctx.obj['force'],
+        verbose=ctx.obj['verbose'],
+    )
+
+    helper.create(model=name, template=template)
+
+
 @generate.command()
 @click.argument("name", required=True)
 @click.pass_context
@@ -309,15 +335,14 @@ def serializer(ctx, name):
 
     helper.create(model=name)
 
-    ensure_test_directory(path)
-
     ctx.invoke(test, name=name, scope='serializer')
 
 
 @generate.command()
 @click.argument("name", required=True)
+@click.option('-m', 'model', help='The model this signal is connected to')
 @click.pass_context
-def signal(ctx, name):
+def signal(ctx, name, model):
     """
     Generates a signal.
     """
@@ -331,14 +356,15 @@ def signal(ctx, name):
         verbose=ctx.obj['verbose'],
     )
 
-    helper.create(name=name)
+    helper.create(model=name, related_model=model)
 
 
 @generate.command()
 @click.argument("name", required=True)
 @click.option("-c", "--class-type", type=click.Choice(SUPPORTED_VIEW_TYPES))
+@click.option('--full', is_flag=True, help='Create all CBVs for given resource')
 @click.pass_context
-def template(ctx, name, class_type):
+def template(ctx, name, class_type, full):
     """
     Generates an html template.
     """
@@ -352,7 +378,11 @@ def template(ctx, name, class_type):
         verbose=ctx.obj['verbose']
     )
 
-    helper.create(model=name, class_type=class_type)
+    if full:
+        for klass in SUPPORTED_VIEW_TYPES:
+            helper.create(model=name, class_type=klass)
+    else:
+        helper.create(model=name, class_type=class_type)
 
 
 @generate.command(name='tag')
@@ -372,7 +402,7 @@ def templatetag(ctx, name):
         verbose=ctx.obj['verbose'],
     )
 
-    helper.create(name=name)
+    helper.create(model=name)
 
 
 @generate.command()
@@ -394,8 +424,6 @@ def test(ctx, name, scope):
         verbose=ctx.obj['verbose']
     )
 
-    ensure_test_directory(ctx.obj[f'{scope}s'])
-
     helper.create(model=name, scope=scope)
 
 
@@ -403,8 +431,9 @@ def test(ctx, name, scope):
 @click.argument("name", required=True)
 @click.option("-c", "--class-type", type=click.Choice(SUPPORTED_VIEW_TYPES))
 @click.option('--no-template', is_flag=True, default=False, help='Generate related template.')
+@click.option('--full', is_flag=True, help='Create all CBVs for given resource')
 @click.pass_context
-def view(ctx, name, class_type, no_template):
+def view(ctx, name, class_type, no_template, full):
     """
     Generates a view function or class.
     """
@@ -418,12 +447,20 @@ def view(ctx, name, class_type, no_template):
         verbose=ctx.obj['verbose']
     )
 
-    helper.create(model=name, class_type=class_type)
+    if full:
+        [helper.create(model=name, class_type=klass) for klass in SUPPORTED_VIEW_TYPES if klass not in 'template']
 
-    if no_template:
-        pass
+        if no_template:
+            pass
+        else:
+            [ctx.invoke(template, name=name, class_type=klass) for klass in SUPPORTED_VIEW_TYPES]
     else:
-        ctx.invoke(template, name=name, class_type=class_type)
+        helper.create(model=name, class_type=class_type)
+
+        if no_template:
+            pass
+        else:
+            ctx.invoke(template, name=name, class_type=class_type)
 
 
 @generate.command()

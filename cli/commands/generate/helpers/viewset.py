@@ -1,22 +1,17 @@
-import os
 import inflection
-from cli.decorators import watch_templates
 from cli.helpers.logger import *
 from cli.helpers import sanitized_string
-from cli.helpers import FSHelper
+from cli.commands.generate.helpers.generator import Generator
 
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__)).rsplit('/', 1)[0]
+class ViewSetHelper(Generator):
 
-
-@watch_templates(os.path.join(BASE_DIR, 'templates'))
-class ViewSetHelper(FSHelper):
-
-    def create(self, model, read_only=False):
+    def create(self, model, **kwargs):
         model = sanitized_string(model)
 
         template = 'viewset.tpl'
         template_import = 'viewset-import.tpl'
+        read_only = kwargs.get('read_only', None)
 
         # TODO: Ensure serializer already exists
 
@@ -33,7 +28,7 @@ class ViewSetHelper(FSHelper):
             }
         )
 
-    def delete(self, model):
+    def delete(self, model, **kwargs):
         model = self.check_noun(model)
         classname = inflection.camelize(model)
 

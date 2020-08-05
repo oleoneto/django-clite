@@ -1,16 +1,15 @@
-{% raw %}
-{% load cache %}
-
+{%- raw %}
 {% comment %}
     Describe the template here.
 {% endcomment %}
 
-{% block body %}
-    <h2>Create Form</h2>
-    {{ form }}
-{% endblock body %}
+{% block content %}
+    <div class="container">
+        <h2 class="title">Create Form</h2>
 
-{% block footer %}{% endblock footer %}
-
-{% block scripts %}{% endblock scripts %}
+        <div id="modelForm">
+            {{ form }}
+        </div>
+    </div>
+{% endblock %}
 {% endraw %}

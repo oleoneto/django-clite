@@ -5,7 +5,7 @@
 from __future__ import unicode_literals
 import os
 
-__version__ = '0.13.0'
+__version__ = '0.14.0'
 __license__ = 'BSD 3-Clause'
 __copyright__ = 'Copyright 2019 Leo Neto'
 
