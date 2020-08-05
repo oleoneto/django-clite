@@ -1,19 +1,16 @@
-import os
 import inflection
-from cli.decorators import watch_templates
 from cli.helpers.logger import *
 from cli.helpers import sanitized_string
-from cli.helpers import FSHelper
+from cli.commands.generate.helpers.generator import Generator
 
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__)).rsplit('/', 1)[0]
+class AdminHelper(Generator):
 
-
-@watch_templates(os.path.join(BASE_DIR, 'templates'))
-class AdminHelper(FSHelper):
-
-    def create(self, model, fields=None, **kwargs):
+    def create(self, model, **kwargs):
         model = sanitized_string(model)
+
+        fields = kwargs.get('fields', None)
+        inline = kwargs.get('inline', False)
 
         scope = "Admin"
         template = 'admin.tpl' \
@@ -23,7 +20,7 @@ class AdminHelper(FSHelper):
             if not kwargs.get('template_import') \
             else kwargs.get('template_import')
 
-        if kwargs['inline']:
+        if inline:
             scope = "Inline"
             template = 'admin-inline.tpl'
             template_import = 'admin-inline-import.tpl'

@@ -21,6 +21,7 @@ def add_app_package_paths_to_context(context):
     context.obj['managers'] = f"{os.getcwd()}/models/managers"
     context.obj['serializers'] = f"{os.getcwd()}/serializers/"
     context.obj['serializers_tests'] = f"{os.getcwd()}/serializers/tests/"
+    context.obj['search_indexes'] = f"{os.getcwd()}/search_indexes/"
     context.obj['signals'] = f"{os.getcwd()}/models/signals/"
     context.obj['tasks'] = f"{os.getcwd()}/tasks/"
     context.obj['templates'] = f"{os.getcwd()}/templates/"

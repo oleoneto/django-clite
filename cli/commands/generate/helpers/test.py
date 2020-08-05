@@ -1,20 +1,15 @@
-import os
 import inflection
-from cli.decorators import watch_templates
 from cli.helpers.logger import *
 from cli.helpers import sanitized_string
-from cli.helpers import FSHelper
+from cli.commands.generate.helpers.generator import Generator
 
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__)).rsplit('/', 1)[0]
+class TestHelper(Generator):
 
-
-@watch_templates(os.path.join(BASE_DIR, 'templates'))
-class TestHelper(FSHelper):
-
-    def create(self, model, scope, **kwargs):
+    def create(self, model, **kwargs):
         model = self.check_noun(model)
         model = sanitized_string(model)
+        scope = kwargs.get('scope')
 
         template = f'{scope}-test.tpl' \
             if not kwargs.get('template') \
@@ -35,7 +30,7 @@ class TestHelper(FSHelper):
             }
         )
 
-    def delete(self, model, scope):
+    def delete(self, model, **kwargs):
         model = self.check_noun(model)
         classname = inflection.camelize(model)
 

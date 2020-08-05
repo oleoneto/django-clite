@@ -11,7 +11,7 @@ from .finders import replace_line
 from .finders import save_to_settings
 from .finders import walk_up
 from .fs import FSHelper
-from .fs import ensure_test_directory
+from .fs import ensure_directory
 from .fs import not_an_app_directory_warning
 from .fs import not_in_project
 from .fs import not_in_project_warning

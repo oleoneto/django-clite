@@ -1,16 +1,10 @@
-import os
 import inflection
-from cli.decorators import watch_templates
 from cli.helpers.logger import *
 from cli.helpers import sanitized_string
-from cli.helpers import FSHelper
+from cli.commands.generate.helpers.generator import Generator
 
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__)).rsplit('/', 1)[0]
-
-
-@watch_templates(os.path.join(BASE_DIR, 'templates'))
-class FormHelper(FSHelper):
+class FormHelper(Generator):
 
     def create(self, model, **kwargs):
         model = sanitized_string(model)
