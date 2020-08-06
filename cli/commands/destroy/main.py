@@ -1,10 +1,10 @@
 import click
 from cli.helpers import add_app_package_paths_to_context
-from cli.helpers import ensure_test_directory
 from cli.helpers import not_an_app_directory_warning
 from cli.commands.generate.helpers import AdminHelper
 from cli.commands.generate.helpers import FixtureHelper
 from cli.commands.generate.helpers import FormHelper
+from cli.commands.generate.helpers import IndexHelper
 from cli.commands.generate.helpers import ManagerHelper
 from cli.commands.generate.helpers import ModelHelper
 from cli.commands.generate.helpers import SerializerHelper
@@ -14,9 +14,7 @@ from cli.commands.generate.helpers import TemplateTagHelper
 from cli.commands.generate.helpers import TestHelper
 from cli.commands.generate.helpers import ViewHelper
 from cli.commands.generate.helpers import ViewSetHelper
-
-
-SUPPORTED_VIEW_TYPES = ['create', 'detail', 'list', 'update']
+from cli.commands.generate.main import SUPPORTED_VIEW_TYPES
 
 
 @click.group()
@@ -140,8 +138,6 @@ def model(ctx, name, full, unregister_admin, unregister_inline, test_case):
         verbose=ctx.obj['verbose']
     )
 
-    ensure_test_directory(path)
-
     h.delete(model=name)
 
     if unregister_admin or full:
@@ -174,6 +170,9 @@ def resource(ctx, name):
 
     name = ModelHelper.check_noun(name)
 
+    if click.confirm('Are you sure you want to delete all associated files?', abort=True):
+        ctx.obj['force'] = True
+
     ctx.invoke(admin, name=name)
     ctx.invoke(admin, name=name, inline=True)
 
@@ -196,6 +195,26 @@ def resource(ctx, name):
     ctx.invoke(viewset, name=name)
 
 
+@destroy.command(name='index')
+@click.argument('name')
+@click.pass_context
+def search_index(ctx, name):
+    """
+    Destroys a search index file.
+    """
+
+    path = ctx.obj['search_indexes']
+
+    helper = IndexHelper(
+        cwd=path,
+        dry=ctx.obj['dry'],
+        force=ctx.obj['force'],
+        verbose=ctx.obj['verbose'],
+    )
+
+    helper.delete(model=name)
+
+
 @destroy.command()
 @click.argument('name')
 @click.pass_context
@@ -215,8 +234,6 @@ def serializer(ctx, name):
 
     h.delete(model=name)
 
-    ensure_test_directory(path)
-
     ctx.invoke(test, name=name, scope='serializer')
 
 
@@ -230,14 +247,14 @@ def signal(ctx, name):
 
     path = ctx.obj['signals']
 
-    helper = TemplateTagHelper(
+    helper = SignalHelper(
         cwd=path,
         dry=ctx.obj['dry'],
         force=ctx.obj['force'],
         verbose=ctx.obj['verbose'],
     )
 
-    helper.delete(name=name)
+    helper.delete(model=name)
 
 
 @destroy.command()
@@ -321,7 +338,7 @@ def templatetag(ctx, name):
         verbose=ctx.obj['verbose'],
     )
 
-    helper.delete(name=name)
+    helper.delete(model=name)
 
 
 @destroy.command()
@@ -341,7 +358,5 @@ def test(ctx, name, scope):
         force=ctx.obj['force'],
         verbose=ctx.obj['verbose']
     )
-
-    ensure_test_directory(ctx.obj[f'{scope}s'])
 
     h.delete(model=name, scope=scope)

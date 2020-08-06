@@ -55,14 +55,11 @@ def not_an_app_directory_warning():
         raise click.Abort
 
 
-def ensure_test_directory(cwd):
-    if 'tests' in os.listdir(cwd):
-        pass
-    else:
-        try:
-            os.mkdir('tests')
-        except FileExistsError:
-            pass
+def ensure_directory(d):
+    try:
+        os.listdir(d)
+    except FileNotFoundError:
+        os.makedirs(d)
 
 
 class FSHelper(object):
@@ -307,6 +304,9 @@ class FSHelper(object):
         """
 
         path = path if path else self.__cwd
+
+        if not self.__dry and not self.__force:
+            click.confirm('Are you sure you want to delete this file?', abort=True)
 
         if self.is_dry:
             click.echo(DEFAULT_DESTROY_LOG.format(filename, path))

@@ -1,17 +1,11 @@
-import os
 import inflection
-from cli.decorators import watch_templates
 from cli.helpers.logger import *
 from cli.helpers import sanitized_string
 from cli.helpers import rendered_file_template
-from cli.helpers import FSHelper
+from cli.commands.generate.helpers.generator import Generator
 
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__)).rsplit('/', 1)[0]
-
-
-@watch_templates(os.path.join(BASE_DIR, 'templates'))
-class TemplateHelper(FSHelper):
+class TemplateHelper(Generator):
 
     def create(self, model, **kwargs):
 
@@ -22,8 +16,9 @@ class TemplateHelper(FSHelper):
         template = 'template.tpl'
         filename = f"{model}.html"
         if class_type:
-            filename = f"{model.lower()}_{class_type}.html"
-            template = f"template_{class_type}.tpl"
+            if class_type not in ['template']:
+                filename = f"{model.lower()}_{class_type}.html"
+                template = f"template_{class_type}.tpl"
 
             if class_type == 'list':
                 page_title = inflection.pluralize(model)

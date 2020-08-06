@@ -1,37 +1,44 @@
-import os
 import inflection
-from cli.decorators import watch_templates
 from cli.helpers.logger import *
 from cli.helpers import sanitized_string
 from cli.helpers import rendered_file_template
-from cli.helpers import FSHelper
+from cli.commands.generate.helpers.generator import Generator
 
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__)).rsplit('/', 1)[0]
+class ViewHelper(Generator):
 
-
-@watch_templates(os.path.join(BASE_DIR, 'templates'))
-class ViewHelper(FSHelper):
-
-    def create(self, model, class_type, **kwargs):
+    def create(self, model, **kwargs):
         model = self.check_noun(model)
         model = sanitized_string(model)
         classname = inflection.camelize(model)
         singular = inflection.singularize(classname)
         plural = inflection.pluralize(classname)
+        class_type = kwargs.get('class_type', None)
+        extra = {}
 
         filename = f"{model.lower()}.py"
         template = 'view-function.tpl'
         template_import = 'view-function-import.tpl'
         view_name = inflection.underscore(singular)
         route_name = f'{inflection.underscore(model)}/'
+        template_name = f'{model.lower()}.html'
 
         if class_type is not None:
             filename = f"{model.lower()}_{class_type}.py"
             template = 'view-class.tpl'
             template_import = 'view-class-import.tpl'
-            view_name = inflection.underscore(singular) + f'-{class_type}'
-            route_name = f'{inflection.underscore(plural)}/'
+
+            if class_type not in ['template']:
+                view_name = inflection.underscore(singular) + f'-{class_type}'
+                template_name += f'_{class_type.lower()}.html'
+                extra['object_name'] = plural if class_type == 'list' else singular
+
+            if class_type in ['form', 'update', 'create']:
+                extra['form_class'] = f'{classname}Form'
+
+            if class_type in ['list']:
+                route_name = f'{inflection.underscore(plural)}/'
+                extra['pagination'] = True
 
             if class_type in ['detail', 'update']:
                 route_name += '<slug:slug>'
@@ -45,7 +52,8 @@ class ViewHelper(FSHelper):
                 'class_type': class_type,
                 'route_name': route_name,
                 'view_name': view_name,
-                'object_name': plural if class_type == 'list' else singular,
+                'template_name': template_name,
+                **extra,
             }
         )
 
@@ -75,9 +83,10 @@ class ViewHelper(FSHelper):
                 resource = f"{classname}{class_type.capitalize()}View."
             log_success(DEFAULT_CREATE_MESSAGE.format(filename, resource))
 
-    def delete(self, model, class_type, **kwargs):
+    def delete(self, model, **kwargs):
         model = self.check_noun(model)
         classname = inflection.camelize(model)
+        class_type = kwargs.get('class_type', None)
 
         filename = f"{model}.py"
         template_import = 'view-function-import.tpl'

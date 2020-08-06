@@ -1,18 +1,12 @@
-import os
-from cli.decorators import watch_templates
-from cli.helpers import FSHelper
 from cli.helpers import sanitized_string
 from cli.helpers.logger import log_error
+from cli.commands.generate.helpers.generator import Generator
 
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__)).rsplit('/', 1)[0]
+class TemplateTagHelper(Generator):
 
-
-@watch_templates(os.path.join(BASE_DIR, 'templates'))
-class TemplateTagHelper(FSHelper):
-
-    def create(self, name, **kwargs):
-        name = sanitized_string(name)
+    def create(self, model, **kwargs):
+        name = sanitized_string(model)
         template = 'templatetag.tpl'
         template_import = 'generic-import.tpl'
 
@@ -24,8 +18,8 @@ class TemplateTagHelper(FSHelper):
             context={'model': name}
         )
 
-    def delete(self, name, **kwargs):
-        name = sanitized_string(name)
+    def delete(self, model, **kwargs):
+        name = sanitized_string(model)
 
         filename = f'{name}.py'
         template_import = 'generic-import.tpl'

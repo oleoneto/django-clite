@@ -1,17 +1,11 @@
-import os
 import inflection
-from cli.decorators import watch_templates
 from cli.helpers.logger import *
 from cli.helpers import sanitized_string
 from cli.helpers import rendered_file_template
-from cli.helpers import FieldParser
+from cli.commands.generate.helpers.generator import Generator
 
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__)).rsplit('/', 1)[0]
-
-
-@watch_templates(os.path.join(BASE_DIR, 'templates'))
-class FixtureHelper(FieldParser):
+class FixtureHelper(Generator):
 
     def create(self, model, **kwargs):
         model = self.check_noun(model)
