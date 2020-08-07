@@ -5,6 +5,13 @@ from cli.helpers import rendered_file_template
 from cli.commands.generate.helpers.generator import Generator
 
 
+MODEL_VIEWS = ['create', 'detail', 'update', 'delete', 'list']
+
+CHANGE_VIEWS = ['update', 'delete']
+
+RECORD_VIEWS = ['update', 'delete', 'detail']
+
+
 class ViewHelper(Generator):
 
     def create(self, model, **kwargs):
@@ -22,37 +29,43 @@ class ViewHelper(Generator):
         view_name = inflection.underscore(singular)
         route_name = f'{inflection.underscore(model)}/'
         template_name = f'{model.lower()}.html'
+        import_source = f'{model.lower()}'
 
         if class_type is not None:
-            filename = f"{model.lower()}_{class_type}.py"
+
             template = 'view-class.tpl'
             template_import = 'view-class-import.tpl'
 
-            if class_type not in ['template']:
+            if class_type not in ['form', 'template']:
                 view_name = inflection.underscore(singular) + f'-{class_type}'
                 template_name += f'_{class_type.lower()}.html'
                 extra['object_name'] = plural if class_type == 'list' else singular
+                extra['model'] = model
 
-            if class_type in ['form', 'update', 'create']:
-                extra['form_class'] = f'{classname}Form'
+            if class_type in MODEL_VIEWS:  # CRE, DEL, DET, LIS, UPD
+                filename = f"{model.lower()}_{class_type}.py"
+                import_source += f'_{class_type.lower()}'
 
-            if class_type in ['list']:
-                route_name = f'{inflection.underscore(plural)}/'
-                extra['pagination'] = True
+                if class_type in CHANGE_VIEWS or class_type == 'create':  # CRE, DEL, UPD
+                    extra['form_class'] = f'{classname}Form'
 
-            if class_type in ['detail', 'update']:
-                route_name += '<slug:slug>'
+                if class_type == 'list':
+                    route_name = f'{inflection.underscore(plural)}/'
+                    extra['pagination'] = True
+
+                if class_type in RECORD_VIEWS:  # DEL, DET, UPD
+                    route_name += '<slug:slug>'
 
         content = rendered_file_template(
             path=self.TEMPLATES_DIRECTORY,
             template=template,
             context={
-                'model': model,
                 'classname': classname,
                 'class_type': class_type,
                 'route_name': route_name,
                 'view_name': view_name,
                 'template_name': template_name,
+                'import_source': import_source,
                 **extra,
             }
         )
@@ -64,6 +77,7 @@ class ViewHelper(Generator):
                 'model': model,
                 'classname': classname,
                 'class_type': class_type,
+                'import_source': import_source,
             }
         )
 

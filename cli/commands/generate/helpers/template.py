@@ -5,6 +5,13 @@ from cli.helpers import rendered_file_template
 from cli.commands.generate.helpers.generator import Generator
 
 
+MODEL_VIEWS = ['create', 'detail', 'update', 'delete', 'list']
+
+CHANGE_VIEWS = ['update', 'delete']
+
+RECORD_VIEWS = ['update', 'delete', 'detail']
+
+
 class TemplateHelper(Generator):
 
     def create(self, model, **kwargs):
@@ -15,8 +22,9 @@ class TemplateHelper(Generator):
 
         template = 'template.tpl'
         filename = f"{model}.html"
-        if class_type:
-            if class_type not in ['template']:
+
+        if class_type is not None:
+            if class_type in MODEL_VIEWS:
                 filename = f"{model.lower()}_{class_type}.html"
                 template = f"template_{class_type}.tpl"
 
