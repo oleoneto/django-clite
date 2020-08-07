@@ -146,9 +146,9 @@ def create_applications(ctx, apps, project, package, directory, api, defaults):
     
             click.echo(f"Successfully created app: {name}")
 
-        print(helper.config)
+        # print(helper.config)
     except (KeyboardInterrupt, SystemExit, Exception) as e:
-        log_error('Exited!')
+        log_error(f'Exited! {repr(e)}')
 
 
 @create.command(name='settings')

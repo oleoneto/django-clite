@@ -1,4 +1,4 @@
-# {{ if project }}{{ project }}:{% endif %}{{ app }}:urls
+# {% if project %}{{ project }}:{% endif %}{{ app }}:urls
 
 from django.urls import include, path
 from .views.urls import urlpatterns
