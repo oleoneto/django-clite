@@ -26,18 +26,25 @@ class ViewHelper(Generator):
         filename = f"{model.lower()}.py"
         template = 'view-function.tpl'
         template_import = 'view-function-import.tpl'
-        view_name = inflection.underscore(singular)
+        pattern_name = inflection.underscore(singular)
         route_name = f'{inflection.underscore(model)}/'
         template_name = f'{model.lower()}.html'
         import_source = f'{model.lower()}'
+        view_name = f'{classname}View'
 
         if class_type is not None:
 
             template = 'view-class.tpl'
             template_import = 'view-class-import.tpl'
+            view_name = f'{classname}{class_type.capitalize()}View'
+            extra['view_import_name'] = f'{class_type.capitalize()}View'
+
+            if class_type == 'template':
+                template = 'view-class-simple.tpl'
+                view_name = f'{classname}View'
 
             if class_type not in ['form', 'template']:
-                view_name = inflection.underscore(singular) + f'-{class_type}'
+                pattern_name = inflection.underscore(singular) + f'-{class_type}'
                 template_name += f'_{class_type.lower()}.html'
                 extra['object_name'] = plural if class_type == 'list' else singular
                 extra['model'] = model
@@ -63,6 +70,7 @@ class ViewHelper(Generator):
                 'classname': classname,
                 'class_type': class_type,
                 'route_name': route_name,
+                'pattern_name': pattern_name,
                 'view_name': view_name,
                 'template_name': template_name,
                 'import_source': import_source,
@@ -78,6 +86,7 @@ class ViewHelper(Generator):
                 'classname': classname,
                 'class_type': class_type,
                 'import_source': import_source,
+                'view_name': view_name,
             }
         )
 

@@ -51,6 +51,7 @@ setup(
         'jinja2>=2.11.2',
         'inquirer>=2.6.3',
         'inflection>=0.4.0',
+        'rich==5.0.0',
     ],
     extra_require={
         'click-repl==0.1.6',

@@ -48,7 +48,7 @@ def not_in_project_warning():
 
 
 def not_an_app_directory_warning():
-    if '--help' in click.get_os_args():
+    if '--help' or '--dry' in click.get_os_args():
         pass
     elif not ('apps.py' in os.listdir('.')):
         log_error("Not inside an app directory")
@@ -260,12 +260,11 @@ class FSHelper(object):
         """
 
         if self.is_dry:
-            if self.verbose:
-                self.__log_dry(
-                    path=path,
-                    filename=filename,
-                    content=content
-                )
+            self.__log_dry(
+                path=path,
+                filename=filename,
+                content=content
+            )
             return False
 
         path = path if path else self.__cwd
@@ -365,12 +364,11 @@ class FSHelper(object):
         path = path if path else self.__cwd
 
         if self.is_dry:
-            if self.verbose:
-                self.__log_dry(
-                    path=path,
-                    filename=filename,
-                    content=content,
-                )
+            self.__log_dry(
+                path=path,
+                filename=filename,
+                content=content,
+            )
             return content
         try:
             self.change_directory(path)
@@ -603,18 +601,14 @@ class FSHelper(object):
         Used when --dry flag is specified.
         """
 
-        path = path if path else self.__cwd
+        from rich.console import Console
+        from rich.syntax import Syntax
 
-        log_verbose(
-            header=f'{path}{filename}',
-            message=content,
-        )
-
-        # click.echo(DEFAULT_PARSED_CONTENT_LOG.format(
-        #     filename,
-        #     path,
-        #     content
-        # ))
+        syntax = Syntax(content, 'python', theme='monokai', line_numbers=True)
+        console = Console()
+        console.print(path)
+        console.print(syntax)
+        console.print("")
 
     def run_or_log_dry(self, message, force_verbose=False):
         if self.is_dry:

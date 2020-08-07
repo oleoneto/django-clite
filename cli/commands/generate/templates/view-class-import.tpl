@@ -1,1 +1,1 @@
-from .{{ import_source }} import {{ classname }}{{ class_type.capitalize() }}View
+from .{{ import_source }} import {{ view_name }}
