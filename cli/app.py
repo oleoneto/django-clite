@@ -17,9 +17,8 @@ def cli(ctx, dry, force, verbose):
 
     A CLI to handle the creation and management of your Django projects.
 
-    The CLI has some options about how your project should be structured in order for it to maximize the
-    amount of automatic configuration it can provide you. Since Django itself adheres to configuration over
-    convention, you are free to bypass conventions of the CLI if you so choose.
+    The CLI has some opinions about how your project should be structured in order for it to maximize the
+    amount of automatic configuration it can provide you. Since Django itself is highly configurable, you are free to bypass conventions of the CLI if you so choose.
     """
 
     ctx.ensure_object(dict)
