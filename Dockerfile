@@ -1,7 +1,7 @@
 # Base image
 FROM python:3.7-alpine
 
-MAINTAINER Leo Neto
+LABEL MAINTAINER="Leo Neto"
 
 # Working directory
 WORKDIR /app
@@ -15,6 +15,8 @@ ENV LANG C.UTF-8
 COPY . .
 
 # Install dependencies
-RUN apk add gcc musl-dev linux-headers && pip install -e .
+RUN apk add gcc musl-dev linux-headers bash tzdata \
+  && pip install pytest \
+  && pip install -e .[extra]
 
-ENTRYPOINT ['D']
+CMD ["sh"]
