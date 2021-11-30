@@ -1,6 +1,6 @@
-from setuptools import setup
 import os
 import re
+from setuptools import setup
 
 
 def read(f):
