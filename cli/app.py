@@ -1,24 +1,26 @@
+import os
+
 import click
 from cli.click import AliasedAndDiscoverableGroup
-
-
-__author__ = 'Leo Neto'
+from cli.handlers.filesystem import FileHandler
 
 
 @click.command(cls=AliasedAndDiscoverableGroup)
 @click.option('--dry', is_flag=True, help="Display output without creating files.")
 @click.option('--force', is_flag=True, help="Override any conflicting files.")
 @click.option('--verbose', is_flag=True, help="Run in verbose mode.")
+@click.option('--debug', is_flag=True, help="Run in debug mode.")
 @click.version_option()
 @click.pass_context
-def cli(ctx, dry, force, verbose):
+def cli(ctx, dry, force, verbose, debug):
     """
-    django-clite: by Leo Neto
+    django-clite by Leo Neto
 
     A CLI to handle the creation and management of your Django projects.
 
     The CLI has some opinions about how your project should be structured in order for it to maximize the
-    amount of automatic configuration it can provide you. Since Django itself is highly configurable, you are free to bypass conventions of the CLI if you so choose.
+    amount of automatic configuration it can provide you. Since Django itself is highly configurable,
+    you are free to bypass conventions of the CLI if you so choose.
     """
 
     ctx.ensure_object(dict)
@@ -26,6 +28,8 @@ def cli(ctx, dry, force, verbose):
     ctx.obj['dry'] = dry
     ctx.obj['force'] = force
     ctx.obj['verbose'] = verbose
+    ctx.obj['debug'] = debug
+    ctx.obj['project_files'] = FileHandler.find_files(path=os.getcwd(), patterns=['manage.py', 'wsgi.py', 'apps.py'])
 
     # Note for contributors:
     #

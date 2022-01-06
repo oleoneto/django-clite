@@ -2,10 +2,8 @@
 import click
 import inquirer
 import os
-from cli.commands.create.presets import docker
-from cli.commands.create.presets import extra_apps
-from cli.commands.create.presets import installable_apps
-from cli.commands.create.presets import presets
+from cli.config.presets import docker, extra_apps, installable_apps
+from cli.config.presets import presets
 
 
 def inquire_app_presets(app, default=False):

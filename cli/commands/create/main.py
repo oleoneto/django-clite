@@ -1,18 +1,105 @@
-import click
 import os
-from cli.helpers import get_project_name
-from cli.helpers import find_project_files
-from cli.helpers import not_in_project
-from cli.helpers import wrong_place_warning
-from cli.helpers.logger import *
-from cli.commands.inspect.main import InspectorHelper
-from cli.commands.inspect.main import inspect
-from cli.commands.create.helpers.app import AppHelper
-from cli.commands.create.helpers.creator import CreatorHelper
-from cli.commands.create.helpers import inquire_app_presets
-from cli.commands.create.helpers import inquire_docker_options
-from cli.commands.create.helpers import inquire_project_presets
-# from cli.commands.create.helpers import inquire_installable_apps
+import click
+import subprocess
+from pathlib import PosixPath
+from rich.live import Live
+from rich.prompt import Confirm
+from rich import print as rich_print
+from cli.utils.logger import Logger
+from cli.utils.sanitize import sanitized_string
+from cli.utils.fs.utils import change_directory, inside_project_directory
+from cli.handlers.filesystem import FileHandler, GitHandler, TemplateHandler
+from cli.handlers.filesystem.directory import Directory
+from cli.handlers.filesystem.template import Template
+
+
+initializer_template = Template('__init__.py', '# import package modules here', raw=True)
+
+
+def format_application(ctx, param, value):
+    apps = []
+    files = [
+        initializer_template,
+        Template('apps.py', 'apps.tpl'),
+        Template('urls.py', 'urls.tpl'),
+        Template('constants.py', '# your constants go here', raw=True),
+    ]
+    children = [
+        Directory(
+            'admin',
+            [
+                Directory('actions', files=[initializer_template]),
+                Directory('inlines', files=[initializer_template]),
+                Directory('permissions', files=[initializer_template])
+            ],
+            [initializer_template]
+        ),
+        Directory('fixtures', files=[initializer_template]),
+        Directory('forms', files=[initializer_template]),
+        Directory('middleware', files=[initializer_template]),
+        Directory('migrations', files=[initializer_template]),
+        Directory(
+            'models',
+            [
+                Directory('managers', [], [initializer_template]),
+                Directory('signals', [], [initializer_template]),
+                Directory('validators', [], [initializer_template])
+            ],
+            [initializer_template]
+        ),
+        Directory(
+            'router',
+            files=[
+                Template('__init__.py', 'from .api import urlpatterns\nfrom .router import router', raw=True),
+                Template('api.py', 'api.tpl'),
+                Template('router.py', 'router.tpl')
+            ]
+        ),
+        Directory('serializers', files=[initializer_template]),
+        Directory('tasks', files=[initializer_template]),
+        Directory('templates', files=[initializer_template]),
+        Directory('templatetags', files=[initializer_template]),
+        Directory('tests', files=[initializer_template]),
+        Directory('views', files=[initializer_template]),
+        Directory(
+            'viewsets',
+            [Directory('permissions'), Directory('mixins')],
+            [initializer_template]
+        ),
+    ]
+
+    is_package = ctx.params.get('is_package')
+
+    for app_name in value:
+        if is_package:
+            files.extend([
+                Template('LICENSE', 'LICENSE.tpl'),
+                Template('MANIFEST', 'MANIFEST.tpl'),
+                Template('README.md', 'README.tpl'),
+                Template('setup.cfg', 'setup_cfg.tpl'),
+                Template('setup.py', 'setup.tpl'),
+            ])
+            children = [
+                Directory(
+                    sanitized_string(app_name),
+                    children,
+                    files=[Template('__init__.py', 'init.tpl')]
+                )
+            ]
+
+        application = Directory(
+            name=sanitized_string(app_name),
+            verbose=ctx.obj['verbose'],
+            force=ctx.obj['force'],
+            dry=ctx.obj['dry'],
+            children=children,
+            files=files,
+            templates_scope='app',
+        )
+
+        apps.append(application)
+
+    return apps
 
 
 @click.group()
@@ -23,23 +110,10 @@ def create(ctx):
     """
     ctx.ensure_object(dict)
 
-    ctx.obj['helper'] = CreatorHelper(
-        cwd=os.getcwd(),
-        dry=ctx.obj['dry'],
-        verbose=ctx.obj['verbose']
-    )
-
-    p, m, f = find_project_files(os.getcwd())  # project path, project directory, management_file
-
-    ctx.obj['path'] = p
-    ctx.obj['file'] = f
-    ctx.obj['management'] = m
-    ctx.obj['project'] = get_project_name(f)
-
 
 @create.command(name='project')
 @click.argument('name')
-@click.argument('apps', nargs=-1)
+@click.argument('apps', nargs=-1, callback=format_application)
 @click.option('--defaults', is_flag=True, help="Apply defaults to project")
 @click.pass_context
 def create_project(ctx, name, apps, defaults):
@@ -50,49 +124,82 @@ def create_project(ctx, name, apps, defaults):
     The command can handle the creation of apps upon creation of any project, you can simply specify the name of
     the apps after the project name:
 
-        D new project website app1 app2 app3 ...
+        django-clite new project website app1 app2 app3 ...
     """
 
+    project = Directory(
+        sanitized_string(name),
+        children=[
+            Directory('config', files=[
+                Template('database.py', '# database', raw=True),
+                Template('storage.py', 'storage.tpl'),
+                Template('settings.py', 'settings.tpl'),
+            ]),
+            Directory('celery', files=[
+                Template('__init__.py', 'celery.tpl'),
+                Template('tasks.py', 'celery_tasks.tpl'),
+            ]),
+        ],
+        files=[
+            Template('__init__.py', 'init.tpl'),
+            Template('.gitignore', 'gitignore.tpl'),
+            Template('api.py', 'api.tpl'),
+            Template('apps.py', 'apps.tpl'),
+            Template('.env', 'env.tpl'),
+            Template('app.json', 'app_json.tpl'),
+            Template('Dockerfile', 'dockerfile.tpl'),
+            Template('docker-compose.yml', 'docker-compose.tpl'),
+            Template('docker-entrypoint.sh', 'docker-entrypoint.tpl'),
+            Template('.env-example', 'env.tpl'),
+            Template('urls.py', 'urls.tpl'),
+            Template('README.md', 'README.tpl'),
+            Template('Procfile', 'procfile.tpl'),
+        ],
+        templates_scope="project",
+    )
+
+    scoped_context = {
+        'verbose': ctx.obj['verbose'],
+        'force': ctx.obj['force'],
+        'dry': ctx.obj['dry'],
+    }
+
+    template_handler = TemplateHandler(scope='project', **scoped_context)
+
     try:
-        helper = ctx.obj['helper']
+        with Live(f'Creating django project [b][yellow]{project.name}') as live:
+            try:
+                if not ctx.obj['dry']:
+                    subprocess.check_output(['django-admin', 'startproject', project.name])
+            except subprocess.CalledProcessError as error:
+                return Logger.error(error.__str__())
 
-        # project presets
-        presets = inquire_project_presets(project_name=name, default=defaults)
-    
-        # project app settings
-        # settings_apps, settings_middleware = inquire_installable_apps(default=defaults)
-    
-        # docker settings
-        services = {} if 'dockerized' not in presets['presets'] else inquire_docker_options(default=defaults)
+            # Configuration should be under > project
+            change_directory(project.name, **scoped_context)
 
-        # Create project
-        helper.create_project(
-            project=name,
-            apps=apps,
-            **presets,
-            **services,
-            # settings_apps=settings_apps,
-            # settings_middleware=settings_middleware,
-        )
+            for folder in project.children:
+                folder.create(template_handler, **scoped_context)
 
-        # Add info to .cli_config.json
-        helper.write_cli_config()
+        if apps:
+            change_directory(project.name, **scoped_context)
 
-        # apps = ctx.invoke(inspect, scope='apps', no_stdout=True)
-        # resources = ctx.invoke(inspect, scope='models', no_stdout=True)
-    except (KeyboardInterrupt, SystemExit, Exception) as e:
-        log_error(f'Exited! {repr(e)}')
+            ctx.invoke(create_applications, apps=apps, directory=os.getcwd())
+
+            change_directory('..')
+
+        # Initialize git repository
+        GitHandler.initialize(**scoped_context)
+
+        Logger.log(f'Successfully created django project [b][yellow]{project.name}')
+    except (KeyboardInterrupt, SystemExit, Exception) as error:
+        Logger.error(f'An exception occurred while creating this project: [b]{repr(error.__str__())}\n')
 
 
 @create.command(name='apps')
-@click.argument('apps', nargs=-1)
-@click.option('--project', '-p', help="Specify name of your project.")
-@click.option('--package', is_flag=True, help="Specify that the app can be installed as a package.")
+@click.argument('apps', nargs=-1, callback=format_application)
 @click.option('--directory', '-d', type=click.Path(), help="Specify path to your project's management file.")
-@click.option('--api', is_flag=True, help="Add a special api urls module to your app directory.")
-@click.option('--defaults', is_flag=True, help="Apply defaults to project")
 @click.pass_context
-def create_applications(ctx, apps, project, package, directory, api, defaults):
+def create_applications(ctx, apps, directory):
     """
     Creates new django apps.
 
@@ -102,7 +209,7 @@ def create_applications(ctx, apps, project, package, directory, api, defaults):
 
     The command can accept multiple apps as arguments. So,
 
-        D new apps shop blog forum
+        django-clite new apps shop blog forum
 
     will work prompt the CLI to create all 4 apps two levels within your project's
     directory, i.e mysite/mysite. The CLI tries to identify where the management module for your
@@ -115,72 +222,43 @@ def create_applications(ctx, apps, project, package, directory, api, defaults):
     a DRF router is instantiated in `router.py` and its urls added to each app's urlpatterns by default.
     """
 
-    try:
-        # Get project name from arguments
-        project = project if project else ctx.obj['project']
-        directory = directory if directory else ctx.obj['management']
-    
-        if not_in_project(ctx) and not package:
-            if not click.confirm(DEFAULT_MANAGEMENT_APP_ERROR_PROMPT):
-                return False
-    
-        helper = AppHelper(
-            cwd=os.getcwd(),
-            dry=ctx.obj['dry'],
-            verbose=ctx.obj['verbose'],
-            package=package,
-        )
-    
-        options = {}
-        if len(apps) == 1:
-            if package:
-                options = inquire_app_presets(apps[0], default=defaults)
-    
-        for name in apps:
-            helper.create_app(
-                project=project,
-                app=name,
-                api=api,
-                **options,
-            )
-    
-            click.echo(f"Successfully created app: {name}")
+    if directory:
+        ctx.obj['project_files'] = FileHandler.find_files(directory, patterns=['manage.py', 'wsgi.py', 'apps.py'])
 
-        print(helper.config)
-    except (KeyboardInterrupt, SystemExit, Exception) as e:
-        log_error('Exited!')
+    scoped_context = {
+        'verbose': ctx.obj['verbose'],
+        'force': ctx.obj['force'],
+        'dry': ctx.obj['dry'],
+    }
 
+    template_handler = TemplateHandler(scope='app', **scoped_context)
 
-@create.command(name='settings')
-@click.option('--ignore-apps', is_flag=True, help="Do not add project apps to INSTALLED_APPS.")
-@click.option('--override-file', is_flag=True, help="Override contents of current settings.py module")
-@click.pass_context
-def create_settings(ctx, ignore_apps, override_file):
-    """
-    Create settings file for project.
-    """
+    # Attempt to create app inside a project as prompt user for choice if outside project directory
+    if inside_project_directory(ctx, exit_on_error=not scoped_context['force']):
+        server_file = ctx.obj['project_files'].get('wsgi.py', None) or ctx.obj['project_files'].get('asgi.py', None)
+        management_file = ctx.obj['project_files'].get('manage.py', None)
+
+        project_path = PosixPath(directory) if directory else FileHandler.scoped_project_directory(management_file or server_file)
+
+        if not project_path:
+            raise click.Abort
+    else:
+        if not Confirm.ask('The CLI could not find your django project. Proceed anyways?', default=False):
+            raise click.Abort
 
     try:
-        wrong_place_warning(ctx)
-        project_name = ctx.obj['project']
-        path = os.path.join(ctx.obj['management'], project_name)
+        # Create application inside the scoped path
+        change_directory(project_path)
 
-        helper = ctx.obj['helper']
-    
-        if not ignore_apps:
-            ctx.obj['helper'] = InspectorHelper(cwd=ctx.obj['management'])
-            apps = ctx.invoke(inspect, scope='apps', suppress_output=True)
-            helper.create_file_in_context(
-                project=ctx.obj['project'],
-                template='settings.tpl',
-                filename='settings_override.py',
-                apps=apps
-            )
-        else:
-            helper.create_file_in_context(
-                project=ctx.obj['project'],
-                template='settings.tpl',
-                filename='settings_override.py',
-            )
-    except (KeyboardInterrupt, SystemExit, Exception) as e:
-        log_error(f'Exited! {repr(e)}')
+        for app in apps:
+            template_handler.context = {'project': project_path.name, 'app': app.name, **scoped_context}
+
+            app.create(template_handler, **scoped_context)
+
+            if scoped_context['verbose']:
+                Logger.log(f"Successfully created created app [b]{app.name}[/b] with the following structure:")
+                rich_print(app.traverse(show_files=False))
+            else:
+                Logger.log(f"Successfully created app [b]{app.name}")
+    except (KeyboardInterrupt, SystemExit, Exception) as error:
+        Logger.error(repr(error))
