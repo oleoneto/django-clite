@@ -4,6 +4,5 @@ register = template.Library()
 
 
 @register.filter
-def {{ model }}(queryset):
-    # code here...
+def {{ name }}(queryset):
     pass

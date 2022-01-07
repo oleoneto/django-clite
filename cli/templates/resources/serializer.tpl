@@ -1,9 +1,7 @@
 from rest_framework import serializers
-{% if model %}from ..models import {{ classname }}
-{% endif %}
+from ..models import {{ classname }}
 
 class {{ classname }}Serializer(serializers.ModelSerializer):
-    
     # Add related fields below:
     # Example relation fields are:
     # -- HyperlinkedIdentityField
@@ -12,7 +10,7 @@ class {{ classname }}Serializer(serializers.ModelSerializer):
     # -- SlugRelatedField
     # -- StringRelatedField
     
-    # You can also create a custom serializer, like so:
+    # You can also add a custom serializer, like so:
     # likes = LikeSerializer(many=True)
 
     class Meta:

@@ -3,7 +3,6 @@ from django.db.models import Q
 
 
 class {{ classname }}Manager(models.Manager):
-
     """
     Applying a custom QuerySet.
     def get_queryset(self):

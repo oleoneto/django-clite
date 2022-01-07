@@ -1,8 +1,8 @@
 from rest_framework import viewsets
 from rest_framework import permissions
-from .router import router
-from ..models import {{ classname }}
-from ..serializers import {{ classname }}Serializer
+from {{ project }}.{{ app }}.router import router
+from {{ project }}.{{ app }}.models import {{ classname }}
+from {{ project }}.{{ app }}.serializers import {{ classname }}Serializer
 
 
 class {{ classname }}ViewSet(viewsets.{% if read_only %}ReadOnlyModelViewSet{% else %}ModelViewSet{% endif %}):
@@ -11,4 +11,4 @@ class {{ classname }}ViewSet(viewsets.{% if read_only %}ReadOnlyModelViewSet{% e
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
 
-router.register('{{ route.lower() }}', {{ classname }}ViewSet)
+router.register('{{ namespace }}', {{ classname }}ViewSet)
