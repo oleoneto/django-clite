@@ -1,9 +1,14 @@
 import glob
 import os
+import fileinput
 from pathlib import Path
 from cli.utils.logger import Logger
 from cli.utils.fs.utils import change_directory, make_directory
-from cli.handlers.generic_handler import GenericHandler, SearchResults
+from cli.handlers.generic_handler import GenericHandler
+
+
+class ContentDuplicationError(BaseException):
+    pass
 
 
 class FileHandler(GenericHandler):
@@ -13,7 +18,7 @@ class FileHandler(GenericHandler):
 
     # File Manipulation
 
-    def append_to_file(self, content, filename, **kwargs):
+    def append_to_file(self, content, filename, prevent_duplication=False, **kwargs):
         message = f"Append to file [b]{filename}"
 
         dry = kwargs.get('dry', self.dry)
@@ -23,12 +28,20 @@ class FileHandler(GenericHandler):
             return self.messages['append_skipped']
 
         try:
+            if prevent_duplication:
+                for line in fileinput.input(filename):
+                    if content in line:
+                        raise ContentDuplicationError('Duplicate content found')
+
             with open(filename, mode='a') as file:
                 file.write(content)
                 file.write('\n')
         except FileNotFoundError:
             Logger.log(f"File {filename} does not exist.")
             return self.errors['file_does_not_exist']
+        except ContentDuplicationError:
+            Logger.log(f"Skipped appending due to content duplication", is_visible=kwargs.get('verbose', self.verbose))
+            return self.messages['append_skipped']
 
         Logger.log(message, is_visible=kwargs.get('verbose', self.verbose))
         return self.messages['appended']

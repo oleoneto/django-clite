@@ -29,3 +29,12 @@ class TemplateHandler(GenericHandler):
     def __parsed_template_string(self, template):
         environment = Environment(autoescape=select_autoescape()).from_string(template)
         return environment.render(self.context)
+
+
+# Aliases
+
+ApplicationTemplateHandler = TemplateHandler(scope='app')
+ProjectTemplateHandler = TemplateHandler(scope='project')
+ResourceTemplateHandler = TemplateHandler(scope='resources')
+SharedTemplateHandler = TemplateHandler(scope='shared')
+TestTemplateHandler = TemplateHandler(scope='tests')

@@ -1,5 +1,8 @@
+import os
 from rich.tree import Tree
 from cli.handlers.filesystem.file_handler import FileHandler
+from cli.handlers.filesystem.template_handler import TemplateHandler
+from cli.handlers.filesystem.template import Template
 
 
 class Directory(FileHandler):
@@ -27,5 +30,21 @@ class Directory(FileHandler):
 
         return tree
 
+    def add_children(self, children, **kwargs):
+        for child in children:
+            if not type(child) == type(self):
+                child = Directory(name=child)
+
+            self.children.append(child)
+
     def create(self, template_handler, **kwargs):
         return self.create_folder(self, template_handler, **kwargs)
+
+    @classmethod
+    def ensure_directory(cls, container, **kwargs):
+        if container not in os.listdir():
+            folder = Directory(container, files=[Template('__init__.py', '# import package modules here', raw=True)])
+            folder.create(template_handler=TemplateHandler(), **kwargs)
+        else:
+            if '__init__.py' not in os.listdir(container) and not kwargs.get('no_append', True):
+                cls.create_file(filename='__init__.py', content='# import package modules here', **kwargs)

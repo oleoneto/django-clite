@@ -57,9 +57,16 @@ def format_application(ctx, param, value):
         ),
         Directory('serializers', files=[initializer_template]),
         Directory('tasks', files=[initializer_template]),
-        Directory('templates', files=[initializer_template]),
+        Directory('templates', files=[]),
         Directory('templatetags', files=[initializer_template]),
-        Directory('tests', files=[initializer_template]),
+        Directory(
+            'tests',
+            files=[Template('__init__.py', 'from .models import *\nfrom .serializers import *', raw=True)],
+            children=[
+                Directory('models', files=[initializer_template]),
+                Directory('serializers', files=[initializer_template])
+            ]
+        ),
         Directory('views', files=[initializer_template]),
         Directory(
             'viewsets',
@@ -212,12 +219,12 @@ def create_applications(ctx, apps, directory):
         django-clite new apps shop blog forum
 
     will work prompt the CLI to create all 4 apps two levels within your project's
-    directory, i.e mysite/mysite. The CLI tries to identify where the management module for your
-    project is so it can place your app files in the correct location. This helps with consistency
+    directory, i.e. my_site/my_site. The CLI tries to identify where the management module for your
+    project is, so it can place your app files in the correct location. This helps with consistency
     as the CLI can infer module/package scopes when performing other automatic configurations.
 
     As part of the CLI convention, each app is assigned its own `urls.py` file, which can be used to route urls on a
-    per app basis. Another convention the CLI adopts is
+    per-app basis. Another convention the CLI adopts is
     to add a viewsets package to the app's directory by default (for use with DRF). Within the viewsets directory
     a DRF router is instantiated in `router.py` and its urls added to each app's urlpatterns by default.
     """
