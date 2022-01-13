@@ -31,6 +31,7 @@ class FileHandler(GenericHandler):
             if prevent_duplication:
                 for line in fileinput.input(filename):
                     if content in line:
+                        fileinput.close()
                         raise ContentDuplicationError('Duplicate content found')
 
             with open(filename, mode='a') as file:

@@ -6,7 +6,7 @@ from cli.commands.generate.admin import admin
 from cli.commands.generate.fixture import fixture
 from cli.commands.generate.form import form
 from cli.commands.generate.manager import manager
-# from cli.commands.generate.resource import model, resource, search_index
+from cli.commands.generate.resource import model, resource
 from cli.commands.generate.serializer import serializer
 from cli.commands.generate.signal import signal
 from cli.commands.generate.template import template, templatetag
@@ -45,8 +45,8 @@ subcommands = [
     fixture,
     form,
     manager,
-    # model,
-    # resource,
+    model,
+    resource,
     serializer,
     signal,
     template,

@@ -13,6 +13,10 @@ def sanitized_string(text):
     return inflection.underscore(r).lower()
 
 
+def sanitized_string_callback(ctx, param, value):
+    return sanitized_string(value)
+
+
 def check_noun_inflection(noun, force_singular=None, force_plural=None):
     """
     Checks whether a noun is plural or singular and gives

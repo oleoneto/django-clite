@@ -61,10 +61,10 @@ def format_application(ctx, param, value):
         Directory('templatetags', files=[initializer_template]),
         Directory(
             'tests',
-            files=[Template('__init__.py', 'from .models import *\nfrom .serializers import *', raw=True)],
+            files=[Template('__init__.py', 'from .models import *\nfrom .viewsets import *', raw=True)],
             children=[
                 Directory('models', files=[initializer_template]),
-                Directory('serializers', files=[initializer_template])
+                Directory('viewsets', files=[initializer_template])
             ]
         ),
         Directory('views', files=[initializer_template]),
@@ -111,14 +111,14 @@ def format_application(ctx, param, value):
 
 @click.group()
 @click.pass_context
-def create(ctx):
+def new(ctx):
     """
     Creates projects and apps.
     """
     ctx.ensure_object(dict)
 
 
-@create.command(name='project')
+@new.command(name='project')
 @click.argument('name')
 @click.argument('apps', nargs=-1, callback=format_application)
 @click.option('--defaults', is_flag=True, help="Apply defaults to project")
@@ -133,6 +133,8 @@ def create_project(ctx, name, apps, defaults):
 
         django-clite new project website app1 app2 app3 ...
     """
+
+    # FIXME: Handle --defaults flag
 
     project = Directory(
         sanitized_string(name),
@@ -202,7 +204,7 @@ def create_project(ctx, name, apps, defaults):
         Logger.error(f'An exception occurred while creating this project: [b]{repr(error.__str__())}\n')
 
 
-@create.command(name='apps')
+@new.command(name='apps')
 @click.argument('apps', nargs=-1, callback=format_application)
 @click.option('--directory', '-d', type=click.Path(), help="Specify path to your project's management file.")
 @click.pass_context

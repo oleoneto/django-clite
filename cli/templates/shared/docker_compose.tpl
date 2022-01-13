@@ -68,14 +68,4 @@ services:
     stop_grace_period: 5s
 
 
-  vault:
-    container_name: "{{ project }}_vault"
-    labels:
-        com.vault.description: "{{ project }}: Project Vault"
-    image: vault
-    ports:
-      - 7200:8200
-    restart: always
-
-
 # These settings are provided for development purposes only. Not suitable for production.

@@ -1,24 +1,38 @@
 import inflection
 from cli.utils.sanitize import sanitized_string
 from cli.utils.fs.utils import change_directory
-from cli.handlers.filesystem.template_handler import ResourceTemplateHandler as rth
+from cli.handlers.parser.field_handler import table_name_for_model
+from cli.handlers.filesystem.template_handler import ResourceTemplateHandler
 from cli.handlers.filesystem.file_handler import FileHandler
 from cli.handlers.filesystem.directory import Directory
 
 
-def resource_generator(name, package, template, import_template=None, file_extension='.py', template_handler=rth, **kwargs):
+def resource_generator(
+        name,
+        package,
+        template,
+        parent=None,
+        filename=None,
+        import_template=None,
+        file_extension='.py',
+        template_handler=ResourceTemplateHandler,
+        **kwargs
+):
     fh = FileHandler()
 
+    # Context variables
     project_files = kwargs.get('project_files', {})
     app_file = project_files.get('apps.py', None)
 
     app = app_file.parent.name
     project = app_file.parent.parent.name
 
-    # Context variables
     name = sanitized_string(name)
     namespace = inflection.pluralize(name)
-    filename = f"{name}{file_extension}"
+
+    # Force filename if one does not exist
+    filename = filename or f"{name}{file_extension}"
+
     scope = kwargs.get('scope', inflection.singularize(inflection.camelize(package)))
     classname = inflection.camelize(name)
     content = template_handler.parsed_template(template, context={
@@ -27,11 +41,16 @@ def resource_generator(name, package, template, import_template=None, file_exten
         'project': kwargs.get('project', project),
         'app': kwargs.get('app', app),
         'namespace': namespace,
+        'table_name': table_name_for_model(name, app),
         **kwargs.get('context', {}),
     })
 
     # Ensure the top-level package exists and is properly configured
     # Handle resource creation and import
+
+    if parent:
+        Directory.ensure_directory(parent, **kwargs)
+        change_directory(parent, **kwargs)
 
     Directory.ensure_directory(package, **kwargs)
 
@@ -54,3 +73,8 @@ def resource_generator(name, package, template, import_template=None, file_exten
             prevent_duplication=True,
             **kwargs,
         )
+
+    if parent:
+        change_directory('..')
+
+    change_directory('..')

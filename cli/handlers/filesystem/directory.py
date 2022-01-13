@@ -42,9 +42,17 @@ class Directory(FileHandler):
 
     @classmethod
     def ensure_directory(cls, container, **kwargs):
+        folder = Directory(container, files=[Template('__init__.py', '# import package modules here', raw=True)])
+
         if container not in os.listdir():
-            folder = Directory(container, files=[Template('__init__.py', '# import package modules here', raw=True)])
             folder.create(template_handler=TemplateHandler(), **kwargs)
         else:
-            if '__init__.py' not in os.listdir(container) and not kwargs.get('no_append', True):
-                cls.create_file(filename='__init__.py', content='# import package modules here', **kwargs)
+            if '__init__.py' not in os.listdir(container):
+                if kwargs.get('no_append', False):
+                    return
+
+                os.chdir(container)
+
+                folder.create_file(filename='__init__.py', content='# import package modules here', **kwargs)
+
+                os.chdir('..')

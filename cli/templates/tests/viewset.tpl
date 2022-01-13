@@ -4,7 +4,7 @@ from django.contrib.auth import get_user_model
 from {{ project }}.{{ app }}.{{ name }} import {{ classname }}
 
 
-class {{ classname }}ViewsetTestCase(APITestCase):
+class {{ classname }}TestCase(APITestCase):
 
     # The client used to connect to the API
     client = APIClient()

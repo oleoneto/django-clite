@@ -1,10 +1,17 @@
 from django.contrib import admin
-from ..models import {{ classname }}
+from {{ project }}.{{ app }}.models import {{ classname }}
 
 
 @admin.register({{ classname }})
 class {{ classname }}Admin(admin.ModelAdmin):
-    list_display = {% if fields %}{{ fields }}{% else %}[field.name for field in {{classname}}._meta.fields]{% endif %}
+    {%- if fields %}
+    list_display = [{% for field in fields %}
+        {{ field }},
+    {%- endfor %}
+    ]
+    {% else %}
+    list_display = []
+    {% endif %}
 
     {%- if permissions %}
     def has_change_permission(self, request, obj=None):

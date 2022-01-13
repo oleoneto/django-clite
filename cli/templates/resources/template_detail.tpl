@@ -1,4 +1,4 @@
-{%- raw %}
+{%- raw -%}
 {% comment %}
     Describe the template here.
 {% endcomment %}
@@ -10,4 +10,4 @@
         <div class="content"></div>
     </div>
 {% endblock %}
-{% endraw -%}
+{%- endraw %}

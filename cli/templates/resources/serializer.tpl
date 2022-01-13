@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from ..models import {{ classname }}
 
+
 class {{ classname }}Serializer(serializers.ModelSerializer):
     # Add related fields below:
     # Example relation fields are:

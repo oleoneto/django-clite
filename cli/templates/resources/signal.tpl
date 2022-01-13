@@ -6,7 +6,6 @@ from django.db.models.signals import pre_save, post_save, post_delete
 # from ..models import MyModel
 
 
-
 # @receiver(post_save, sender=MyModel, dispatch_uid="{{ name }}")
 def {{ name }}(sender, **kwargs):
     instance = kwargs.get('instance')

@@ -1,6 +1,6 @@
 import unittest
 from click.testing import CliRunner
-from cli.commands.create.main import create_project, create_applications
+from cli.commands.new.main import create_project, create_applications
 from tests import CliTestCase
 
 runner = CliRunner()
