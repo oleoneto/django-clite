@@ -1,7 +1,7 @@
 import click
 from cli.handlers.filesystem.file_handler import FileHandler
 from cli.handlers.filesystem.template_handler import SharedTemplateHandler
-from cli.utils.fs.utils import inside_project_directory
+from cli.utils import inside_project_directory
 
 
 file_handler = FileHandler()

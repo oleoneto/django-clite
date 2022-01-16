@@ -1,5 +1,5 @@
 import click
-from cli.utils.fs.utils import inside_app_directory
+from cli.utils import inside_app_directory
 from cli.commands.destroy.admin import admin
 from cli.commands.destroy.fixture import fixture
 from cli.commands.destroy.form import form

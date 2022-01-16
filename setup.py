@@ -43,7 +43,7 @@ setup(
         'Topic :: Software Development :: Libraries :: Application Frameworks',
         'Topic :: Software Development :: Libraries :: Python Modules',
     ],
-    license="BSD",
+    license="BSD 3-Clause",
     install_requires=[
         'Click>=8.0',
         'django>=2.2.4',

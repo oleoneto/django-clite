@@ -1,6 +1,6 @@
 import inflection
+from cli.utils import change_directory
 from cli.utils.sanitize import sanitized_string
-from cli.utils.fs.utils import change_directory
 from cli.handlers.parser.field_handler import table_name_for_model
 from cli.handlers.filesystem.template_handler import ResourceTemplateHandler
 from cli.handlers.filesystem.file_handler import FileHandler

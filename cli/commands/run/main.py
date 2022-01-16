@@ -1,5 +1,5 @@
 import click
-from cli.utils.fs.utils import inside_project_directory
+from cli.utils import inside_project_directory
 from cli.commands.run.helpers import make_migrations, migrate, run_server, run_copy_environment
 
 DEFAULT_MISSING_ARGS_ERROR = 'Missing arguments: {}.'

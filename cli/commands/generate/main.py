@@ -1,6 +1,6 @@
 import os
 import click
-from cli.utils.fs.utils import inside_app_directory
+from cli.utils import inside_app_directory
 from cli.handlers.filesystem import FileHandler
 from cli.commands.generate.admin import admin
 from cli.commands.generate.fixture import fixture

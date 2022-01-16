@@ -7,7 +7,7 @@ from rich.prompt import Confirm
 from rich import print as rich_print
 from cli.utils.logger import Logger
 from cli.utils.sanitize import sanitized_string
-from cli.utils.fs.utils import change_directory, inside_project_directory
+from cli.utils import change_directory, inside_project_directory
 from cli.handlers.filesystem import FileHandler, GitHandler, TemplateHandler
 from cli.handlers.filesystem.directory import Directory
 from cli.handlers.filesystem.template import Template

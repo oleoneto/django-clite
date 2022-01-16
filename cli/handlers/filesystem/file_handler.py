@@ -1,9 +1,8 @@
 import glob
 import os
-import fileinput
 from pathlib import Path
 from cli.utils.logger import Logger
-from cli.utils.fs.utils import change_directory, make_directory
+from cli.utils import change_directory, make_directory
 from cli.handlers.generic_handler import GenericHandler
 
 

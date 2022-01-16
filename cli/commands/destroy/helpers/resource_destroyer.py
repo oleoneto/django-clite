@@ -1,9 +1,8 @@
 import os
-
 import inflection
 from cli.handlers.filesystem.file_handler import FileHandler
 from cli.handlers.filesystem.template_handler import ResourceTemplateHandler
-from cli.utils.fs.utils import change_directory
+from cli.utils import change_directory
 from cli.utils.sanitize import sanitized_string
 from cli.utils.logger import Logger
 
