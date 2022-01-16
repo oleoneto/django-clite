@@ -1,13 +1,14 @@
-import inflection
 import click
+import inflection
 from cli.utils.logger import Logger
 from cli.utils.sanitize import sanitized_string, sanitized_string_callback
 from cli.utils.sanitize import check_noun_inflection
 from cli.handlers.parser.field_handler import parse_fields
+from cli.handlers.parser.fields import FieldParsingError
 from cli.commands.generate.helpers import resource_generator
-from cli.commands.generate.admin import admin as register_admin
+from cli.commands.generate.admin import admin as admin_
 from cli.commands.generate.fixture import fixture
-from cli.commands.generate.form import form as register_form
+from cli.commands.generate.form import form as form_
 from cli.commands.generate.serializer import serializer
 from cli.commands.generate.template import template
 from cli.commands.generate.test import test
@@ -16,8 +17,12 @@ from cli.commands.generate.viewset import viewset
 
 
 def fields_callback(ctx, _, value):
-    fields, import_list = parse_fields(value, model=ctx.params['name'])
-    return fields, import_list
+    try:
+        fields, import_list = parse_fields(value, model=ctx.params['name'])
+        return fields, import_list
+    except FieldParsingError as error:
+        Logger.error(error)
+        raise click.Abort()
 
 
 def inheritance_callback(ctx, _, value):
@@ -28,8 +33,8 @@ def inheritance_callback(ctx, _, value):
 
 
 @click.command()
-@click.argument("name", required=True, callback=sanitized_string_callback)
-@click.argument("fields", nargs=-1, required=False, callback=fields_callback)
+@click.argument('name', required=True, callback=sanitized_string_callback)
+@click.argument('fields', nargs=-1, required=False, callback=fields_callback)
 @click.option('-a', '--abstract', is_flag=True, help="Creates an abstract model type")
 @click.option('--api', is_flag=True, help="Adds only related api resources")
 @click.option('--full', is_flag=True, help="Adds all related resources")
@@ -66,7 +71,7 @@ def model(ctx, name, fields, abstract, api, full, admin, fixtures, form, seriali
         name,
         template='model.tpl',
         package='models',
-        import_context={'classname': inflection.camelize(name), 'name': name},
+        import_context={'classname': inflection.camelize(name)},
         context={
             'api': api,
             'abstract': abstract,
@@ -84,13 +89,13 @@ def model(ctx, name, fields, abstract, api, full, admin, fixtures, form, seriali
         pending[test] = {'name': name, 'full': True}
 
     if full or admin:
-        pending[register_admin] = {'name': name, 'fields': [f for f in parsed_fields if f.supported_in_admin]}
+        pending[admin_] = {'name': name, 'fields': [f for f in parsed_fields if f.supported_in_admin]}
 
     if full or fixtures:
         pending[fixture] = {'name': name}
 
     if full or form:
-        pending[register_form] = {'name': name}
+        pending[form_] = {'name': name}
 
     if full or serializers:
         pending[serializer] = {'name': name}
@@ -114,13 +119,13 @@ def model(ctx, name, fields, abstract, api, full, admin, fixtures, form, seriali
 
 
 @click.command()
-@click.argument("name", required=True, callback=sanitized_string_callback)
-@click.argument("fields", nargs=-1, required=True, callback=fields_callback)
-@click.option('--api', is_flag=True, help='Adds related api resources')
+@click.argument('name', required=True, callback=sanitized_string_callback)
+@click.argument('fields', nargs=-1, required=True, callback=fields_callback)
+@click.option('--api', is_flag=True, help='Only add api-related resources')
 @click.pass_context
 def resource(ctx, name, fields, api):
     """
-    Generates an app resource.
+    Generates a resource and its related modules.
 
     This is ideal to add a model along with admin, serializer, view, viewset, template, and tests.
     You can invoke this command the same way you would the model command:

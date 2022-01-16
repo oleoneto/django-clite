@@ -3,6 +3,10 @@ from cli.utils.sanitize import sanitized_string
 from cli.handlers.filesystem.template_handler import ResourceTemplateHandler
 
 
+class FieldParsingError(Exception):
+    pass
+
+
 class DjangoField(object):
     def __init__(self, name, kind, model='', options: dict = {}, supported_in_admin: bool = True):
         self.name = sanitized_string(name)
@@ -193,4 +197,4 @@ class FieldFactory:
                 options={'template': """default=uuid.uuid4, editable=False"""}
             )
 
-        return None
+        raise FieldParsingError(f"Field `{kind}:{name}` cannot be parsed. `{kind}` is not a valid field type.")

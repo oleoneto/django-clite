@@ -11,7 +11,7 @@ from cli.commands.generate.helpers import resource_generator
 @click.pass_context
 def admin(ctx, name, fields, inline, permissions):
     """
-    Generates an admin model within the admin package.
+    Generates an admin model.
     """
 
     if inline:
@@ -20,7 +20,7 @@ def admin(ctx, name, fields, inline, permissions):
             template='admin_inline.tpl',
             parent='admin',
             package='inlines',
-            import_context={'classname': f"{name.capitalize()}Inline"},
+            scope='Inline',
             **ctx.obj
         )
     else:
@@ -28,7 +28,7 @@ def admin(ctx, name, fields, inline, permissions):
             name,
             template='admin.tpl',
             package='admin',
-            import_context={'classname': f"{name.capitalize()}Admin"},
+            scope='Admin',
             context={
                 'fields': fields,
                 'permissions': permissions,

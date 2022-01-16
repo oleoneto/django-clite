@@ -1,5 +1,5 @@
-import inflection
 import click
+import inflection
 from cli.commands.generate.helpers import resource_generator
 from cli.handlers.filesystem.template_handler import TestTemplateHandler
 
@@ -8,16 +8,16 @@ SUPPORTED_SCOPES = ['model', 'viewset']
 
 
 @click.command()
-@click.argument("name", required=True)
-@click.option("-s", "--scope", type=click.Choice(SUPPORTED_SCOPES), required=True)
-@click.option('--full', is_flag=True, help='Create templates for all CRUD operations')
+@click.argument('name', required=True)
+@click.option('-s', '--scope', type=click.Choice(SUPPORTED_SCOPES), required=True)
+@click.option('--full', is_flag=True, help=f'Create tests for {SUPPORTED_SCOPES}')
 @click.pass_context
 def test(ctx, name, scope, full):
     """
-    Generates a new TestCase.
+    Generates new TestCases.
     """
 
-    def generate_test(n, s):
+    def generate(n, s):
         resource_generator(
             n,
             parent='tests',
@@ -29,6 +29,6 @@ def test(ctx, name, scope, full):
         )
 
     if full:
-        [generate_test(name, t) for t in SUPPORTED_SCOPES]
+        [generate(name, s) for s in SUPPORTED_SCOPES]
     else:
-        generate_test(name, scope)
+        generate(name, scope)

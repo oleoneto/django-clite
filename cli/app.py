@@ -8,7 +8,7 @@ from cli.handlers.filesystem import FileHandler
 @click.command(cls=AliasedAndDiscoverableGroup)
 @click.option('--dry', is_flag=True, help="Display output without creating files.")
 @click.option('-f', '--force', is_flag=True, help="Override any conflicting files.")
-@click.option('-v', '--verbose', is_flag=True, help="Run in verbose mode.")
+@click.option('--verbose', is_flag=True, help="Run in verbose mode.")
 @click.option('--debug', is_flag=True, help="Run in debug mode.")
 @click.version_option()
 @click.pass_context

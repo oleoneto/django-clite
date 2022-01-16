@@ -11,7 +11,7 @@ DEFAULT_TOO_MANY_ARGS_ERROR = 'Too many arguments passed.'
 @click.pass_context
 def run(ctx):
     """
-    Run maintenance, development, and deployment scripts.
+    Run certain tasks or scripts.
     """
 
     ctx.ensure_object(dict)

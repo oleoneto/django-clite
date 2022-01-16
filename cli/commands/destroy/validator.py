@@ -1,5 +1,5 @@
 import click
-from cli.commands.generate.helpers import resource_generator
+from cli.commands.destroy.helpers.resource_destroyer import resource_destroyer
 
 
 @click.command()
@@ -10,9 +10,8 @@ def validator(ctx, name):
     Generates a validator.
     """
 
-    resource_generator(
+    resource_destroyer(
         name,
-        template='validator.tpl',
         parent='models',
         package='validators',
         import_template="""from .{{ module }} import {{ module }}""",

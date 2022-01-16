@@ -72,6 +72,8 @@ class GenericHandler:
             "appended": ExecutionResult('appended', 'Content was appended successfully.'),
             "append_skipped": ExecutionResult('append_skipped', 'Content was not appended. Skipped with DRY flag.'),
             "not_appended": ExecutionResult('not_appended', 'Content was not appended.'),
+            "un_appended": ExecutionResult('un_appended', 'Content was removed from file.'),
+            "skipped_un_appended": ExecutionResult('skipped_un_appended', 'Content was not removed from file. Skipped with DRY flag.'),
             "directory_not_found_help": """If your project uses custom configuration, you can pass\
             some context to the CLI:\nSpecify the manage.py directory with the flag: --directory/-d\
             Specify the project name with the flag: --project/-p/

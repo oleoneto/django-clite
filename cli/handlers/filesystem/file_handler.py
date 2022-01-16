@@ -29,14 +29,14 @@ class FileHandler(GenericHandler):
 
         try:
             if prevent_duplication:
-                for line in fileinput.input(filename):
-                    if content in line:
-                        fileinput.close()
-                        raise ContentDuplicationError('Duplicate content found')
+                with open(filename, 'r') as file:
+                    lines = file.readlines()
+                    for line in lines:
+                        if line.startswith(content):
+                            raise ContentDuplicationError('Duplicate content found')
 
             with open(filename, mode='a') as file:
-                file.write(content)
-                file.write('\n')
+                file.write(f"{content}\n")
         except FileNotFoundError:
             Logger.log(f"File {filename} does not exist.")
             return self.errors['file_does_not_exist']
@@ -46,6 +46,34 @@ class FileHandler(GenericHandler):
 
         Logger.log(message, is_visible=kwargs.get('verbose', self.verbose))
         return self.messages['appended']
+
+    def remove_line_from_file(self, content, filename, **kwargs):
+        message = f"Removed line from file [b]{filename}"
+
+        dry = kwargs.get('dry', self.dry)
+
+        if dry:
+            Logger.log(message, dry=dry)
+            return self.messages['skipped_un_appended']
+
+        try:
+            with open(filename, mode='r') as file:
+                lines = file.readlines()
+
+                for index, line in enumerate(lines):
+                    if line.startswith(content):
+                        lines.pop(index)
+                        break
+
+            file = open(filename, 'w')
+            file.writelines(lines)
+            file.close()
+        except FileNotFoundError:
+            Logger.log(f"File {filename} does not exist.")
+            return self.errors['file_does_not_exist']
+
+        Logger.log(message, is_visible=kwargs.get('verbose', self.verbose))
+        return self.messages['un_appended']
 
     # File Creation
 
@@ -98,9 +126,10 @@ class FileHandler(GenericHandler):
 
     # Directory creation
 
-    def create_folder(self, folder, template_handler, **kwargs):
-        make_directory(folder.name, **kwargs)
-        change_directory(folder.name, **kwargs)
+    def create_folder(self, folder, template_handler, create_in_cwd=False, **kwargs):
+        if not create_in_cwd:
+            make_directory(folder.name, **kwargs)
+            change_directory(folder.name, **kwargs)
 
         # Process all template files
         for file in folder.files:
@@ -111,7 +140,8 @@ class FileHandler(GenericHandler):
         for sub_folder in folder.children:
             self.create_folder(sub_folder, template_handler, **kwargs)
 
-        change_directory('..', **kwargs)
+        if not create_in_cwd:
+            change_directory('..', **kwargs)
         return True
 
     # Finder

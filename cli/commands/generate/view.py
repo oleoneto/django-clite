@@ -1,5 +1,5 @@
 import click
-from cli.click.mutex import Mutex
+import inflection
 from cli.utils.sanitize import sanitized_string
 from cli.commands.generate.helpers import resource_generator
 from cli.handlers.filesystem.directory import Directory
@@ -16,25 +16,25 @@ SUPPORTED_VIEW_TYPES = [
 
 @click.command()
 @click.argument("name", required=True)
-@click.option("-c", "--class-type", type=click.Choice(SUPPORTED_VIEW_TYPES), cls=Mutex, not_required_if=["full"])
-@click.option('--full', is_flag=True, help='Create all CRUD views', cls=Mutex, not_required_if=["class-type"])
-@click.option('--no-template', is_flag=True, default=False, help='Generate related template.')
+@click.option("-c", "--class-type", type=click.Choice(SUPPORTED_VIEW_TYPES))
+@click.option('--full', is_flag=True, help='Create all CRUD views')
+@click.option('--skip-templates', is_flag=True, default=False, help='Skip generation of related templates.')
 @click.pass_context
-def view(ctx, name, class_type, full, no_template):
+def view(ctx, name, class_type, full, skip_templates):
     """
     Generates a view function or class.
     """
 
-    def generate_view(n, ct):
-        resource_name = sanitized_string(n)
+    def generate(n, ct):
+        n = sanitized_string(n)
         scope = f"{'_' + ct if ct else ''}"
-        module = f"{resource_name}{scope}"
-        classname = f"{resource_name.capitalize()}{ct.capitalize()}View" if ct else f"{resource_name}_view"
-        template_name = f"{resource_name}{scope}.html"
+        module = f"{n}{scope}"
+        template_name = f"{module}.html"
+        classname = f"{inflection.camelize(n)}{ct.capitalize()}View" if ct else f"{n}_view"
         import_template = """from .{{module}} import {{classname}}"""
 
         resource_generator(
-            resource_name,
+            n,
             package='views',
             filename=f"{module}.py",
             template=f"view{scope}.tpl",
@@ -47,12 +47,12 @@ def view(ctx, name, class_type, full, no_template):
         )
 
         # Handle creation of related template
-        if not no_template:
-            ctx.invoke(template, name=resource_name, class_type=ct)
+        if not skip_templates:
+            ctx.invoke(template, name=n, class_type=ct)
 
     Directory.ensure_directory('views', **ctx.obj)
 
     if full:
-        [generate_view(name, t) for t in SUPPORTED_VIEW_TYPES]
+        [generate(name, t) for t in SUPPORTED_VIEW_TYPES]
     else:
-        generate_view(name, class_type)
+        generate(name, class_type)

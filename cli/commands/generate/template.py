@@ -12,8 +12,8 @@ SUPPORTED_VIEW_TYPES = [
 
 
 @click.command()
-@click.argument("name", required=True)
-@click.option("-c", "--class-type", type=click.Choice(SUPPORTED_VIEW_TYPES))
+@click.argument('name', required=True)
+@click.option('-c', '--class-type', type=click.Choice(SUPPORTED_VIEW_TYPES))
 @click.option('--full', is_flag=True, help='Create templates for all CRUD operations')
 @click.pass_context
 def template(ctx, name, class_type, full):
@@ -22,12 +22,11 @@ def template(ctx, name, class_type, full):
     """
 
     def generate_template(n, ct):
-        resource_name = sanitized_string(n)
-        filename = f"{resource_name}{'_' + ct if ct else ''}.html"
+        filename = f"{sanitized_string(n)}{'_' + ct if ct else ''}.html"
         scope = f"{'_' + ct if ct else ''}"
 
         resource_generator(
-            resource_name,
+            n,
             package='templates',
             filename=filename,
             template=f"template{scope}.tpl",

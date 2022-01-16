@@ -135,6 +135,7 @@ def create_project(ctx, name, apps, defaults):
     """
 
     # FIXME: Handle --defaults flag
+    # FIXME: Consolidate both settings.py modules
 
     project = Directory(
         sanitized_string(name),
@@ -150,19 +151,16 @@ def create_project(ctx, name, apps, defaults):
             ]),
         ],
         files=[
-            Template('__init__.py', 'init.tpl'),
-            Template('.gitignore', 'gitignore.tpl'),
-            Template('api.py', 'api.tpl'),
-            Template('apps.py', 'apps.tpl'),
+            Template('__init__.py', '# import package modules here', raw=True),
             Template('.env', 'env.tpl'),
-            Template('app.json', 'app_json.tpl'),
+            Template('.env-example', 'env.tpl'),
+            Template('.gitignore', 'gitignore.tpl'),
             Template('Dockerfile', 'dockerfile.tpl'),
             Template('docker-compose.yml', 'docker-compose.tpl'),
             Template('docker-entrypoint.sh', 'docker-entrypoint.tpl'),
-            Template('.env-example', 'env.tpl'),
-            Template('urls.py', 'urls.tpl'),
             Template('README.md', 'README.tpl'),
             Template('Procfile', 'procfile.tpl'),
+            Template('urls.py', 'urls.tpl'),
         ],
         templates_scope="project",
     )
@@ -186,8 +184,7 @@ def create_project(ctx, name, apps, defaults):
             # Configuration should be under > project
             change_directory(project.name, **scoped_context)
 
-            for folder in project.children:
-                folder.create(template_handler, **scoped_context)
+            project.create(template_handler, create_in_cwd=True, **scoped_context)
 
         if apps:
             change_directory(project.name, **scoped_context)

@@ -48,12 +48,12 @@ def resource_generator(
     # Ensure the top-level package exists and is properly configured
     # Handle resource creation and import
 
+    # TODO: perhaps instead of changing directories, I should pass a pathname to .create_file() instead
+
     if parent:
         Directory.ensure_directory(parent, **kwargs)
         change_directory(parent, **kwargs)
-
     Directory.ensure_directory(package, **kwargs)
-
     change_directory(package, **kwargs)
 
     fh.create_file(content, filename, **kwargs)
@@ -61,9 +61,12 @@ def resource_generator(
     if kwargs.get('no_append', False):
         pass
     else:
+        default_context = {'name': name, 'module': name, 'classname': f"{classname}{scope}"}
+        default_context.update(kwargs.get('import_context', {}))
+
         content = template_handler.parsed_template(
             import_template or """from .{{name}} import {{classname}}""",
-            context=kwargs.get('import_context', {'name': name, 'module': name, 'classname': f"{classname}{scope}"}),
+            context=default_context,
             raw=import_template is None or type(import_template).__name__ == 'str'
         )
 
@@ -76,5 +79,4 @@ def resource_generator(
 
     if parent:
         change_directory('..')
-
     change_directory('..')

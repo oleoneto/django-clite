@@ -21,7 +21,7 @@ from cli.commands.generate.viewset import viewset
 @click.pass_context
 def generate(ctx, directory):
     """
-    Adds models, routes, and other resources
+    Generates code for models, forms, views, and other resources
     """
     ctx.ensure_object(dict)
 
