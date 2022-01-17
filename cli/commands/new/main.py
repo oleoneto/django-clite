@@ -140,6 +140,9 @@ def create_project(ctx, name, apps, defaults):
     project = Directory(
         sanitized_string(name),
         children=[
+            Directory('.github', files=[
+                Template('ci.yml', 'github_ci.tpl'),
+            ]),
             Directory('config', files=[
                 Template('database.py', '# database', raw=True),
                 Template('storage.py', 'storage.tpl'),
@@ -159,6 +162,7 @@ def create_project(ctx, name, apps, defaults):
             Template('docker-compose.yml', 'docker-compose.tpl'),
             Template('docker-entrypoint.sh', 'docker-entrypoint.tpl'),
             Template('README.md', 'README.tpl'),
+            Template('requirements.txt', 'requirements.tpl'),
             Template('Procfile', 'procfile.tpl'),
             Template('urls.py', 'urls.tpl'),
         ],
@@ -171,7 +175,7 @@ def create_project(ctx, name, apps, defaults):
         'dry': ctx.obj['dry'],
     }
 
-    template_handler = TemplateHandler(scope='project', **scoped_context)
+    template_handler = TemplateHandler(scope='project', context={'project': project.name}, **scoped_context)
 
     try:
         with Live(f'Creating django project [b][yellow]{project.name}') as live:

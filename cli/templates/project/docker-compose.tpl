@@ -19,7 +19,7 @@ services:
     environment:
         DJANGO_ENV: docker
     entrypoint: /docker-entrypoint.sh
-    command: gunicorn {{ project }}.wsgi:application --bind 0.0.0.0:{{ port }} --workers {{ workers }}
+    command: "gunicorn {{ project }}.wsgi:application --bind 0.0.0.0:{{ port }} --workers {{ workers }}"
     ports:
         - 8007:8000 # host:docker
     {%- if services %}
