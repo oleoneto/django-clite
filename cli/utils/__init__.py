@@ -2,7 +2,6 @@
 import os
 import click
 from cli.utils.logger import Logger
-from cli.utils.finders import find_project_files
 
 
 PREVIOUS_WORKING_DIRECTORY = '..'
@@ -67,31 +66,3 @@ def inside_app_directory(ctx, exit_on_error=False):
         raise click.Abort
 
     return False
-
-
-def wrong_place_warning(ctx):
-    try:
-        if (ctx.obj['path'] and ctx.obj['project']) is None:
-            Logger.log('PROJECT_DIRECTORY_NOT_FOUND_ERROR')
-            Logger.log('')
-            Logger.log('PROJECT_DIRECTORY_NOT_FOUND_ERROR_HELP')
-            raise click.Abort
-    except (AttributeError, KeyError) as e:
-        raise click.Abort
-
-
-def not_in_project_warning():
-    if '--help' in click.get_os_args():
-        pass
-    else:
-        path, management, file = find_project_files(os.getcwd())
-        if not management:
-            Logger.log('PROJECT_DIRECTORY_NOT_FOUND_ERROR')
-            raise click.Abort
-
-
-def ensure_directory(d):
-    try:
-        os.listdir(d)
-    except FileNotFoundError:
-        os.makedirs(d)

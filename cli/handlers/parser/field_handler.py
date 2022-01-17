@@ -3,15 +3,6 @@ import inflection
 import fileinput
 from cli.handlers.parser.fields import FieldFactory
 from cli.utils.sanitize import sanitized_string
-# from faker.providers import company, date_time, internet, misc
-# from faker import Faker
-
-
-# fake = Faker()
-# fake.add_provider(company)
-# fake.add_provider(date_time)
-# fake.add_provider(internet)
-# fake.add_provider(misc)
 
 
 def parse_fields(tokens: tuple, model: str = None):
