@@ -1,362 +1,48 @@
 import click
-from cli.helpers import add_app_package_paths_to_context
-from cli.helpers import not_an_app_directory_warning
-from cli.commands.generate.helpers import AdminHelper
-from cli.commands.generate.helpers import FixtureHelper
-from cli.commands.generate.helpers import FormHelper
-from cli.commands.generate.helpers import IndexHelper
-from cli.commands.generate.helpers import ManagerHelper
-from cli.commands.generate.helpers import ModelHelper
-from cli.commands.generate.helpers import SerializerHelper
-from cli.commands.generate.helpers import SignalHelper
-from cli.commands.generate.helpers import TemplateHelper
-from cli.commands.generate.helpers import TemplateTagHelper
-from cli.commands.generate.helpers import TestHelper
-from cli.commands.generate.helpers import ViewHelper
-from cli.commands.generate.helpers import ViewSetHelper
-from cli.commands.generate.main import SUPPORTED_VIEW_TYPES
+from cli.utils import inside_app_directory
+from cli.commands.destroy.admin import admin
+from cli.commands.destroy.fixture import fixture
+from cli.commands.destroy.form import form
+from cli.commands.destroy.manager import manager
+from cli.commands.destroy.resource import model, resource
+from cli.commands.destroy.serializer import serializer
+from cli.commands.destroy.signal import signal
+from cli.commands.destroy.template import template, templatetag
+from cli.commands.destroy.test import test
+from cli.commands.destroy.validator import validator
+from cli.commands.destroy.view import view
+from cli.commands.destroy.viewset import viewset
 
 
 @click.group()
 @click.pass_context
 def destroy(ctx):
     """
-    Removes models, serializers, and other resources
+    Removes models, forms, views, and other resources
     """
-    if not ctx.obj['dry']:
-        not_an_app_directory_warning()
 
     ctx.ensure_object(dict)
 
-    add_app_package_paths_to_context(context=ctx)
-
-
-@destroy.command()
-@click.argument('name')
-@click.option('--inline', is_flag=True, help='Destroy inline admin model')
-@click.pass_context
-def admin(ctx, name, inline):
-    """
-    Destroys an admin model or inline.
-    """
-
-    path = ctx.obj['admin']
-
-    if inline:
-        path = ctx.obj['admin_inlines']
-
-    h = AdminHelper(
-        cwd=path,
-        dry=ctx.obj['dry'],
-        force=ctx.obj['force'],
-        verbose=ctx.obj['verbose']
-    )
-
-    h.delete(model=name, inline=inline)
-
-
-@destroy.command()
-@click.argument('name')
-@click.pass_context
-def fixture(ctx, name):
-    """
-    Destroys a fixture.
-    """
-
-    path = ctx.obj.get('fixtures')
-
-    helper = FixtureHelper(
-        cwd=path,
-        dry=ctx.obj['dry'],
-        force=ctx.obj['force'],
-        verbose=ctx.obj['verbose']
-    )
-
-    helper.delete(model=name)
-
-
-@destroy.command()
-@click.argument('name', required=True)
-@click.pass_context
-def form(ctx, name):
-    """
-    Destroys a form.
-    """
-
-    path = ctx.obj['forms']
-
-    h = FormHelper(
-        cwd=path,
-        dry=ctx.obj['dry'],
-        force=ctx.obj['force'],
-        verbose=ctx.obj['verbose']
-    )
-
-    h.delete(model=name)
-
-
-@destroy.command()
-@click.argument('name', required=True)
-@click.pass_context
-def manager(ctx, name):
-    """
-    Destroys a model manager.
-    """
-
-    path = ctx.obj['managers']
-
-    h = ManagerHelper(
-        cwd=path,
-        dry=ctx.obj['dry'],
-        force=ctx.obj['force'],
-        verbose=ctx.obj['verbose']
-    )
-
-    h.delete(model=name)
-
-
-@destroy.command()
-@click.argument('name')
-@click.option('--unregister-admin', is_flag=True, help="Unregister model from the admin site.")
-@click.option('--unregister-inline', is_flag=True, help="Unregister inline model from the admin site.")
-@click.option('--test-case', is_flag=True, help="Delete TestCases for model.")
-@click.option('--full', is_flag=True, help="Delete admin, inline, and TestCase")
-@click.pass_context
-def model(ctx, name, full, unregister_admin, unregister_inline, test_case):
-    """
-    Destroys a model.
-    """
-
-    name = ModelHelper.check_noun(name)
-
-    path = ctx.obj['models']
-
-    h = ModelHelper(
-        cwd=path,
-        dry=ctx.obj['dry'],
-        force=ctx.obj['force'],
-        verbose=ctx.obj['verbose']
-    )
-
-    h.delete(model=name)
-
-    if unregister_admin or full:
-        ctx.invoke(admin, name=name)
-
-    if unregister_inline or full:
-        ctx.invoke(admin, name=name, inline=True)
-
-    if test_case or full:
-        ctx.invoke(test, name=name, scope='model')
-
-    if full:
-        ctx.invoke(form, name=name)
-        ctx.invoke(serializer, name=name)
-        ctx.invoke(test, name=name, scope='serializer')
-        ctx.invoke(template, name=name, class_type='list')
-        ctx.invoke(template, name=name, class_type='detail')
-        ctx.invoke(view, name=name, class_type="list")
-        ctx.invoke(view, name=name, class_type="detail")
-        ctx.invoke(viewset, name=name)
-
-
-@destroy.command()
-@click.argument('name')
-@click.pass_context
-def resource(ctx, name):
-    """
-    Destroys a resource and its related modules.
-    """
-
-    name = ModelHelper.check_noun(name)
-
-    if click.confirm('Are you sure you want to delete all associated files?', abort=True):
-        ctx.obj['force'] = True
-
-    ctx.invoke(admin, name=name)
-    ctx.invoke(admin, name=name, inline=True)
-
-    ctx.invoke(form, name=name)
-
-    ctx.invoke(
-        model,
-        name=name,
-        unregister_admin=True,
-        unregister_inline=True,
-        test_case=True
-    )
-
-    ctx.invoke(serializer, name=name)
-
-    ctx.invoke(view, name=name, class_type='list')
-    ctx.invoke(view, name=name, class_type='detail')
-    ctx.invoke(view, name=name)
-
-    ctx.invoke(viewset, name=name)
-
-
-@destroy.command(name='index')
-@click.argument('name')
-@click.pass_context
-def search_index(ctx, name):
-    """
-    Destroys a search index file.
-    """
-
-    path = ctx.obj['search_indexes']
-
-    helper = IndexHelper(
-        cwd=path,
-        dry=ctx.obj['dry'],
-        force=ctx.obj['force'],
-        verbose=ctx.obj['verbose'],
-    )
-
-    helper.delete(model=name)
-
-
-@destroy.command()
-@click.argument('name')
-@click.pass_context
-def serializer(ctx, name):
-    """
-    Destroys a serializer.
-    """
-
-    path = ctx.obj['serializers']
-
-    h = SerializerHelper(
-        cwd=path,
-        dry=ctx.obj['dry'],
-        force=ctx.obj['force'],
-        verbose=ctx.obj['verbose']
-    )
-
-    h.delete(model=name)
-
-    ctx.invoke(test, name=name, scope='serializer')
-
-
-@destroy.command()
-@click.argument("name", required=True)
-@click.pass_context
-def signal(ctx, name):
-    """
-    Generates a signal.
-    """
-
-    path = ctx.obj['signals']
-
-    helper = SignalHelper(
-        cwd=path,
-        dry=ctx.obj['dry'],
-        force=ctx.obj['force'],
-        verbose=ctx.obj['verbose'],
-    )
-
-    helper.delete(model=name)
-
-
-@destroy.command()
-@click.argument('name')
-@click.option("-c", "--class-type", type=click.Choice(SUPPORTED_VIEW_TYPES))
-@click.pass_context
-def view(ctx, name, class_type):
-    """
-    Destroys a view.
-    """
-
-    path = ctx.obj['views']
-
-    h = ViewHelper(
-        cwd=path,
-        dry=ctx.obj['dry'],
-        force=ctx.obj['force'],
-        verbose=ctx.obj['verbose']
-    )
-
-    ctx.invoke(template, name=name, class_type=class_type)
-
-    h.delete(model=name, class_type=class_type)
-
-
-@destroy.command()
-@click.argument('name')
-@click.pass_context
-def viewset(ctx, name):
-    """
-    Destroys a viewset.
-    """
-
-    path = ctx.obj['viewsets']
-
-    h = ViewSetHelper(
-        cwd=path,
-        dry=ctx.obj['dry'],
-        force=ctx.obj['force'],
-        verbose=ctx.obj['verbose']
-    )
-
-    h.delete(model=name)
-
-
-@destroy.command()
-@click.argument('name')
-@click.option("-c", "--class-type", type=click.Choice(SUPPORTED_VIEW_TYPES))
-@click.pass_context
-def template(ctx, name, class_type):
-    """
-    Destroys a template.
-    """
-
-    path = ctx.obj['templates']
-
-    h = TemplateHelper(
-        cwd=path,
-        dry=ctx.obj['dry'],
-        force=ctx.obj['force'],
-        verbose=ctx.obj['verbose']
-    )
-
-    h.delete(model=name, class_type=class_type)
-
-
-@destroy.command(name='tag')
-@click.argument("name", required=True)
-@click.pass_context
-def templatetag(ctx, name):
-    """
-    Destroys a template tag.
-    """
-
-    path = ctx.obj['templatetags']
-
-    helper = TemplateTagHelper(
-        cwd=path,
-        dry=ctx.obj['dry'],
-        force=ctx.obj['force'],
-        verbose=ctx.obj['verbose'],
-    )
-
-    helper.delete(model=name)
-
-
-@destroy.command()
-@click.argument('name', required=True)
-@click.option("-s", "--scope", type=click.Choice(['model', 'serializer']), required=True)
-@click.pass_context
-def test(ctx, name, scope):
-    """
-    Destroys a TestCase.
-    """
-
-    path = ctx.obj[f'{scope}s_tests']
-
-    h = TestHelper(
-        cwd=path,
-        dry=ctx.obj['dry'],
-        force=ctx.obj['force'],
-        verbose=ctx.obj['verbose']
-    )
-
-    h.delete(model=name, scope=scope)
+    if not inside_app_directory(ctx, exit_on_error=not ctx.obj['force']):
+        click.Abort()
+
+
+subcommands = [
+    admin,
+    fixture,
+    form,
+    manager,
+    model,
+    resource,
+    serializer,
+    signal,
+    template,
+    templatetag,
+    test,
+    validator,
+    view,
+    viewset,
+]
+
+for command in subcommands:
+    destroy.add_command(command)

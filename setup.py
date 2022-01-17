@@ -43,14 +43,15 @@ setup(
         'Topic :: Software Development :: Libraries :: Application Frameworks',
         'Topic :: Software Development :: Libraries :: Python Modules',
     ],
-    license="BSD",
+    license="BSD 3-Clause",
     install_requires=[
-        'Click==7.0',
+        'Click>=8.0',
         'django>=2.2.4',
         'faker>=4.1.0',
         'jinja2>=2.11.2',
         'inquirer>=2.6.3',
         'inflection>=0.4.0',
+        'rich>=10.15',
     ],
     extra_require={
         'click-repl==0.1.6',

@@ -42,8 +42,11 @@ any of which can be used in place of the another:
 ```
 D
 django-clite
-djc
 ```
+
+### Extending the CLI
+If you would like to extend the functionality of this CLI, you can include your own `plugins/commands` by
+setting an environment variable: `DJANGO_CLITE_PLUGINS`. Simply set this variable to the path where your plugins are.
 
 ## To Do
 [Check out our open issues](https://github.com/oleoneto/django-clite/issues).

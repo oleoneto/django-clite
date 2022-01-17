@@ -10,7 +10,6 @@ pycache
 A
 django_test*
 *dummy*
-file*
 ignore*
 _ignore/
 
@@ -126,3 +125,8 @@ venv.bak/
 
 # mypy
 .mypy_cache/
+
+# Node
+node_modules
+
+.DS_Store
