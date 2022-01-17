@@ -73,14 +73,14 @@ class DiscoverableGroup(click.MultiCommand):
     def get_command(self, ctx, name):
         ns = {}
         fn = os.path.join(COMMANDS_FOLDER, name, 'main.py')
-        pfn = os.path.join(PLUGINS_FOLDER, name, 'main.py')
 
         try:
-            run_command(pfn, ns)
+            run_command(fn, ns)
         except FileNotFoundError:
             try:
-                run_command(fn, ns)
-            except FileNotFoundError:
+                pfn = os.path.join(PLUGINS_FOLDER, name, 'main.py')
+                run_command(pfn, ns)
+            except FileNotFoundError or TypeError:
                 pass
 
         try:
