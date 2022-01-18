@@ -1,6 +1,6 @@
 {
   "name": "django-clite",
-  "version": "0.1.0",
+  "version": "0.16.1",
   "main": "index.js",
   "author": "Leo Neto <leo@ekletik.com>",
   "license": "BSD-3-Clause",
