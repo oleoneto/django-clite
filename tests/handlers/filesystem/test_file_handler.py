@@ -2,10 +2,13 @@ import os
 import unittest
 from pathlib import Path
 from tests import CliTestCase
+from click.testing import CliRunner
 from cli.handlers.filesystem.file_handler import FileHandler
 from cli.handlers.filesystem.template_handler import TemplateHandler
 from cli.handlers.filesystem.directory import Directory
 from cli.handlers.filesystem.template import Template
+
+runner = CliRunner()
 
 
 class FileHandlerTestCase(CliTestCase):
@@ -116,9 +119,9 @@ class FileHandlerTestCase(CliTestCase):
         self.assertEqual('./dummy/example.test.py', result)
 
     @unittest.skip('Reimplementing')
-    def test_find_file_for_nonexisting_file(self):
+    def test_find_file_for_non_existing_file(self):
         handler = FileHandler()
-        result = handler.find_file(path='./dummy', filename='nonexisting.test.py')
+        result = handler.find_file(path='./dummy', filename='non_existing.test.py')
         self.assertIs(None, result)
 
     # TODO: Need to test Click file creation in isolated filesystems
@@ -134,9 +137,9 @@ class FileHandlerTestCase(CliTestCase):
 
     # TODO: Need to test Click file creation in isolated filesystems
     @unittest.skip('Reimplementing')
-    def test_find_files_for_nonexisting_files(self):
+    def test_find_files_for_non_existing_files(self):
         handler = FileHandler()
-        result = handler.find_files(path='./dummy', patterns=['nonexisting.test.py', 'nonexisting.test.rb'])
+        result = handler.find_files(path='./dummy', patterns=['non_existing.test.py', 'non_existing.test.rb'])
         self.assertEqual(0, len(result))
         self.assertDictEqual({}, result)
 
