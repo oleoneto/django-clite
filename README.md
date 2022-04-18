@@ -45,7 +45,7 @@ django-clite
 ```
 
 ### Extending the CLI
-If you would like to extend the functionality of this CLI, you can include your own `plugins/commands` by
+If you would like to extend the functionality of this CLI, you can include your own `plugins` or `commands` by
 setting an environment variable: `DJANGO_CLITE_PLUGINS`. Simply set this variable to the path where your plugins are.
 
 ## To Do
