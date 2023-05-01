@@ -14,6 +14,8 @@ class AliasedAndDiscoverableGroup(DiscoverableGroup):
 
         if not matches:
             return None
-        elif len(matches) == 1:
-            return self.__get_command(ctx, matches[0])
-        ctx.fail('Too many matches: %s' % ', '.join(sorted(matches)))
+
+        if len(matches) != 1:
+            raise ctx.fail('Too many matches: %s' % ', '.join(sorted(matches)))
+
+        return self.__get_command(ctx, matches[0])

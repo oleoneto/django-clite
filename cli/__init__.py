@@ -5,10 +5,10 @@
 from __future__ import unicode_literals
 import os
 
-__version__ = '0.16.1'
+__version__ = '1.0.0'
 __license__ = 'BSD 3-Clause'
 __author__ = 'Leo Neto'
-__copyright__ = 'Copyright 2019 Leo Neto'
+__copyright__ = 'Copyright 2019-2023 Leo Neto'
 
 COMMANDS_FOLDER = os.path.join(os.path.dirname(__file__), 'commands')
 

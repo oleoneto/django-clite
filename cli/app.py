@@ -23,14 +23,6 @@ def cli(ctx, dry, force, verbose, debug):
     you are free to bypass conventions of the CLI if you so choose.
     """
 
-    ctx.ensure_object(dict)
-
-    ctx.obj['dry'] = dry
-    ctx.obj['force'] = force
-    ctx.obj['verbose'] = verbose
-    ctx.obj['debug'] = debug
-    ctx.obj['project_files'] = FileHandler.find_files(path=os.getcwd(), patterns=['manage.py', 'wsgi.py', 'apps.py'])
-
     # Note for contributors:
     #
     # Commands are auto-discovered if they are placed under the commands directory.
@@ -45,6 +37,14 @@ def cli(ctx, dry, force, verbose, debug):
     #   If you would like to skip a plugin/command from being auto-discovered,
     #   simply rename the package by either prepending or appending any number of underscores (_).
     #   Any code contained within the package will be ignored.
+
+    ctx.ensure_object(dict)
+
+    ctx.obj['dry'] = dry
+    ctx.obj['force'] = force
+    ctx.obj['verbose'] = verbose
+    ctx.obj['debug'] = debug
+    ctx.obj['project_files'] = FileHandler.find_files(path=os.getcwd(), patterns=['manage.py', 'wsgi.py', 'apps.py'])
 
 
 if __name__ == '__main__':

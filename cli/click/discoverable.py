@@ -1,9 +1,9 @@
 import click
 import os
-from cli import COMMANDS_FOLDER, PLUGINS_FOLDER
+from v1 import COMMANDS_FOLDER, PLUGINS_FOLDER
 
 
-def run_command(command, ns):
+def execute_command(command, ns):
     with open(command) as f:
         code = compile(f.read(), command, 'exec')
         eval(code, ns, ns)
@@ -12,18 +12,18 @@ def run_command(command, ns):
 class DiscoverableGroup(click.MultiCommand):
     """
     Adds support for auto-discoverable commands/plugins
-    """
 
-    # Commands are auto-discovered if they are placed under the COMMAND_FOLDER.
-    #
-    # But please be sure to do the following for this to work:
-    #   1. Name your package and click command the same.
-    #   2. Place your command definition within your package's main.py module
-    #   3. Any sub-commands of your command should be added to the top-most command in the package's main.py module.
-    #
-    #   If you would like to skip a plugin/command from being auto-discovered,
-    #   simply rename the package by either prepending or appending any number of underscores (_).
-    #   Any code contained within the package will be ignored.
+    Commands are auto-discovered if they are placed under the COMMAND_FOLDER.
+
+    But please be sure to do the following for this to work:
+      1. Name your package and click command the same.
+      2. Place your command definition within your package's main.py module
+      3. Any sub-commands of your command should be added to the top-most command in the package's main.py module.
+
+      If you would like to skip a plugin/command from being auto-discovered,
+      simply rename the package by either prepending or appending any number of underscores (_).
+      Any code contained within the package will be ignored.
+    """
 
     COMMAND_PATHS = [COMMANDS_FOLDER]
 
@@ -75,11 +75,11 @@ class DiscoverableGroup(click.MultiCommand):
         fn = os.path.join(COMMANDS_FOLDER, name, 'main.py')
 
         try:
-            run_command(fn, ns)
+            execute_command(fn, ns)
         except FileNotFoundError:
             try:
                 pfn = os.path.join(PLUGINS_FOLDER, name, 'main.py')
-                run_command(pfn, ns)
+                execute_command(pfn, ns)
             except FileNotFoundError or TypeError:
                 pass
 
