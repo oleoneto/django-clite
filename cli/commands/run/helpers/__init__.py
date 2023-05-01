@@ -2,7 +2,7 @@
 import os
 import re
 import subprocess
-from cli.utils.logger import Logger
+from cli.logger import logger
 
 
 DEFAULT_RUNSERVER_PLUS_COMMAND = ['python3', 'manage.py', 'runserver_plus', '8000']
@@ -106,12 +106,12 @@ def __copy_env(env_file, destination, project_name=None, dokku=True):
 
 def copy_dokku(env_file, destination, project_name):
     __copy_env(env_file, destination, project_name)
-    Logger.log('Exported environment to .env-dokku')
+    logger.log('Exported environment to .env-dokku')
 
 
 def copy_example(env_file, destination):
     __copy_env(env_file, destination, dokku=False)
-    Logger.log('Exported environment to .env-example')
+    logger.log('Exported environment to .env-example')
 
 
 # ...
@@ -152,13 +152,13 @@ def run_copy_environment(**kwargs):
         f = open(env_file)
         f.close()
     except FileNotFoundError:
-        Logger.error("No environment file found.")
+        logger.error("No environment file found.")
         raise
 
     destination = kwargs['destination']
 
     if kwargs['no_dokku'] and kwargs['no_example']:
-        Logger.error('Nothing to export. Skipping...')
+        logger.error('Nothing to export. Skipping...')
         raise
 
     if not kwargs['no_example']:

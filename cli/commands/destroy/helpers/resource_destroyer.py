@@ -4,7 +4,7 @@ from cli.handlers.filesystem.file_handler import FileHandler
 from cli.handlers.filesystem.template_handler import ResourceTemplateHandler
 from cli.utils import change_directory
 from cli.utils.sanitize import sanitized_string
-from cli.utils.logger import Logger
+from cli.logger import logger
 
 
 def resource_destroyer(
@@ -39,7 +39,7 @@ def resource_destroyer(
             change_directory(parent, **kwargs)
         change_directory(package, **kwargs)
     except FileNotFoundError:
-        Logger.log(f'File or directory {parent or package} does not exit.')
+        logger.log(f'File or directory {parent or package} does not exit.')
         return
 
     # FIXME: delete files

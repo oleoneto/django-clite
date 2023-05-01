@@ -1,7 +1,7 @@
 # Base image
-FROM python:3.7-alpine
+FROM python:3.11-alpine
 
-MAINTAINER Leo Neto
+LABEL MAINTAINER="Leo Neto"
 
 # Working directory
 WORKDIR /app
@@ -17,4 +17,4 @@ COPY . .
 # Install dependencies
 RUN apk add gcc musl-dev linux-headers && pip install -e .
 
-ENTRYPOINT ['D']
+ENTRYPOINT ["D"]

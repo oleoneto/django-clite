@@ -1,6 +1,6 @@
 import click
 import inflection
-from cli.utils.logger import Logger
+from cli.logger import logger
 from cli.utils.sanitize import sanitized_string_callback
 from cli.commands.destroy.helpers.resource_destroyer import resource_destroyer
 from cli.commands.destroy.admin import admin as admin_
@@ -33,7 +33,7 @@ def model(ctx, name, api, full, admin, fixtures, form, serializers, templates, t
 
     # Ensure --api and --full are not used simultaneously
     if api and full:
-        Logger.log("Flags [b]--api[/b] and [b]--full[/b] cannot be used simultaneously.")
+        logger.log("Flags [b]--api[/b] and [b]--full[/b] cannot be used simultaneously.")
         raise click.Abort
 
     resource_destroyer(
@@ -92,6 +92,6 @@ def resource(ctx, name, api):
     try:
         ctx.invoke(model, name=name, api=api, full=not api)
     except (KeyboardInterrupt, SystemExit) as error:
-        Logger.error(f'Exited! {error}')
+        logger.error(f'Exited! {error}')
 
 

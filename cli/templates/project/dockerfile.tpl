@@ -18,7 +18,7 @@ COPY docker-entrypoint.sh /docker-entrypoint.sh
 RUN apt-get update \
     && apt-get install -y \
     swig libssl-dev dpkg-dev \
-    && pip install -U pip pipenv gunicorn Faker \
+    && pip install -U pip pipenv gunicorn \
     && pipenv lock --requirements > requirements.txt \
     && pip install -r requirements.txt \
     && chmod +x /docker-entrypoint.sh

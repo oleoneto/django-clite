@@ -1,7 +1,7 @@
 import glob
 import os
 from pathlib import Path
-from cli.utils.logger import Logger
+from cli.logger import logger
 from cli.utils import change_directory, make_directory
 from cli.handlers.generic_handler import GenericHandler
 
@@ -23,7 +23,7 @@ class FileHandler(GenericHandler):
         dry = kwargs.get('dry', self.dry)
 
         if dry:
-            Logger.log(message, dry=dry)
+            logger.log(message, dry=dry)
             return self.messages['append_skipped']
 
         try:
@@ -37,13 +37,13 @@ class FileHandler(GenericHandler):
             with open(filename, mode='a') as file:
                 file.write(f"{content}\n")
         except FileNotFoundError:
-            Logger.log(f"File {filename} does not exist.")
+            logger.log(f"File {filename} does not exist.")
             return self.errors['file_does_not_exist']
         except ContentDuplicationError:
-            Logger.log(f"Skipped appending due to content duplication", is_visible=kwargs.get('verbose', self.verbose))
+            logger.log(f"Skipped appending due to content duplication", is_visible=kwargs.get('verbose', self.verbose))
             return self.messages['append_skipped']
 
-        Logger.log(message, is_visible=kwargs.get('verbose', self.verbose))
+        logger.log(message, is_visible=kwargs.get('verbose', self.verbose))
         return self.messages['appended']
 
     def remove_line_from_file(self, content, filename, **kwargs):
@@ -52,7 +52,7 @@ class FileHandler(GenericHandler):
         dry = kwargs.get('dry', self.dry)
 
         if dry:
-            Logger.log(message, dry=dry)
+            logger.log(message, dry=dry)
             return self.messages['skipped_un_appended']
 
         try:
@@ -68,10 +68,10 @@ class FileHandler(GenericHandler):
             file.writelines(lines)
             file.close()
         except FileNotFoundError:
-            Logger.log(f"File {filename} does not exist.")
+            logger.log(f"File {filename} does not exist.")
             return self.errors['file_does_not_exist']
 
-        Logger.log(message, is_visible=kwargs.get('verbose', self.verbose))
+        logger.log(message, is_visible=kwargs.get('verbose', self.verbose))
         return self.messages['un_appended']
 
     # File Creation
@@ -82,7 +82,7 @@ class FileHandler(GenericHandler):
         dry = kwargs.get('dry', self.dry)
 
         if dry:
-            Logger.log(message, dry=dry)
+            logger.log(message, dry=dry)
             return self.messages['create_skipped']
 
         try:
@@ -97,7 +97,7 @@ class FileHandler(GenericHandler):
                 return self.messages['created']
             return self.errors['file_exists']
 
-        Logger.log(message, is_visible=kwargs.get('verbose', self.verbose))
+        logger.log(message, is_visible=kwargs.get('verbose', self.verbose))
         return self.messages['created']
 
     # File destruction
@@ -108,7 +108,7 @@ class FileHandler(GenericHandler):
         dry = kwargs.get('dry', self.dry)
 
         if dry:
-            Logger.log(message, dry=dry)
+            logger.log(message, dry=dry)
             return self.messages['delete_skipped']
 
         # TODO: Handle forceful removal
@@ -117,10 +117,10 @@ class FileHandler(GenericHandler):
             change_directory(path)
             os.remove(filename)
         except FileNotFoundError:
-            Logger.log(f"File {filename} does not exist.")
+            logger.log(f"File {filename} does not exist.")
             return self.errors['file_does_not_exist']
 
-        Logger.log(message, is_visible=kwargs.get('verbose', self.verbose))
+        logger.log(message, is_visible=kwargs.get('verbose', self.verbose))
         return self.messages['deleted']
 
     # Directory creation

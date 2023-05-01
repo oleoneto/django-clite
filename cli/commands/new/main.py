@@ -5,7 +5,7 @@ from pathlib import PosixPath
 from rich.live import Live
 from rich.prompt import Confirm
 from rich import print as rich_print
-from cli.utils.logger import Logger
+from cli.logger import logger
 from cli.utils.sanitize import sanitized_string
 from cli.utils import change_directory, inside_project_directory
 from cli.handlers.filesystem import FileHandler, GitHandler, TemplateHandler
@@ -183,7 +183,7 @@ def create_project(ctx, name, apps, defaults):
                 if not ctx.obj['dry']:
                     subprocess.check_output(['django-admin', 'startproject', project.name])
             except subprocess.CalledProcessError as error:
-                return Logger.error(error.__str__())
+                return logger.error(error.__str__())
 
             # Configuration should be under > project
             change_directory(project.name, **scoped_context)
@@ -200,9 +200,9 @@ def create_project(ctx, name, apps, defaults):
         # Initialize git repository
         GitHandler.initialize(**scoped_context)
 
-        Logger.log(f'Successfully created django project [b][yellow]{project.name}')
+        logger.log(f'Successfully created django project [b][yellow]{project.name}')
     except (KeyboardInterrupt, SystemExit, Exception) as error:
-        Logger.error(f'An exception occurred while creating this project: [b]{repr(error.__str__())}\n')
+        logger.error(f'An exception occurred while creating this project: [b]{repr(error.__str__())}\n')
 
 
 @new.command(name='apps')
@@ -266,9 +266,9 @@ def create_applications(ctx, apps, directory):
             app.create(template_handler, **scoped_context)
 
             if scoped_context['verbose']:
-                Logger.log(f"Successfully created created app [b]{app.name}[/b] with the following structure:")
+                logger.log(f"Successfully created created app [b]{app.name}[/b] with the following structure:")
                 rich_print(app.traverse(show_files=False))
             else:
-                Logger.log(f"Successfully created app [b]{app.name}")
+                logger.log(f"Successfully created app [b]{app.name}")
     except (KeyboardInterrupt, SystemExit, Exception) as error:
-        Logger.error(repr(error))
+        logger.error(repr(error))

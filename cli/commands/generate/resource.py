@@ -1,6 +1,6 @@
 import click
 import inflection
-from cli.utils.logger import Logger
+from cli.logger import logger
 from cli.utils.sanitize import sanitized_string, sanitized_string_callback
 from cli.utils.sanitize import check_noun_inflection
 from cli.handlers.parser.field_handler import parse_fields
@@ -21,7 +21,7 @@ def fields_callback(ctx, _, value):
         fields, import_list = parse_fields(value, model=ctx.params['name'])
         return fields, import_list
     except FieldParsingError as error:
-        Logger.error(error)
+        logger.error(error)
         raise click.Abort()
 
 
@@ -62,7 +62,7 @@ def model(ctx, name, fields, abstract, api, full, admin, fixtures, form, seriali
 
     # Ensure --api and --full are not used simultaneously
     if api and full:
-        Logger.log("Flags [b]--api[/b] and [b]--full[/b] cannot be used simultaneously.")
+        logger.log("Flags [b]--api[/b] and [b]--full[/b] cannot be used simultaneously.")
         raise click.Abort
 
     parsed_fields, import_list = fields
@@ -143,4 +143,4 @@ def resource(ctx, name, fields, api):
     try:
         ctx.invoke(model, name=name, fields=fields, api=api, full=not api)
     except (KeyboardInterrupt, SystemExit) as error:
-        Logger.error(f'Exited! {error}')
+        logger.error(f'Exited! {error}')

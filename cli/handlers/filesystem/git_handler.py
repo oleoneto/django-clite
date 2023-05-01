@@ -1,5 +1,5 @@
 import subprocess
-from cli.utils.logger import Logger
+from cli.logger import logger
 from cli.handlers.generic_handler import GenericHandler
 
 
@@ -10,23 +10,23 @@ class GitHandler(GenericHandler):
         verbose = kwargs.get('verbose', cls.verbose)
 
         if dry:
-            Logger.log("Skipping initialization of repository", is_visible=verbose)
+            logger.log("Skipping initialization of repository", is_visible=verbose)
             return False
 
         try:
             subprocess.check_output(['git', 'init'])
             subprocess.check_output(['git', 'add', '--all'])
             subprocess.check_output(['git', 'commit', '-m', 'Initial commit'])
-            Logger.log('Successfully initialized git repository')
+            logger.log('Successfully initialized git repository')
             return True
         except subprocess.CalledProcessError as error:
-            Logger.log(repr(error))
+            logger.log(repr(error))
 
         if origin:
             try:
                 subprocess.check_output(['git', 'remote', 'add', 'origin', origin])
-                Logger.log(f'Successfully added origin {origin}', is_visible=cls.verbose)
+                logger.log(f'Successfully added origin {origin}', is_visible=cls.verbose)
             except subprocess.CalledProcessError as error:
-                Logger.log(repr(error))
+                logger.log(repr(error))
 
         return True

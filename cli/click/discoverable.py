@@ -1,6 +1,6 @@
 import click
 import os
-from v1 import COMMANDS_FOLDER, PLUGINS_FOLDER
+from cli import COMMANDS_FOLDER, PLUGINS_FOLDER
 
 
 def execute_command(command, ns):

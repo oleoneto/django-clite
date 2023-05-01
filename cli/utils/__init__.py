@@ -1,7 +1,7 @@
 # cli:utils
 import os
 import click
-from cli.utils.logger import Logger
+from cli.logger import logger
 
 
 PREVIOUS_WORKING_DIRECTORY = '..'
@@ -12,7 +12,7 @@ PREVIOUS_WORKING_DIRECTORY = '..'
 def change_directory(directory, **kwargs):
     message = f"Change to directory [b]{directory}"
 
-    Logger.log(message, is_visible=kwargs.get('verbose', None), **kwargs)
+    logger.log(message, is_visible=kwargs.get('verbose', None), **kwargs)
 
     if kwargs.get('dry', None):
         return False
@@ -24,7 +24,7 @@ def change_directory(directory, **kwargs):
 def make_directory(directory, **kwargs):
     message = f"Create directory [b]{directory}"
 
-    Logger.log(message, is_visible=kwargs.get('verbose', None), **kwargs)
+    logger.log(message, is_visible=kwargs.get('verbose', None), **kwargs)
 
     if kwargs.get('dry', None):
         return False
@@ -47,7 +47,7 @@ def inside_project_directory(ctx, exit_on_error=False):
         if ctx.obj['project_files'].get(file, None):
             return True
 
-    Logger.error('Unable to locate project files.\nTry running this command at the top level of your project directory.')
+    logger.error('Unable to locate project files.\nTry running this command at the top level of your project directory.')
     if exit_on_error:
         raise click.Abort
 
@@ -61,7 +61,7 @@ def inside_app_directory(ctx, exit_on_error=False):
         if ctx.obj['project_files'].get(file, None):
             return True
 
-    Logger.error('Not inside an app directory')
+    logger.error('Not inside an app directory')
     if exit_on_error:
         raise click.Abort
 

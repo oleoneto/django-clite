@@ -9,20 +9,14 @@ A CLI tool that handles creating and managing Django projects
 ![PyPI - Downloads](https://img.shields.io/pypi/dm/django-clite)
 
 
-- [Introduction](#django-clite)
-- [Interactive Docs](#interactive-docs)
-- [Dependencies](#dependencies)
-- [Installation](#installation)
-- [To Do](#to-do)
-- [Pull requests](#pull-requests)
-- [LICENSE](#license)
-
-## Interactive Docs
-In order to maintain consistency in our documentation of all the different commands and features of the CLI,
- we've decided to move the [README](docs/cli/readme.ipynb) to a series of Jupyter notebooks which you can explore per command under the [docs](docs) directory.
-
-## Dependencies
-Check out [setup.py](setup.py) for all installation dependencies.
+- [django-clite](#django-clite)
+  - [Installation](#installation)
+    - [Extending the CLI](#extending-the-cli)
+  - [Dependencies](#dependencies)
+  - [Interactive Docs](#interactive-docs)
+  - [To Do](#to-do)
+  - [Pull requests](#pull-requests)
+  - [LICENSE](#license)
 
 ## Installation
 Install via [pip](https://pypi.org/project/django-clite/):
@@ -32,21 +26,26 @@ pip install django-clite
 
 Install from source:
 ```
-git clone https://bitbucket.org/oleoneto/django-clite.git
+git clone https://github.com/oleoneto/django-clite.git
 cd django-clite
 pip install .
 ```
 
-After installation, the CLI will expose the binary with three names,
-any of which can be used in place of the another:
+After installation, the CLI will expose the binary with the name:
 ```
-D
 django-clite
 ```
 
 ### Extending the CLI
 If you would like to extend the functionality of this CLI, you can include your own `plugins/commands` by
 setting an environment variable: `DJANGO_CLITE_PLUGINS`. Simply set this variable to the path where your plugins are.
+
+## Dependencies
+Check out [setup.py](setup.py) for all installation dependencies.
+
+## Interactive Docs
+In order to maintain consistency in our documentation of all the different commands and features of the CLI,
+ we've decided to move the [README](docs/cli/readme.ipynb) to a series of Jupyter notebooks which you can explore per command under the [docs](docs) directory.
 
 ## To Do
 [Check out our open issues](https://github.com/oleoneto/django-clite/issues).
