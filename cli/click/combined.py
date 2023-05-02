@@ -16,6 +16,6 @@ class AliasedAndDiscoverableGroup(DiscoverableGroup):
             return None
 
         if len(matches) != 1:
-            raise ctx.fail('Too many matches: %s' % ', '.join(sorted(matches)))
+            raise ctx.fail("Too many matches: %s" % ", ".join(sorted(matches)))
 
         return self.__get_command(ctx, matches[0])

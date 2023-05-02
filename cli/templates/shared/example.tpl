@@ -1,1 +1,0 @@
-Shared template at: {{ path }}

@@ -5,7 +5,7 @@ from cli import COMMANDS_FOLDER, PLUGINS_FOLDER
 
 def execute_command(command, ns):
     with open(command) as f:
-        code = compile(f.read(), command, 'exec')
+        code = compile(f.read(), command, "exec")
         eval(code, ns, ns)
 
 
@@ -36,8 +36,11 @@ class DiscoverableGroup(click.MultiCommand):
         # Core commands + plugins
         for path in self.COMMAND_PATHS:
             c = {
-                command_path.rsplit('/', 1)[-1]: command_path  # command_name: command_path
-                for command_path, _, files in os.walk(path) if 'main.py' in files
+                command_path.rsplit("/", 1)[
+                    -1
+                ]: command_path  # command_name: command_path
+                for command_path, _, files in os.walk(path)
+                if "main.py" in files
             }
 
             commands.update(c)
@@ -61,10 +64,11 @@ class DiscoverableGroup(click.MultiCommand):
         """
 
         for func, path in commands.items():
-
             # Skip packages beginning or ending in underscores (_)
-            command = path.split('/')[-1]
-            if command not in rv and not (command.startswith('_') or command.endswith('_')):
+            command = path.split("/")[-1]
+            if command not in rv and not (
+                command.startswith("_") or command.endswith("_")
+            ):
                 rv.append(func)
 
         rv.sort()
@@ -72,13 +76,13 @@ class DiscoverableGroup(click.MultiCommand):
 
     def get_command(self, ctx, name):
         ns = {}
-        fn = os.path.join(COMMANDS_FOLDER, name, 'main.py')
+        fn = os.path.join(COMMANDS_FOLDER, name, "main.py")
 
         try:
             execute_command(fn, ns)
         except FileNotFoundError:
             try:
-                pfn = os.path.join(PLUGINS_FOLDER, name, 'main.py')
+                pfn = os.path.join(PLUGINS_FOLDER, name, "main.py")
                 execute_command(pfn, ns)
             except FileNotFoundError or TypeError:
                 pass

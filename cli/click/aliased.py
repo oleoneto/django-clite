@@ -12,12 +12,14 @@ class AliasedGroup(click.Group):
         if rv is not None:
             return rv
 
-        matches = [match for match in self.list_commands(ctx) if match.startswith(cmd_name)]
+        matches = [
+            match for match in self.list_commands(ctx) if match.startswith(cmd_name)
+        ]
 
         if not matches:
             return None
 
         if len(matches) != 1:
-            raise ctx.fail('Too many matches: %s' % ', '.join(sorted(matches)))
+            raise ctx.fail("Too many matches: %s" % ", ".join(sorted(matches)))
 
         return click.Group.get_command(self, ctx, matches[0])

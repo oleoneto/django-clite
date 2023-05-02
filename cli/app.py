@@ -1,18 +1,30 @@
 import os
-
 import click
+from pathlib import Path
 from cli.click import AliasedAndDiscoverableGroup
-from cli.handlers.filesystem import FileHandler
+from cli.core import FS
+from cli import VERSION
+
+
+django_files = FS.find(
+    path=Path(os.getcwd()),
+    patterns=[
+        "apps.py",
+        "asgi.py",
+        "manage.py",
+        "wsgi.py",
+    ],
+)
 
 
 @click.command(cls=AliasedAndDiscoverableGroup)
-@click.option('--dry', is_flag=True, help="Display output without creating files.")
-@click.option('-f', '--force', is_flag=True, help="Override any conflicting files.")
-@click.option('--verbose', is_flag=True, help="Run in verbose mode.")
-@click.option('--debug', is_flag=True, help="Run in debug mode.")
-@click.version_option()
+@click.option("--debug", is_flag=True, help="Enable debug logs.")
+@click.option("--dry", is_flag=True, help="Do not modify the file system.")
+@click.option("-f", "--force", is_flag=True, help="Override any conflicting files.")
+@click.option("--verbose", is_flag=True, help="Enable verbosity.")
+@click.version_option(version=VERSION)
 @click.pass_context
-def cli(ctx, dry, force, verbose, debug):
+def cli(ctx, debug, dry, force, verbose):
     """
     django-clite by Leo Neto
 
@@ -40,15 +52,15 @@ def cli(ctx, dry, force, verbose, debug):
 
     ctx.ensure_object(dict)
 
-    ctx.obj['dry'] = dry
-    ctx.obj['force'] = force
-    ctx.obj['verbose'] = verbose
-    ctx.obj['debug'] = debug
-    ctx.obj['project_files'] = FileHandler.find_files(path=os.getcwd(), patterns=['manage.py', 'wsgi.py', 'apps.py'])
+    ctx.obj["dry"] = dry
+    ctx.obj["force"] = force
+    ctx.obj["enable_verbosity"] = verbose
+    ctx.obj["enable_debug"] = debug
+    ctx.obj["django_files"] = django_files
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     try:
         cli()
     except (KeyboardInterrupt, SystemExit) as e:
-        click.echo(f'Exited! {repr(e)}')
+        click.echo(f"Exited! {repr(e)}")
