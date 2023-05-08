@@ -1,20 +1,22 @@
 import os
+import logging
 import click
 from pathlib import Path
 from cli.click import AliasedAndDiscoverableGroup
-from cli.core import FS
 from cli import VERSION
-
-
-django_files = FS.find(
-    path=Path(os.getcwd()),
-    patterns=[
-        "apps.py",
-        "asgi.py",
-        "manage.py",
-        "wsgi.py",
-    ],
+from cli.core.filesystem import FS, NullFS
+from cli.constants import (
+    CLI_NAME_KEY,
+    DJANGO_FILES_KEY,
+    ENABLE_DRY_RUN_KEY,
+    ENABLE_DEBUG_KEY,
+    ENABLE_FORCE_KEY,
+    ENABLE_VERBOSITY_KEY,
+    FILE_SYSTEM_HANDLER,
+    FILE_SYSTEM_HANDLER_KEY,
 )
+
+from cli.logger import logger
 
 
 @click.command(cls=AliasedAndDiscoverableGroup)
@@ -52,11 +54,30 @@ def cli(ctx, debug, dry, force, verbose):
 
     ctx.ensure_object(dict)
 
-    ctx.obj["dry"] = dry
-    ctx.obj["force"] = force
-    ctx.obj["enable_verbosity"] = verbose
-    ctx.obj["enable_debug"] = debug
-    ctx.obj["django_files"] = django_files
+    if verbose:
+        logger.setLevel(logging.DEBUG)
+
+    if dry:
+        FILE_SYSTEM_HANDLER = NullFS
+    else:
+        FILE_SYSTEM_HANDLER = FS
+
+    django_files = FILE_SYSTEM_HANDLER.find(
+        path=Path(os.getcwd()),
+        patterns=[
+            "apps.py",
+            "asgi.py",
+            "manage.py",
+            "wsgi.py",
+        ],
+    )
+
+    ctx.obj[DJANGO_FILES_KEY] = django_files
+    ctx.obj[ENABLE_DEBUG_KEY] = debug
+    ctx.obj[ENABLE_DRY_RUN_KEY] = dry
+    ctx.obj[ENABLE_FORCE_KEY] = force
+    ctx.obj[ENABLE_VERBOSITY_KEY] = verbose
+    ctx.obj[FILE_SYSTEM_HANDLER_KEY] = FILE_SYSTEM_HANDLER
 
 
 if __name__ == "__main__":

@@ -1,47 +1,7 @@
-# cli:core
+# cli:core:filesystem
 import os
-from rich.tree import Tree
-from typing import Protocol
 from pathlib import Path
-
-
-class Reader(Protocol):
-    def read(self, fd: int, length: int) -> bytes:
-        ...
-
-    def open(self, path: Path, flags: int, mode: int = ...) -> int:
-        ...
-
-    def close(self, fd: int):
-        ...
-
-    def getcwd(self) -> str:
-        ...
-
-    def find(self, path: Path, patterns: list[str]) -> dict:
-        ...
-
-
-class Writer(Protocol):
-    def write(self, fd: int, data: bytes) -> int:
-        ...
-
-    def remove(self, name: str) -> bool:
-        ...
-
-    def create_directory(self, name: str) -> bool:
-        ...
-
-    def create_file(self, name: str, content: bytes) -> bool:
-        ...
-
-
-class FileHandler(Protocol):
-    def pop_line(self, filename: str, content: str) -> bool:
-        ...
-
-    def add_line(self, filename: str, content: bytes, prevent_duplicates: bool) -> bool:
-        ...
+from .protocols import Reader, Writer, FileHandler
 
 
 class FS(Reader, Writer, FileHandler):
@@ -165,53 +125,57 @@ class FS(Reader, Writer, FileHandler):
         return success
 
 
-class File:
-    def __init__(self, name: str, content: bytes):
-        self._name = name
-        self._content = content
+class NullFS(Reader, Writer, FileHandler):
+    # --------------------------
+    # Implements Reader Protocol
 
-    @property
-    def name(self) -> str:
-        return self._name
+    @classmethod
+    def read(cls, fd: int, length: int) -> bytes:
+        return b""
 
-    @property
-    def content(self) -> bytes:
-        return self._content
+    @classmethod
+    def close(cls, fd: int):
+        return None
 
+    @classmethod
+    def open(cls, path: Path, flags: int, mode: int) -> int:
+        return -1
 
-class Directory:
-    def __init__(self, name, children=list, files=list[File]):
-        self.name = name
-        self._children = children
-        self._files = files
+    @classmethod
+    def getcwd(cls) -> str:
+        return os.getcwd()
 
-    def traverse(self, hide_files: bool = False, **kwargs):
-        tree = Tree(self.name)
+    @classmethod
+    def find(cls, path: Path, patterns: list[str]) -> dict:
+        matches = dict()
+        return matches
 
-        if not hide_files:
-            for file in self.files:
-                tree.add(file.filename)
+    # --------------------------
+    # Implements Writer Protocol
 
-        for child in self.children:
-            child_tree = child.traverse(**kwargs)
-            tree.add(child_tree)
+    @classmethod
+    def write(cls, fd, data) -> int:
+        return -1
 
-        return tree
+    @classmethod
+    def remove(cls, name: str) -> bool:
+        return True
 
-    def add_children(self, children: list, **kwargs):
-        for child in children:
-            if not type(child) == type(self):
-                child = Directory(name=child)
-            self._children.append(child)
+    @classmethod
+    def create_directory(cls, name: str) -> bool:
+        return True
 
-    def add_files(self, files: list[File], **kwargs):
-        for file in files:
-            self._files.append(file)
+    @classmethod
+    def create_file(cls, name: str, content: bytes) -> bool:
+        return True
 
-    @property
-    def children(self) -> list:
-        return self._children
+    # ----------------------
+    # Implements FileHandler
 
-    @property
-    def files(self) -> list[File]:
-        return self._files
+    @classmethod
+    def add_line(cls, filename, content, prevent_duplicates: bool = True) -> bool:
+        return True
+
+    @classmethod
+    def pop_line(cls, filename, content) -> bool:
+        return True
