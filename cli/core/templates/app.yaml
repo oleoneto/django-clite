@@ -1,0 +1,16 @@
+app:
+	name: &name
+	folders:
+	- admin
+	- fixtures
+	- forms
+	- middleware
+	- migrations
+	- models
+	- serializers
+	- templates
+	- views
+	- viewsets
+	files:
+	- apps.py
+	- urls.py

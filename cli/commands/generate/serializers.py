@@ -1,8 +1,8 @@
 import click
 import logging
 from cli.utils import sanitized_string_callback
-from cli.core.filesystem import File
-from cli.constants import FILE_SYSTEM_HANDLER_KEY
+from cli.core.filesystem import File, FileSystem
+from cli.core.templates import TemplateParser
 from cli.logger import logger
 
 
@@ -20,10 +20,16 @@ def serializer(ctx, name):
     file = File(
         path=f"serializers/{name}.py",
         template="serializer.tpl",
-        content=None,
-        context={},
+        context={
+            "name": name,
+            # TODO: Add model
+            # TODO: Add ClassName
+        },
     )
 
-    handler = ctx.obj[FILE_SYSTEM_HANDLER_KEY]
-
-    # TODO: TemplateHandler
+    FileSystem().create_file(
+        file=file,
+        content=TemplateParser().parse_file(
+            filepath=file.template, variables=file.context
+        ),
+    )

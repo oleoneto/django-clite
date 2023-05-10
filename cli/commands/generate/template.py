@@ -1,8 +1,8 @@
 import click
 import logging
 from cli.utils import sanitized_string, sanitized_string_callback
-from cli.core.filesystem import File
-from cli.constants import FILE_SYSTEM_HANDLER_KEY
+from cli.core.filesystem import File, FileSystem
+from cli.core.templates import TemplateParser
 from cli.logger import logger
 
 SUPPORTED_CLASSES = [
@@ -23,18 +23,18 @@ def template(ctx, name, klass, full):
     Generate an html template.
     """
 
-    handler = ctx.obj[FILE_SYSTEM_HANDLER_KEY]
-
     klasses = SUPPORTED_CLASSES if full else [klass]
 
-    files = [
-        File(
+    for k in klasses:
+        file = File(
             path=f"templates/{sanitized_string(name)}{'_' + k if k else ''}.html",
             template=f"templates/{k if k else 'template'}.tpl",
-            content=None,
             context={},
         )
-        for k in klasses
-    ]
 
-    # TODO: TemplateHandler
+        FileSystem().create_file(
+            file=file,
+            content=TemplateParser().parse_file(
+                filepath=file.template, variables=file.context
+            ),
+        )

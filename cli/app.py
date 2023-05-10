@@ -4,7 +4,8 @@ import click
 from pathlib import Path
 from cli.click import AliasedAndDiscoverableGroup
 from cli import VERSION
-from cli.core.filesystem import FS, NullFS
+from cli.core.filesystem import FileSystem, Finder
+from cli.core.templates import TemplateParser
 from cli.constants import (
     CLI_NAME_KEY,
     DJANGO_FILES_KEY,
@@ -12,8 +13,8 @@ from cli.constants import (
     ENABLE_DEBUG_KEY,
     ENABLE_FORCE_KEY,
     ENABLE_VERBOSITY_KEY,
-    FILE_SYSTEM_HANDLER,
     FILE_SYSTEM_HANDLER_KEY,
+    TEMPLATES_KEY,
 )
 
 from cli.logger import logger
@@ -57,12 +58,7 @@ def cli(ctx, debug, dry, force, verbose):
     if verbose:
         logger.setLevel(logging.DEBUG)
 
-    if dry:
-        FILE_SYSTEM_HANDLER = NullFS
-    else:
-        FILE_SYSTEM_HANDLER = FS
-
-    django_files = FILE_SYSTEM_HANDLER.find(
+    django_files = Finder().find(
         path=Path(os.getcwd()),
         patterns=[
             "apps.py",
@@ -72,12 +68,18 @@ def cli(ctx, debug, dry, force, verbose):
         ],
     )
 
+    fs = FileSystem(dry=dry, debug=debug, verbose=verbose, force=force)
+    tp = TemplateParser(
+        # TODO: Pass project and app name to TemplateParser
+        context={"project": None, "app": None},
+        templates_dir=Path(__file__).resolve().parent / "template_files",
+    )
+
     ctx.obj[DJANGO_FILES_KEY] = django_files
     ctx.obj[ENABLE_DEBUG_KEY] = debug
     ctx.obj[ENABLE_DRY_RUN_KEY] = dry
     ctx.obj[ENABLE_FORCE_KEY] = force
     ctx.obj[ENABLE_VERBOSITY_KEY] = verbose
-    ctx.obj[FILE_SYSTEM_HANDLER_KEY] = FILE_SYSTEM_HANDLER
 
 
 if __name__ == "__main__":

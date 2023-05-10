@@ -1,7 +1,4 @@
 # cli
-from cli.core.filesystem import NullFS
-
-FILE_SYSTEM_HANDLER = NullFS
 
 # CLI configuration
 
@@ -12,6 +9,8 @@ ENABLE_DRY_RUN_KEY = "enable:dry"
 ENABLE_FORCE_KEY = "enable:force"
 ENABLE_VERBOSITY_KEY = "enable:verbosity"
 FILE_SYSTEM_HANDLER_KEY = "fshandler"
+
+TEMPLATES_KEY = "templates"
 
 # Project information
 

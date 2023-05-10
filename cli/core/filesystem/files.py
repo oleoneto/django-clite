@@ -3,11 +3,13 @@ from pathlib import Path
 
 
 class File:
-    def __init__(self, path: str, template: str, content: bytes, context: dict):
+    def __init__(self, path: str, template: str, context: dict, content=None):
         self._path = path
         self._template = template
         self._content = content
+        self.context = context
 
+        # # TODO: Remove log statement
         print(f"{self.path} -> {template}")
 
     @property

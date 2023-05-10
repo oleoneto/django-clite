@@ -1,7 +1,7 @@
 import click
 from cli.utils import sanitized_string, sanitized_string_callback
-from cli.core.filesystem import File
-from cli.constants import FILE_SYSTEM_HANDLER_KEY
+from cli.core.filesystem import File, FileSystem
+from cli.core.templates import TemplateParser
 from cli.logger import logger
 
 
@@ -17,33 +17,43 @@ def admin(ctx, name, fields, permissions):
     Generate an admin model.
     """
 
-    handler = ctx.obj[FILE_SYSTEM_HANDLER_KEY]
-
-    files = File(
+    file = File(
         path=f"admin/{name}.py",
         template="admin/admin.tpl",
-        content=None,
-        context={},
+        context={
+            "name": name,
+            "permissions": permissions,
+            "fields": fields,
+        },
     )
 
-    # TODO: TemplateHandler
+    FileSystem().create_file(
+        file=file,
+        content=TemplateParser().parse_file(
+            filepath=file.template, variables=file.context
+        ),
+    )
 
 
 @click.command()
 @click.argument("name", callback=sanitized_string_callback)
 @click.pass_context
-def inline(ctx, name):
+def admin_inline(ctx, name):
     """
     Generate an inline admin model.
     """
 
-    handler = ctx.obj[FILE_SYSTEM_HANDLER_KEY]
-
-    files = File(
+    file = File(
         path=f"admin/inlines/{name}.py",
         template="admin/inline.tpl",
-        content=None,
-        context={},
+        context={
+            "name": name,
+        },
     )
 
-    # TODO: TemplateHandler
+    FileSystem().create_file(
+        file=file,
+        content=TemplateParser().parse_file(
+            filepath=file.template, variables=file.context
+        ),
+    )

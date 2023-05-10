@@ -1,5 +1,11 @@
 # cli:core:filesystem
+from .protocols import (
+    ReaderProcotol,
+    WriterProtocol,
+    FileHandlerProtocol,
+    FinderProtocol,
+)
 from .directories import Directory
 from .files import File
-from .filesystem import FS, NullFS
-from .protocols import Reader, Writer, FileHandler
+from .filesystem import FileSystem
+from .filesystem import Finder

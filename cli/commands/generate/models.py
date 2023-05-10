@@ -2,8 +2,8 @@ import click
 import logging
 import inflection
 from cli.utils import sanitized_string_callback
-from cli.core.filesystem import File
-from cli.constants import FILE_SYSTEM_HANDLER_KEY
+from cli.core.filesystem import File, FileSystem
+from cli.core.templates import TemplateParser
 from cli.logger import logger
 
 
@@ -54,21 +54,24 @@ def model(
         logger.error("Flags --api and --full cannot be used simultaneously.")
         raise click.Abort
 
-    handler = ctx.obj[FILE_SYSTEM_HANDLER_KEY]
-
     imports = []
 
     file = File(
         path=f"models/{name}.py",
         template="models/model.tpl",
-        content=None,
         context={
             "api": api,
             "abstract": abstract,
-            "fields": fields,
-            "imports": imports,
             "classname": inflection.camelize(name),
+            "fields": [],  # TODO: Parse fields
+            "imports": imports,
+            "name": name,
         },
     )
 
-    # TODO: TemplateHandler
+    FileSystem().create_file(
+        file=file,
+        content=TemplateParser().parse_file(
+            filepath=file.template, variables=file.context
+        ),
+    )

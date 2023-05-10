@@ -3,7 +3,7 @@ from typing import Protocol
 from pathlib import Path
 
 
-class Reader(Protocol):
+class ReaderProcotol(Protocol):
     def read(self, fd: int, length: int) -> bytes:
         ...
 
@@ -16,11 +16,8 @@ class Reader(Protocol):
     def getcwd(self) -> str:
         ...
 
-    def find(self, path: Path, patterns: list[str]) -> dict:
-        ...
 
-
-class Writer(Protocol):
+class WriterProtocol(Protocol):
     def write(self, fd: int, data: bytes) -> int:
         ...
 
@@ -34,9 +31,14 @@ class Writer(Protocol):
         ...
 
 
-class FileHandler(Protocol):
+class FileHandlerProtocol(Protocol):
     def pop_line(self, filename: str, content: str) -> bool:
         ...
 
     def add_line(self, filename: str, content: bytes, prevent_duplicates: bool) -> bool:
+        ...
+
+
+class FinderProtocol(Protocol):
+    def find(self, path: Path, patterns: list[str]) -> dict:
         ...

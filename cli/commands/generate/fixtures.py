@@ -1,8 +1,8 @@
 import click
 import logging
 from cli.utils import sanitized_string, sanitized_string_callback
-from cli.core.filesystem import File
-from cli.constants import FILE_SYSTEM_HANDLER_KEY
+from cli.core.filesystem import File, FileSystem
+from cli.core.templates import TemplateParser
 from cli.logger import logger
 
 
@@ -16,18 +16,19 @@ def fixture(ctx, name, total, fields):
     Generate model fixtures.
     """
 
-    handler = ctx.obj[FILE_SYSTEM_HANDLER_KEY]
-
-    files = File(
+    file = File(
         path=f"fixtures/{name}.json",
         template="fixture.tpl",
-        content=None,
         context={
             "total": total,
             "fields": fields,
+            "classname": "",
         },
     )
 
-    print(f"{total}, {fields}")
-
-    # TODO: TemplateHandler
+    FileSystem().create_file(
+        file=file,
+        content=TemplateParser().parse_file(
+            filepath=file.template, variables=file.context
+        ),
+    )
