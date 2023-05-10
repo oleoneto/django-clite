@@ -1,8 +1,8 @@
 import click
+import inflection
 from cli.utils import sanitized_string, sanitized_string_callback
 from cli.core.filesystem import File, FileSystem
 from cli.core.templates import TemplateParser
-from cli.logger import logger
 
 
 @click.command()
@@ -21,9 +21,10 @@ def admin(ctx, name, fields, permissions):
         path=f"admin/{name}.py",
         template="admin/admin.tpl",
         context={
+            "classname": inflection.camelize(name),
+            "fields": fields,
             "name": name,
             "permissions": permissions,
-            "fields": fields,
         },
     )
 
@@ -47,6 +48,7 @@ def admin_inline(ctx, name):
         path=f"admin/inlines/{name}.py",
         template="admin/inline.tpl",
         context={
+            "classname": inflection.camelize(name),
             "name": name,
         },
     )

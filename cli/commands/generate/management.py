@@ -4,18 +4,18 @@ from cli.core.filesystem import File, FileSystem
 from cli.core.templates import TemplateParser
 
 
-@click.command()
+@click.command(name="command")
 @click.argument("name", required=True, callback=sanitized_string_callback)
 @click.pass_context
-def manager(ctx, name):
+def management(cls, name):
     """
-    Generate a model manager.
+    Generate an application command.
     """
 
     file = File(
-        path=f"models/managers/{name}.py",
-        template="models/manager.tpl",
-        context={
+        path=f"management/{name}.py",
+        template="management.tpl",
+        content={
             "name": name,
         },
     )

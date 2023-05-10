@@ -1,9 +1,9 @@
 import click
-import logging
+import inflection
 from cli.utils import sanitized_string, sanitized_string_callback
 from cli.core.filesystem import File, FileSystem
 from cli.core.templates import TemplateParser
-from cli.logger import logger
+
 
 SUPPORTED_CLASSES = [
     "create",
@@ -29,7 +29,9 @@ def template(ctx, name, klass, full):
         file = File(
             path=f"templates/{sanitized_string(name)}{'_' + k if k else ''}.html",
             template=f"templates/{k if k else 'template'}.tpl",
-            context={},
+            context={
+                "classname": inflection.camelize(name),
+            },
         )
 
         FileSystem().create_file(

@@ -2,6 +2,7 @@
 from .admin import admin, admin_inline
 from .fixtures import fixture
 from .forms import form
+from .management import management
 from .managers import manager
 from .serializers import serializer
 from .signals import signal

@@ -17,8 +17,6 @@ from cli.constants import (
     TEMPLATES_KEY,
 )
 
-from cli.logger import logger
-
 
 @click.command(cls=AliasedAndDiscoverableGroup)
 @click.option("--debug", is_flag=True, help="Enable debug logs.")
@@ -68,10 +66,20 @@ def cli(ctx, debug, dry, force, verbose):
         ],
     )
 
+    def names():
+        for k, v in django_files.items():
+            if k == "apps.py":
+                return v.parent.parent.name, v.parent.name
+            elif k in ["asgi.py", "manage.py", "wsgi.py"]:
+                return v.parent.name, ""
+        return "", ""
+
+    # TODO: Improve how project and app names are extracted
+    project_name, app_name = names()
+
     fs = FileSystem(dry=dry, debug=debug, verbose=verbose, force=force)
     tp = TemplateParser(
-        # TODO: Pass project and app name to TemplateParser
-        context={"project": None, "app": None},
+        context={"project": project_name, "app": app_name},
         templates_dir=Path(__file__).resolve().parent / "template_files",
     )
 

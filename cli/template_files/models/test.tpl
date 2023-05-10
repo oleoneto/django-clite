@@ -1,3 +1,4 @@
+{% set classname = classname if classname else "MyModel" %}
 from django.test import TestCase
 from {{ project }}.{{ app }}.{{ module }} import {{ classname }}
 

@@ -4,7 +4,7 @@
 {% endcomment %}
 
 {% block content %}
-    <div class="container">
+    <div class="">
         <h2 class="title">Create Form</h2>
 
         <div id="modelForm">

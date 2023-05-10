@@ -3,7 +3,7 @@ from pathlib import Path
 
 
 class File:
-    def __init__(self, path: str, template: str, context: dict, content=None):
+    def __init__(self, path: str, template: str, context={}, content=None):
         self._path = path
         self._template = template
         self._content = content

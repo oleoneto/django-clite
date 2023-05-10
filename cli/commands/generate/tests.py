@@ -1,10 +1,9 @@
 import click
-import logging
 import inflection
 from cli.utils import sanitized_string, sanitized_string_callback
 from cli.core.filesystem import File, FileSystem
 from cli.core.templates import TemplateParser
-from cli.logger import logger
+
 
 SUPPORTED_SCOPES = [
     "model",
@@ -22,6 +21,10 @@ def test(ctx, name, scope, full):
     Generate TestCases.
     """
 
+    if scope and full:
+        logger.error("Flags --scope and --full cannot be used simultaneously.")
+        raise click.Abort
+
     scopes = SUPPORTED_SCOPES if full else [scope]
 
     for s in scopes:
@@ -30,6 +33,9 @@ def test(ctx, name, scope, full):
             template=f"{inflection.pluralize(s)}/test.tpl",
             context={
                 "name": name,
+                "module": name,
+                "classname": inflection.camelize(name),
+                "namespace": inflection.pluralize(name),
             },
         )
 

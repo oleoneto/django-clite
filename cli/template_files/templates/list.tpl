@@ -4,18 +4,18 @@
 {% endcomment %}
 
 {% block content %}
-    <div class="container">
+    <div class="">
         <h2>ListView</h2>
-        <div class="row">
+        <div class="">
             {% for object in object_list %}
             <div class="card">
-                <div class="card-body">
-                    <h3 class="card-title">
+                <div class="body">
+                    <h3 class="title">
                         <a href="{{ object.get_absolute_url }}">{{ object }}</a>
                     </h3>
                 </div>
-                <div class="card-text"></div>
-                <div class="card-footer"></div>
+                <div class="text"></div>
+                <div class="footer"></div>
             </div>
             {% endfor %}
         </div>

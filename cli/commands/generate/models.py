@@ -1,10 +1,8 @@
 import click
-import logging
 import inflection
 from cli.utils import sanitized_string_callback
 from cli.core.filesystem import File, FileSystem
 from cli.core.templates import TemplateParser
-from cli.logger import logger
 
 
 @click.command()

@@ -3,6 +3,7 @@ import click
 from cli.commands.generate.admin import admin, admin_inline as admin_inline
 from cli.commands.generate.fixtures import fixture
 from cli.commands.generate.forms import form
+from cli.commands.generate.management import management
 from cli.commands.generate.managers import manager
 from cli.commands.generate.models import model
 from cli.commands.generate.serializers import serializer
@@ -42,6 +43,7 @@ def generate(ctx, directory):
         admin_inline,
         fixture,
         form,
+        management,
         manager,
         model,
         serializer,
