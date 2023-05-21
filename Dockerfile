@@ -1,5 +1,5 @@
 # Base image
-FROM python:3.7-alpine
+FROM python:3.12.0a5-alpine
 
 MAINTAINER Leo Neto
 
