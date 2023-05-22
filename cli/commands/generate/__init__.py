@@ -10,5 +10,7 @@ from .tags import tag
 from .template import template
 from .tests import test
 from .validators import validator
+from .views import view
+from .viewsets import viewset
 
 from .main import generate

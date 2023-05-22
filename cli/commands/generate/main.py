@@ -12,10 +12,11 @@ from cli.commands.generate.tags import tag
 from cli.commands.generate.template import template
 from cli.commands.generate.tests import test
 from cli.commands.generate.validators import validator
+from cli.commands.generate.views import view
+from cli.commands.generate.viewsets import viewset
 from cli.core.filesystem import FileSystem
 from cli.core.templates import TemplateParser
 from cli.constants import DJANGO_FILES_KEY
-from cli.core.filesystem import FileSystem
 
 
 @click.group()
@@ -64,5 +65,7 @@ def generate(ctx, directory, project, app):
         template,
         test,
         validator,
+        view,
+        viewset,
     ]
 ]
