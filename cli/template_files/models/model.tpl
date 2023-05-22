@@ -3,13 +3,13 @@ from django.db import models
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 from django.template.defaultfilters import slugify
-{% for module in import_list -%}
-{% if module -%}from {{ project }}.{{ app }}.models.{{ module.name.lower() }} import {{ module.name.capitalize() }}{% endif %}
+{% for field in imports -%}
+from {{ project }}.{{ app }}.models.{{ field.module_name }} import {{ field.klass_name }}
 {% endfor %}
 
 class {{ classname }}(models.Model):
-    {% for field in fields -%}
-    {{ field.template() }}
+    {% for f in fields -%}
+    {{f.name}} = {{f.kind}}({{ f.options }})
     {% endfor %}
     # Default fields. Used for record-keeping.
     uuid = models.UUIDField(default=uuid.uuid4, editable=False)
@@ -25,8 +25,7 @@ class {{ classname }}(models.Model):
 
     @property
     def slug(self):
-        # Generate a Medium-like URL slugs:
-        # slugify(f'{__SomeCharField__}{str(self.uuid)[-12:]}')
+        # Generate a Medium/Notion-like URL slugs:
         return slugify(f'{str(self.uuid)[-12:]}')
 
     def get_absolute_url(self):
