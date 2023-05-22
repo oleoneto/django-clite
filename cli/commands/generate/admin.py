@@ -31,7 +31,8 @@ def admin(ctx, name, fields, permissions):
     FileSystem().create_file(
         file=file,
         content=TemplateParser().parse_file(
-            filepath=file.template, variables=file.context
+            filepath=file.template,
+            variables=file.context,
         ),
     )
 
@@ -56,6 +57,7 @@ def admin_inline(ctx, name):
     FileSystem().create_file(
         file=file,
         content=TemplateParser().parse_file(
-            filepath=file.template, variables=file.context
+            filepath=file.template,
+            variables=file.context,
         ),
     )

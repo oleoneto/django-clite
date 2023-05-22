@@ -23,6 +23,7 @@ def tag(ctx, name):
     FileSystem().create_file(
         file=file,
         content=TemplateParser().parse_file(
-            filepath=file.template, variables=file.context
+            filepath=file.template,
+            variables=file.context,
         ),
     )

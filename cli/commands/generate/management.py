@@ -15,7 +15,7 @@ def management(cls, name):
     file = File(
         path=f"management/{name}.py",
         template="management.tpl",
-        content={
+        context={
             "name": name,
         },
     )
@@ -23,6 +23,7 @@ def management(cls, name):
     FileSystem().create_file(
         file=file,
         content=TemplateParser().parse_file(
-            filepath=file.template, variables=file.context
+            filepath=file.template,
+            variables=file.context,
         ),
     )

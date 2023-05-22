@@ -64,12 +64,14 @@ def model(
             "fields": [],  # TODO: Parse fields
             "imports": imports,
             "name": name,
+            "table_name": f"{TemplateParser().app}.{inflection.pluralize(name)}",
         },
     )
 
     FileSystem().create_file(
         file=file,
         content=TemplateParser().parse_file(
-            filepath=file.template, variables=file.context
+            filepath=file.template,
+            variables=file.context,
         ),
     )

@@ -13,7 +13,7 @@ SUPPORTED_CLASSES = [
 ]
 
 
-@click.command()
+@click.command(context_settings=dict(ignore_unknown_options=True))
 @click.argument("name", required=True, callback=sanitized_string_callback)
 @click.option("--klass", type=click.Choice(SUPPORTED_CLASSES))
 @click.option("--full", is_flag=True, help="Create templates for all CRUD operations")
@@ -27,7 +27,7 @@ def template(ctx, name, klass, full):
 
     for k in klasses:
         file = File(
-            path=f"templates/{sanitized_string(name)}{'_' + k if k else ''}.html",
+            path=f"templates/{name}{'_' + k if k else ''}.html",
             template=f"templates/{k if k else 'template'}.tpl",
             context={
                 "classname": inflection.camelize(name),
@@ -37,6 +37,7 @@ def template(ctx, name, klass, full):
         FileSystem().create_file(
             file=file,
             content=TemplateParser().parse_file(
-                filepath=file.template, variables=file.context
+                filepath=file.template,
+                variables=file.context,
             ),
         )

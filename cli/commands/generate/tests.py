@@ -42,6 +42,7 @@ def test(ctx, name, scope, full):
         FileSystem().create_file(
             file=file,
             content=TemplateParser().parse_file(
-                filepath=file.template, variables=file.context
+                filepath=file.template,
+                variables=file.context,
             ),
         )
