@@ -23,9 +23,12 @@ from cli.constants import (
 @click.option("--dry", is_flag=True, help="Do not modify the file system.")
 @click.option("-f", "--force", is_flag=True, help="Override any conflicting files.")
 @click.option("--verbose", is_flag=True, help="Enable verbosity.")
+@click.option("--project", help="Project name.")
+@click.option("--app", help="Application name.")
+@click.option("--settings", help="Path to project's settings file.")
 @click.version_option(version=VERSION)
 @click.pass_context
-def cli(ctx, debug, dry, force, verbose):
+def cli(ctx, debug, dry, force, verbose, project, app, settings):
     """
     django-clite by Leo Neto
 
@@ -74,12 +77,14 @@ def cli(ctx, debug, dry, force, verbose):
                 return v.parent.name, ""
         return "", ""
 
-    # TODO: Improve how project and app names are extracted
     project_name, app_name = names()
 
     fs = FileSystem(dry=dry, debug=debug, verbose=verbose, force=force)
     tp = TemplateParser(
-        context={"project": project_name, "app": app_name},
+        context={
+            "project": project or project_name,
+            "app": app or app_name,
+        },
         templates_dir=Path(__file__).resolve().parent / "template_files",
     )
 

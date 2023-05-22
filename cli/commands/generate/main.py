@@ -12,6 +12,8 @@ from cli.commands.generate.tags import tag
 from cli.commands.generate.template import template
 from cli.commands.generate.tests import test
 from cli.commands.generate.validators import validator
+from cli.core.filesystem import FileSystem
+from cli.core.templates import TemplateParser
 from cli.constants import DJANGO_FILES_KEY
 from cli.core.filesystem import FileSystem
 
@@ -23,13 +25,23 @@ from cli.core.filesystem import FileSystem
     type=click.Path(),
     help="Specify the path to the project's management file.",
 )
+@click.option("--project", help="Project name.")
+@click.option("--app", help="Application name.")
 @click.pass_context
-def generate(ctx, directory):
+def generate(ctx, directory, project, app):
     """
     Create application resources.
     """
 
     ctx.ensure_object(dict)
+
+    context = dict()
+    if project:
+        context = {"project": project}
+    if app:
+        context = {"app": app}
+
+    TemplateParser().context.update(context)
 
     if len(ctx.obj[DJANGO_FILES_KEY]) == 0 and not FileSystem().force:
         click.echo("Django project not detected")

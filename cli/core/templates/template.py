@@ -8,6 +8,8 @@ from cli.decorators import singleton
 @singleton
 class TemplateParser(TemplateParserProtocol):
     def __init__(self, templates_dir, context):
+        self.project = context.get("project", "")
+        self.app = context.get("app", "")
         self.context = context
         self.template_directories = templates_dir
 
@@ -22,4 +24,7 @@ class TemplateParser(TemplateParserProtocol):
         return environment.get_template(filepath).render(self.context)
 
     def parse_string(self, content, variables) -> bytes:
-        pass
+        self.context.update(variables)
+
+        environment = Environment(autoescape=select_autoescape()).from_string(template)
+        return environment.render(self.context)
