@@ -1,15 +1,13 @@
 import click
 import inflection
-from cli.utils import sanitized_string_callback
+from cli.utils import sanitized_string_callback, fields_callback
 from cli.core.filesystem import File, FileSystem
 from cli.core.templates import TemplateParser
 
 
 @click.command()
 @click.argument("name", required=True, callback=sanitized_string_callback)
-@click.argument(
-    "fields", nargs=1, required=False, callback=lambda x, y, z: x
-)  # TODO: fields_callback
+@click.argument("fields", nargs=-1, required=False, callback=fields_callback)
 @click.option("-a", "--abstract", is_flag=True, help="Creates an abstract model type")
 @click.option("--api", is_flag=True, help="Adds only related api resources")
 @click.option("--full", is_flag=True, help="Adds all related resources")
@@ -52,7 +50,7 @@ def model(
         logger.error("Flags --api and --full cannot be used simultaneously.")
         raise click.Abort
 
-    imports = []
+    model_fields, model_imports = fields
 
     file = File(
         path=f"models/{name}.py",
@@ -61,8 +59,8 @@ def model(
             "api": api,
             "abstract": abstract,
             "classname": inflection.camelize(name),
-            "fields": [],  # TODO: Parse fields
-            "imports": imports,
+            "fields": model_fields,
+            "imports": model_imports,
             "name": name,
             "table_name": f"{TemplateParser().app}.{inflection.pluralize(name)}",
         },

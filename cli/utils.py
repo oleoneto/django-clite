@@ -1,6 +1,9 @@
 import re
 import inflection
 
+from cli.core.fieldparser.factory import make_field
+
+
 def check_noun_inflection(noun, force_singular=None, force_plural=None):
     """
     Checks whether a noun is plural or singular and gives
@@ -35,3 +38,25 @@ def sanitized_string(text):
 def sanitized_string_callback(ctx, param, value):
     return sanitized_string(value)
 
+
+def fields_callback(ctx, param, value):
+    model_fields = []
+    model_relationships = []
+
+    model = ctx.params.get("name")
+
+    for pair in value:
+        # Ignore malformed field pairs
+        if pair.find(":") == -1:
+            continue
+
+        kind, name = pair.split(":")
+
+        f = make_field(kind=kind, name=name, model=model)
+        if f.kind is not None:
+            model_fields.append(f)
+
+            if f.is_relationship:
+                model_relationships.append(f)
+
+    return model_fields, model_relationships
