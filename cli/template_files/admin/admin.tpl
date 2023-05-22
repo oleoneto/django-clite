@@ -5,8 +5,8 @@ from {{ project }}.{{ app }}.models import {{ classname }}
 @admin.register({{ classname }})
 class {{ classname }}Admin(admin.ModelAdmin):
     {%- if fields %}
-    list_display = [{% for field in fields %}
-        {{ field }},
+    list_display = [{% for f in fields %}
+        '{{ f.name }}',
     {%- endfor %}
     ]
     {% else %}
