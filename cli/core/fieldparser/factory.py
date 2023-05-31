@@ -1,7 +1,8 @@
 # cli:core:fieldparser
 import inflection
+
 from typing import NamedTuple
-from cli.core.templates import TemplateParser
+from cli.core.templates.template import TemplateParser
 
 
 __json_compatible_fields = {
@@ -64,13 +65,13 @@ class Field:
     @property
     def upload_path(self) -> str:
         if not self.is_media_field:
-            return None
+            return ""
 
         return f"uploads/{inflection.pluralize(self.model)}/{inflection.pluralize(self.name)}/"
 
     @property
-    def sample_value(self):
-        if __json_compatible_fields.get(key):
+    def example_value(self):
+        if __json_compatible_fields.get(self.kind):
             return ""
         return None
 

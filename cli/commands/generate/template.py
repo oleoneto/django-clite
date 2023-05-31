@@ -1,8 +1,9 @@
 import click
 import inflection
 from cli.utils import sanitized_string, sanitized_string_callback
-from cli.core.filesystem import File, FileSystem
-from cli.core.templates import TemplateParser
+from cli.core.filesystem.filesystem import File, FileSystem
+from cli.core.templates.template import TemplateParser
+from cli.decorators.scope import scoped, Scope
 
 
 SUPPORTED_CLASSES = [
@@ -13,6 +14,7 @@ SUPPORTED_CLASSES = [
 ]
 
 
+@scoped(to=Scope.APP)
 @click.command(context_settings=dict(ignore_unknown_options=True))
 @click.argument("name", required=True, callback=sanitized_string_callback)
 @click.option("--klass", type=click.Choice(SUPPORTED_CLASSES))

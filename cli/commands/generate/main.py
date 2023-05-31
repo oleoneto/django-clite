@@ -14,9 +14,8 @@ from cli.commands.generate.tests import test
 from cli.commands.generate.validators import validator
 from cli.commands.generate.views import view
 from cli.commands.generate.viewsets import viewset
-from cli.core.filesystem import FileSystem
-from cli.core.templates import TemplateParser
-from cli.constants import DJANGO_FILES_KEY
+from cli.core.filesystem.filesystem import FileSystem
+from cli.core.templates.template import TemplateParser
 
 
 @click.group()
@@ -26,8 +25,8 @@ from cli.constants import DJANGO_FILES_KEY
     type=click.Path(),
     help="Specify the path to the project's management file.",
 )
-@click.option("--project", help="Project name.")
-@click.option("--app", help="Application name.")
+@click.option("--project", type=click.Path(), help="Project name.")
+@click.option("--app", type=click.Path(), help="Application name.")
 @click.pass_context
 def generate(ctx, directory, project, app):
     """
@@ -43,10 +42,6 @@ def generate(ctx, directory, project, app):
         context = {"app": app}
 
     TemplateParser().context.update(context)
-
-    if len(ctx.obj[DJANGO_FILES_KEY]) == 0 and not FileSystem().force:
-        click.echo("Django project not detected")
-        raise click.Abort
 
 
 [

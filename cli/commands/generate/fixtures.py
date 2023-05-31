@@ -1,10 +1,14 @@
 import click
 import inflection
+
 from cli.utils import sanitized_string, sanitized_string_callback, fields_callback
-from cli.core.filesystem import File, FileSystem
-from cli.core.templates import TemplateParser
+from cli.core.filesystem.files import File
+from cli.core.filesystem.filesystem import FileSystem
+from cli.core.templates.template import TemplateParser
+from cli.decorators.scope import scoped, Scope
 
 
+@scoped(to=Scope.APP)
 @click.command()
 @click.argument("model", required=True, callback=sanitized_string_callback)
 @click.option("--total", default=1, help="Number of fixtures to be created.")
@@ -22,7 +26,7 @@ def fixture(ctx, model, total, fields):
         template="fixture.tpl",
         context={
             "total": total,
-            "fields": f,
+            "fields": fixture_fields,
             "classname": inflection.camelize(model),
         },
     )

@@ -1,10 +1,14 @@
 import click
 import inflection
+
 from cli.utils import sanitized_string_callback, fields_callback
-from cli.core.filesystem import File, FileSystem
-from cli.core.templates import TemplateParser
+from cli.core.filesystem.filesystem import File, FileSystem
+from cli.core.templates.template import TemplateParser
+from cli.decorators.scope import scoped, Scope
+from cli.core.logger import Logger
 
 
+@scoped(to=Scope.APP)
 @click.command()
 @click.argument("name", required=True, callback=sanitized_string_callback)
 @click.argument("fields", nargs=-1, required=False, callback=fields_callback)
@@ -19,6 +23,12 @@ from cli.core.templates import TemplateParser
 @click.option("--tests", is_flag=True, help="Create tests")
 @click.option("--views", is_flag=True, help="Create views")
 @click.option("--viewsets", is_flag=True, help="Create viewsets")
+@click.option(
+    "--skip-import",
+    is_flag=True,
+    default=False,
+    help="Do not import in __init__ module",
+)
 @click.pass_context
 def model(
     ctx,
@@ -35,6 +45,7 @@ def model(
     tests,
     views,
     viewsets,
+    skip_import,
 ):
     """
     Generates a model under the models directory.
@@ -47,8 +58,8 @@ def model(
     """
 
     if api and full:
-        logger.error("Flags --api and --full cannot be used simultaneously.")
-        raise click.Abort
+        Logger().print("Flags --api and --full cannot be used simultaneously.")
+        raise click.Abort()
 
     model_fields, model_imports = fields
 
@@ -72,4 +83,45 @@ def model(
             filepath=file.template,
             variables=file.context,
         ),
+        import_statement=TemplateParser().parse_string(
+            content="from .{{name}} import {{classname}}",
+            variables={
+                "name": name,
+                "classname": inflection.camelize(name),
+            },
+        ),
+        add_import_statement=not skip_import,
     )
+
+    def generate_related_resources():
+        if admin or api or full:
+            from .admin import admin as cmd
+
+            ctx.invoke(cmd, name=name, fields=fields, skip_import=skip_import)
+
+        if fixtures or api or full:
+            from .fixtures import fixture as cmd
+
+            ctx.invoke(cmd, model=name, fields=fields)
+
+        if form or full:
+            from .forms import form as cmd
+
+            ctx.invoke(cmd, name=name, skip_import=skip_import)
+
+        if serializers or api or full:
+            from .serializers import serializer as cmd
+
+            ctx.invoke(cmd, name=name, skip_import=skip_import)
+
+        if views or full:
+            from .views import view as cmd
+
+            ctx.invoke(cmd, name=name, full=full, skip_import=skip_import)
+
+        if viewsets or api or full:
+            from .viewsets import viewset as cmd
+
+            ctx.invoke(cmd, name=name, skip_import=skip_import)
+
+    generate_related_resources()

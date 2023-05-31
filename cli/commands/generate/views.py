@@ -1,8 +1,11 @@
 import click
 import inflection
+
 from cli.utils import sanitized_string_callback
-from cli.core.filesystem import File, FileSystem
-from cli.core.templates import TemplateParser
+from cli.core.filesystem.filesystem import File, FileSystem
+from cli.core.templates.template import TemplateParser
+from cli.decorators.scope import scoped, Scope
+
 from .template import template
 
 
@@ -14,6 +17,7 @@ SUPPORTED_CLASSES = [
 ]
 
 
+@scoped(to=Scope.APP)
 @click.command()
 @click.argument("name", required=True, callback=sanitized_string_callback)
 @click.option("--klass", type=click.Choice(SUPPORTED_CLASSES))
@@ -24,8 +28,14 @@ SUPPORTED_CLASSES = [
     default=False,
     help="Skip generation of related templates.",
 )
+@click.option(
+    "--skip-import",
+    is_flag=True,
+    default=False,
+    help="Do not import in __init__ module",
+)
 @click.pass_context
-def view(ctx, name, klass, full, skip_templates):
+def view(ctx, name, klass, full, skip_templates, skip_import):
     """
     Generate a view function or class.
     """
@@ -50,6 +60,14 @@ def view(ctx, name, klass, full, skip_templates):
                 filepath=file.template,
                 variables=file.context,
             ),
+            import_statement=TemplateParser().parse_string(
+                content="from .{{name}} import {{classname}}",
+                variables={
+                    "name": f"{name}{'_' + k if k else ''}",
+                    "classname": f"{inflection.camelize(name)+inflection.camelize(k)+'View' if k else name}",
+                },
+            ),
+            add_import_statement=not skip_import,
         )
 
         if not skip_templates:

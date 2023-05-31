@@ -1,14 +1,6 @@
-# cli:core
 import subprocess
-from typing import Protocol
 
-
-class Git(Protocol):
-    def initialize(self) -> bool:
-        ...
-
-    def add_origin(self, origin: str) -> bool:
-        ...
+from .protocols import Git
 
 
 class GitHandler(Git):

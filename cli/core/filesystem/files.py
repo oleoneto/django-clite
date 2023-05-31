@@ -3,14 +3,11 @@ from pathlib import Path
 
 
 class File:
-    def __init__(self, path: str, template: str, context={}, content=None):
+    def __init__(self, path: str, template: str, context={}, content=""):
         self._path = path
         self._template = template
         self._content = content
         self.context = context
-
-        # # TODO: Remove log statement
-        print(f"{self.path} -> {template}")
 
     @property
     def template(self) -> str:
@@ -25,5 +22,5 @@ class File:
         return Path(self._path).name
 
     @property
-    def content(self) -> bytes:
+    def content(self) -> str:
         return self._content

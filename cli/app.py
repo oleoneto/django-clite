@@ -1,20 +1,21 @@
 import os
-import logging
 import click
+import logging
 from pathlib import Path
 from cli.click import AliasedAndDiscoverableGroup
+
 from cli import VERSION
-from cli.core.filesystem import FileSystem, Finder
-from cli.core.templates import TemplateParser
+from cli.core.filesystem.system import NullOS, SystemOS
+from cli.core.filesystem.filesystem import FileSystem
+from cli.core.templates.template import TemplateParser
+from cli.core.logger import Logger
+from cli.utils import core_project_files, project_and_app_names
 from cli.constants import (
-    CLI_NAME_KEY,
     DJANGO_FILES_KEY,
     ENABLE_DRY_RUN_KEY,
     ENABLE_DEBUG_KEY,
     ENABLE_FORCE_KEY,
     ENABLE_VERBOSITY_KEY,
-    FILE_SYSTEM_HANDLER_KEY,
-    TEMPLATES_KEY,
 )
 
 
@@ -22,7 +23,7 @@ from cli.constants import (
 @click.option("--debug", is_flag=True, help="Enable debug logs.")
 @click.option("--dry", is_flag=True, help="Do not modify the file system.")
 @click.option("-f", "--force", is_flag=True, help="Override any conflicting files.")
-@click.option("--verbose", is_flag=True, help="Enable verbosity.")
+@click.option("--verbose", "--v", type=click.IntRange(0, 5), help="Enable verbosity.")
 @click.option("--project", help="Project name.")
 @click.option("--app", help="Application name.")
 @click.option("--settings", help="Path to project's settings file.")
@@ -56,31 +57,20 @@ def cli(ctx, debug, dry, force, verbose, project, app, settings):
 
     ctx.ensure_object(dict)
 
-    if verbose:
-        logger.setLevel(logging.DEBUG)
+    Logger(dry=dry, verbose=verbose == 5)
 
-    django_files = Finder().find(
-        path=Path(os.getcwd()),
-        patterns=[
-            "apps.py",
-            "asgi.py",
-            "manage.py",
-            "wsgi.py",
-        ],
+    django_files = core_project_files()
+    project_name, app_name = project_and_app_names(django_files)
+
+    FileSystem(
+        dry=dry,
+        debug=debug,
+        verbose=verbose == 5,
+        force=force,
+        system=NullOS() if dry else SystemOS(),
     )
 
-    def names():
-        for k, v in django_files.items():
-            if k == "apps.py":
-                return v.parent.parent.name, v.parent.name
-            elif k in ["asgi.py", "manage.py", "wsgi.py"]:
-                return v.parent.name, ""
-        return "", ""
-
-    project_name, app_name = names()
-
-    fs = FileSystem(dry=dry, debug=debug, verbose=verbose, force=force)
-    tp = TemplateParser(
+    TemplateParser(
         context={
             "project": project or project_name,
             "app": app or app_name,

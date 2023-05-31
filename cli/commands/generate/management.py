@@ -1,9 +1,11 @@
 import click
 from cli.utils import sanitized_string_callback
-from cli.core.filesystem import File, FileSystem
-from cli.core.templates import TemplateParser
+from cli.core.filesystem.filesystem import File, FileSystem
+from cli.core.templates.template import TemplateParser
+from cli.decorators.scope import scoped, Scope
 
 
+@scoped(to=Scope.APP)
 @click.command(name="command")
 @click.argument("name", required=True, callback=sanitized_string_callback)
 @click.pass_context

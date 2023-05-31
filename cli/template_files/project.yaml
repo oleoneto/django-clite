@@ -1,0 +1,12 @@
+project:
+	name: &name
+	scope: top-level
+	folders:
+	- *name:
+		files:
+		- __init__.py
+		- asgi.py
+		- settings.py
+		- wsgi.py
+	files:
+	- manage.py

@@ -1,5 +1,5 @@
 from django.core.exceptions import ValidationError
 
 
-def {{ name }}(value):
+def {{ name }}_validator(value):
     pass

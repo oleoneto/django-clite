@@ -1,13 +1,21 @@
 # cli:core:filesystem
-from typing import Protocol
+import io
 from pathlib import Path
+from typing import Protocol, NamedTuple
+
+
+class WriteCommandResult(NamedTuple):
+    path: Path
+    success: bool = False
+
+
+class ReadCommandResult(NamedTuple):
+    path: Path
+    success: bool = False
 
 
 class ReaderProcotol(Protocol):
-    def read(self, fd: int, length: int) -> bytes:
-        ...
-
-    def open(self, path: Path, flags: int, mode: int = ...) -> int:
+    def open(self, path: Path, mode: str = ...) -> io.TextIOWrapper:
         ...
 
     def close(self, fd: int):
@@ -21,13 +29,10 @@ class WriterProtocol(Protocol):
     def write(self, fd: int, data: bytes) -> int:
         ...
 
-    def remove(self, name: str) -> bool:
+    def remove(self, name: str) -> None:
         ...
 
-    def create_directory(self, name: str) -> bool:
-        ...
-
-    def create_file(self, name: str, content: bytes) -> bool:
+    def mkdir(self, name: str) -> None:
         ...
 
 
@@ -42,3 +47,7 @@ class FileHandlerProtocol(Protocol):
 class FinderProtocol(Protocol):
     def find(self, path: Path, patterns: list[str]) -> dict:
         ...
+
+
+class SystemProtocol(ReaderProcotol, WriterProtocol, Protocol):
+    ...

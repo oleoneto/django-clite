@@ -14,7 +14,7 @@ class Directory:
 
         if not hide_files:
             for file in self.files:
-                tree.add(file.filename)
+                tree.add(file.name)
 
         for child in self.children:
             child_tree = child.traverse(**kwargs)

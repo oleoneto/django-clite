@@ -1,3 +1,4 @@
+# cli:decorators:singleton
 import functools
 
 
@@ -12,5 +13,6 @@ def singleton(cls):
         if not wrapper_singleton.instance:
             wrapper_singleton.instance = cls(*args, **kwargs)
         return wrapper_singleton.instance
+
     wrapper_singleton.instance = None
     return wrapper_singleton
