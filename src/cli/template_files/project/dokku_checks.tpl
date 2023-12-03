@@ -1,0 +1,2 @@
+DOKKU_CHECKS_WAIT={{ wait }}
+DOKKU_CHECKS_TIMEOUT={{ timeout }}
