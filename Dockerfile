@@ -1,5 +1,5 @@
 # Base image
-FROM python:3.11-alpine
+FROM python:3.13.0a1-alpine
 
 LABEL MAINTAINER="Leo Neto"
 
@@ -17,4 +17,4 @@ COPY . .
 # Install dependencies
 RUN apk add gcc musl-dev linux-headers && pip install -e .
 
-ENTRYPOINT ["D"]
+ENTRYPOINT ["django-clite"]
