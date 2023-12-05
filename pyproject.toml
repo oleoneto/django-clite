@@ -4,7 +4,7 @@ description = "CLI for creating and managing Django projects"
 authors = [{ name = "Leo Neto", email = "leo@ekletik.com" }]
 maintainers = [{ name = "Leo Neto", email = "leo@ekletik.com" }]
 requires-python = ">=3.8"
-license = { file = "LICENSE.txt" }
+license = { file = "LICENSE" }
 readme = "README.md"
 version = "0.17.0"
 keywords = [

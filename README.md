@@ -55,4 +55,4 @@ Found a bug? See a typo? Have an idea for new command?
 Feel free to submit a pull request with your contributions. They are much welcome and appreciated.
 
 ## LICENSE
-**django-clite** is [BSD Licensed](LICENSE.txt).
+**django-clite** is [BSD Licensed](LICENSE).
