@@ -2,7 +2,7 @@ import click
 import inflection
 
 from cli.utils import sanitized_string_callback
-from cli.core.filesystem.filesystem import File, FileSystem
+from cli.core.filesystem.files import File
 from cli.core.templates.template import TemplateParser
 from cli.decorators.scope import scoped, Scope
 
@@ -20,7 +20,7 @@ SUPPORTED_CLASSES = [
 @scoped(to=Scope.APP)
 @click.command()
 @click.argument("name", required=True, callback=sanitized_string_callback)
-@click.option("--klass", type=click.Choice(SUPPORTED_CLASSES))
+@click.option("--class_", type=click.Choice(SUPPORTED_CLASSES))
 @click.option("--full", is_flag=True, help="Create all CRUD views")
 @click.option(
     "--skip-templates",
@@ -35,14 +35,14 @@ SUPPORTED_CLASSES = [
     help="Do not import in __init__ module",
 )
 @click.pass_context
-def view(ctx, name, klass, full, skip_templates, skip_import):
+def view(ctx, name, class_, full, skip_templates, skip_import):
     """
     Generate a view function or class.
     """
 
-    klasses = SUPPORTED_CLASSES if full else [klass]
+    classes = SUPPORTED_CLASSES if full else [class_]
 
-    for k in klasses:
+    for k in classes:
         file = File(
             name=f"views/{name}{'_' + k if k else ''}.py",
             template=f"views/{k if k else 'view'}.tpl",
@@ -54,12 +54,7 @@ def view(ctx, name, klass, full, skip_templates, skip_import):
             },
         )
 
-        FileSystem().create_file(
-            file=file,
-            content=TemplateParser().parse_file(
-                filepath=file.template,
-                variables=file.context,
-            ),
+        file.create(
             import_statement=TemplateParser().parse_string(
                 content="from .{{name}} import {{classname}}",
                 variables={
@@ -68,8 +63,9 @@ def view(ctx, name, klass, full, skip_templates, skip_import):
                 },
             ),
             add_import_statement=not skip_import,
+            **ctx.obj,
         )
 
     if not skip_templates:
-        for k in klasses:
-            ctx.invoke(template, name=name, klass=k)
+        for class_ in classes:
+            ctx.invoke(template, name=name, class_=class_)

@@ -3,9 +3,8 @@ from typing import Self
 from pathlib import Path
 from rich.tree import Tree
 from rich.text import Text
-from .files import File
 from .protocols import FileProtocol
-from .filesystem import FileSystem
+from .files import File
 
 
 class Directory:
@@ -18,7 +17,7 @@ class Directory:
 
     def add_children(self, dirs: list[FileProtocol]):
         dirs = dirs if dirs is not None else []
-        [self._children.append(f) for f in dirs if type(f) in [Directory, File]]
+        [self._children.append(f) for f in dirs]
 
     @property
     def dirs(self) -> list[Self]:
@@ -57,16 +56,16 @@ class Directory:
 
         return tree
 
-    def path(self, parent: str = None) -> str:
-        value = self.name if parent is None else f"{parent}/{self.name}"
+    def path(self, parent: Path = None) -> Path:
+        value = Path(self.name) if parent is None else parent / self.name
         return value
 
-    def create(self, parent=None):
-        # Create top-level directory
+    def create(self, parent: Path = None, **kwargs):
         path = self.path(parent=parent)
 
-        # TODO: Perform item creation
-        FileSystem().create(path, is_dir=True)
+        print(f"Create {path.name}")
+
+        path.mkdir(exist_ok=True)
 
         # Recursively create children items
         for child in self._children:

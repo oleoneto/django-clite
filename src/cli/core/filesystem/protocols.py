@@ -53,6 +53,9 @@ class SystemProtocol(ReaderProtocol, WriterProtocol, Protocol):
     ...
 
 
-class FileProtocol:
-    def create(self):
+class FileProtocol(Protocol):
+    def create(self, parent: str = None, **kwargs):
+        ...
+
+    def path(self, parent: Path = None) -> Path:
         ...

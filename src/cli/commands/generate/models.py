@@ -2,7 +2,7 @@ import click
 import inflection
 
 from cli.utils import sanitized_string_callback, fields_callback
-from cli.core.filesystem.filesystem import File, FileSystem
+from cli.core.filesystem.files import File
 from cli.core.templates.template import TemplateParser
 from cli.decorators.scope import scoped, Scope
 from cli.core.logger import logger
@@ -77,12 +77,7 @@ def model(
         },
     )
 
-    FileSystem().create_file(
-        file=file,
-        content=TemplateParser().parse_file(
-            filepath=file.template,
-            variables=file.context,
-        ),
+    file.create(
         import_statement=TemplateParser().parse_string(
             content="from .{{name}} import {{classname}}",
             variables={
@@ -91,6 +86,7 @@ def model(
             },
         ),
         add_import_statement=not skip_import,
+        **ctx.obj,
     )
 
     def generate_related_resources():
@@ -113,6 +109,16 @@ def model(
             from .serializers import serializer as cmd
 
             ctx.invoke(cmd, name=name, skip_import=skip_import)
+
+        if templates or api or full:
+            from .template import template as cmd
+
+            ctx.invoke(cmd, name=name, full=full)
+
+        if tests or api or full:
+            from .tests import test as cmd
+
+            ctx.invoke(cmd, name=name, full=full)
 
         if views or full:
             from .views import view as cmd

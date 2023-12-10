@@ -1,8 +1,7 @@
 import click
-import inflection
 
 from cli.utils import sanitized_string_callback
-from cli.core.filesystem.filesystem import File, FileSystem
+from cli.core.filesystem.files import File
 from cli.core.templates.template import TemplateParser
 from cli.decorators.scope import scoped, Scope
 
@@ -30,12 +29,7 @@ def validator(ctx, name, skip_import):
         },
     )
 
-    FileSystem().create_file(
-        file=file,
-        content=TemplateParser().parse_file(
-            filepath=file.template,
-            variables=file.context,
-        ),
+    file.create(
         import_statement=TemplateParser().parse_string(
             content="from .{{name}} import {{name}}_validator",
             variables={
@@ -43,4 +37,5 @@ def validator(ctx, name, skip_import):
             },
         ),
         add_import_statement=not skip_import,
+        **ctx.obj,
     )

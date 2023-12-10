@@ -1,9 +1,6 @@
 # cli:core:fieldparser
 import inflection
 
-from typing import NamedTuple
-from cli.core.templates.template import TemplateParser
-
 
 __json_compatible_fields = {
     "BigIntegerField": "pyint",
@@ -155,16 +152,16 @@ __fields = {
     "ipaddress": __generic_ip_field,
     "ip-address": __generic_ip_field,
     # Relationships
-    ## FK
+    # - FK
     "belongsto": __foreign_key_relationship_field,
     "fk": __foreign_key_relationship_field,
     "foreignkey": __foreign_key_relationship_field,
     "foreign-key": __foreign_key_relationship_field,
-    ## One
+    # - One
     "one": __one_to_one_relationship_field,
     "hasone": __one_to_one_relationship_field,
     "one-to-one": __one_to_one_relationship_field,
-    ## Many
+    # - Many
     "hasmany": __many_to_many_relationship_field,
     "has-many": __many_to_many_relationship_field,
     "many": __many_to_many_relationship_field,

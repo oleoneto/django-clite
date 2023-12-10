@@ -5,9 +5,8 @@ from pathlib import Path
 import importlib, sys
 from typing import Callable
 
-# from cli.core.filesystem.directories import Directory
 from cli.core.filesystem.finder import Finder
-from cli.core.fieldparser.factory import make_field
+from cli.core.field_parser.factory import make_field
 
 
 def check_noun_inflection(noun, force_singular=None, force_plural=None):

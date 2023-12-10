@@ -1,10 +1,8 @@
 import click
 import inflection
 
-from cli.utils import sanitized_string, sanitized_string_callback, fields_callback
+from cli.utils import sanitized_string_callback, fields_callback
 from cli.core.filesystem.files import File
-from cli.core.filesystem.filesystem import FileSystem
-from cli.core.templates.template import TemplateParser
 from cli.decorators.scope import scoped, Scope
 
 
@@ -31,10 +29,4 @@ def fixture(ctx, model, total, fields):
         },
     )
 
-    FileSystem().create_file(
-        file=file,
-        content=TemplateParser().parse_file(
-            filepath=file.template,
-            variables=file.context,
-        ),
-    )
+    file.create(**ctx.obj)

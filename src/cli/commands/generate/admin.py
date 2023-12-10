@@ -1,9 +1,8 @@
 import click
 import inflection
 
-from cli.utils import sanitized_string, sanitized_string_callback, fields_callback
+from cli.utils import sanitized_string_callback, fields_callback
 from cli.core.filesystem.files import File
-from cli.core.filesystem.filesystem import FileSystem
 from cli.core.templates.template import TemplateParser
 from cli.decorators.scope import scoped, Scope
 
@@ -41,12 +40,7 @@ def admin(ctx, name, fields, permissions, skip_import):
         },
     )
 
-    FileSystem().create_file(
-        file=file,
-        content=TemplateParser().parse_file(
-            filepath=file.template,
-            variables=file.context,
-        ),
+    file.create(
         import_statement=TemplateParser().parse_string(
             content="from .{{name}} import {{classname}}Admin",
             variables={
@@ -55,6 +49,7 @@ def admin(ctx, name, fields, permissions, skip_import):
             },
         ),
         add_import_statement=not skip_import,
+        **ctx.obj,
     )
 
 
@@ -82,12 +77,7 @@ def admin_inline(ctx, name, skip_import):
         },
     )
 
-    FileSystem().create_file(
-        file=file,
-        content=TemplateParser().parse_file(
-            filepath=file.template,
-            variables=file.context,
-        ),
+    file.create(
         import_statement=TemplateParser().parse_string(
             content="from .{{name}} import {{classname}}Inline",
             variables={
@@ -96,4 +86,5 @@ def admin_inline(ctx, name, skip_import):
             },
         ),
         add_import_statement=not skip_import,
+        **ctx.obj,
     )

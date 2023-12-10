@@ -1,5 +1,6 @@
 # cli:commands:generate
 import click
+
 from cli.commands.generate.admin import admin, admin_inline as admin_inline
 from cli.commands.generate.fixtures import fixture
 from cli.commands.generate.forms import form
@@ -14,7 +15,6 @@ from cli.commands.generate.tests import test
 from cli.commands.generate.validators import validator
 from cli.commands.generate.views import view
 from cli.commands.generate.viewsets import viewset
-from cli.core.filesystem.filesystem import FileSystem
 from cli.core.templates.template import TemplateParser
 
 

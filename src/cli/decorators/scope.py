@@ -29,28 +29,31 @@ def scoped(to: Scope):
 
         django_files = core_project_files()
 
-        # NOTE: Handle forcefull creation
+        # NOTE: Handle forceful creation
         force = ctx.params.get("force", False)
         parent = ctx.parent
         while parent is not None:
             force = parent.params.get("force", False)
             parent = parent.parent
 
-        # 1. Probably not a django project directory
-        if not force and len(django_files) == 0:
-            return noop_cmd
-        # 2. No django app detected
-        elif not force and (to == Scope.APP and not django_files.get("apps.py", None)):
-            return noop_cmd
-        # 3. No django project detected
-        elif not force and (
-            to == Scope.PROJECT
-            and 1
-            > len(
-                [django_files.get(x, None) for x in ["asgi.py", "manage.py", "wsgi.py"]]
-            )
-        ):
-            return noop_cmd
+        if not force:
+            # 1. Probably not inside a django project directory
+            if len(django_files) == 0:
+                return noop_cmd
+
+            # 2. Possibly inside a django project, but no app detected
+            elif to == Scope.APP and not django_files.get("apps.py", None):
+                return noop_cmd
+
+            # 3. No django project detected
+            elif (
+                to == Scope.PROJECT
+                and 1
+                > len(
+                    [django_files.get(x, None) for x in ["manage.py", "wsgi.py", "asgi.py"]]
+                )
+            ):
+                return noop_cmd
 
         return cmd
 

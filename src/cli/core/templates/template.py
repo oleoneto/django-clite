@@ -1,8 +1,6 @@
 # cli:core:templates
-from pathlib import Path
 from .protocols import TemplateParserProtocol
 from jinja2 import Environment, FileSystemLoader, select_autoescape
-from jinja2.exceptions import TemplateNotFound
 from cli.decorators.singleton import singleton
 
 
