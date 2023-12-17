@@ -131,3 +131,16 @@ def model(
             ctx.invoke(cmd, name=name, skip_import=skip_import)
 
     generate_related_resources()
+
+
+@scoped(to=Scope.APP)
+@click.command()
+@click.argument("name", required=True, callback=sanitized_string_callback)
+@click.argument("fields", nargs=-1, required=False, callback=fields_callback)
+@click.pass_context
+def scaffold(ctx, name, fields):
+    """
+    Generate all resources for a given model.
+    """
+
+    ctx.invoke(model, name=name, fields=fields, full=True)

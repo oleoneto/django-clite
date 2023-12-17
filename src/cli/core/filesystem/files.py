@@ -73,6 +73,16 @@ class File:
                     prevent_duplicates=True,
                 )
 
+    def destroy(self, parent: Path = None, **kwargs):
+        path = self.path(parent)
+
+        logger.info(f"delete: {path}")
+
+        path.unlink(missing_ok=True)
+
+        # TODO: remove import statement if applicable
+        # FileSystem().pop_line()
+
     def __str__(self) -> str:
         return self.name
 

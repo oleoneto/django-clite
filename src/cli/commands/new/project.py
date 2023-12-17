@@ -8,7 +8,7 @@ from .defaults.app import application_callback
 from cli.utils import sanitized_string_callback
 from cli.constants import ENABLE_DRY_RUN_KEY
 from cli.core.filesystem.filesystem import working_directory
-from .app import app
+from .app import apps
 
 
 @click.command()
@@ -58,7 +58,7 @@ def project(ctx, name, apps, docker, github, kubernetes):  # TODO: dokku, heroku
 
         # Create nested apps
         with working_directory(name):
-            ctx.invoke(app, names=apps)
+            ctx.invoke(apps, names=apps)
 
         # TODO: Initialize git repository?
 

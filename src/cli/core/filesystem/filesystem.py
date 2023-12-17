@@ -104,5 +104,3 @@ class FileSystem:
             print(repr(err))
 
         return WriteCommandResult(path=Path(), success=success)
-
-

@@ -25,6 +25,13 @@ def scoped(to: Scope):
             context_settings=cmd.context_settings,
             hidden=cmd.hidden,
             callback=cmd.callback,
+            help=cmd.help,
+            add_help_option=cmd.add_help_option,
+            deprecated=cmd.deprecated,
+            epilog=cmd.epilog,
+            no_args_is_help=cmd.no_args_is_help,
+            options_metavar=cmd.options_metavar,
+            short_help=cmd.short_help,
         )
 
         django_files = core_project_files()

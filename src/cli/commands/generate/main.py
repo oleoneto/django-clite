@@ -6,7 +6,7 @@ from cli.commands.generate.fixtures import fixture
 from cli.commands.generate.forms import form
 from cli.commands.generate.management import management
 from cli.commands.generate.managers import manager
-from cli.commands.generate.models import model
+from cli.commands.generate.models import model, scaffold
 from cli.commands.generate.serializers import serializer
 from cli.commands.generate.signals import signal
 from cli.commands.generate.tags import tag
@@ -19,27 +19,18 @@ from cli.core.templates.template import TemplateParser
 
 
 @click.group()
-@click.option(
-    "--directory",
-    "-d",
-    type=click.Path(),
-    help="Specify the path to the project's management file.",
-)
 @click.option("--project", type=click.Path(), help="Project name.")
 @click.option("--app", type=click.Path(), help="Application name.")
 @click.pass_context
-def generate(ctx, directory, project, app):
+def generate(ctx, project, app):
     """
     Create application resources.
     """
 
     ctx.ensure_object(dict)
 
-    context = dict()
-    if project:
-        context = {"project": project}
-    if app:
-        context = {"app": app}
+    context = {"project": project, "app": app}
+    context.update(ctx.obj)
 
     TemplateParser().context.update(context)
 
@@ -54,6 +45,7 @@ def generate(ctx, directory, project, app):
         management,
         manager,
         model,
+        scaffold,
         serializer,
         signal,
         tag,

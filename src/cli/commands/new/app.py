@@ -6,9 +6,9 @@ from cli.constants import ENABLE_DRY_RUN_KEY
 
 @click.command()
 @click.argument("names", nargs=-1, callback=application_callback)
-@click.option("--is-package", is_flag=True)
+@click.option("--is-package", is_flag=True, help="Treat as a standalone Python package")
 @click.pass_context
-def app(ctx, names, is_package):
+def apps(ctx, names, is_package):
     """
     Creates new django apps.
 

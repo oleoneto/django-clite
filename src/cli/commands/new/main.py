@@ -1,6 +1,6 @@
 import click
 
-from cli.commands.new.app import app
+from cli.commands.new.app import apps
 from cli.commands.new.project import project
 
 
@@ -14,4 +14,4 @@ def new(ctx):
     ctx.ensure_object(dict)
 
 
-[new.add_command(cmd) for cmd in [app, project]]
+[new.add_command(cmd) for cmd in [apps, project]]
