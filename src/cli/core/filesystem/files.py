@@ -20,9 +20,10 @@ class File:
     def template(self) -> str:
         return self._template
 
-    @property
-    def contents(self) -> str:
+    def contents(self, **kwargs) -> str:
         if self.template != "":
+            self.context.update(**kwargs)
+
             content = TemplateParser().parse_file(
                 filepath=self.template,
                 variables=self.context,
@@ -54,12 +55,12 @@ class File:
 
         path.touch(exist_ok=True)
 
-        if self.contents != "":
-            with open(path, mode="w") as f:
-                f.write(f"{self.contents}\n")
-                logger.debug(f"Add contents to {path.absolute()}")
+        contents = self.contents(**kwargs)
 
-            # TODO: Add import statement
+        if contents != "":
+            path.write_text(f"{contents}\n")
+
+            logger.debug(f"Add contents to {path.absolute()}")
 
             should_be_imported = kwargs.get("add_import_statement", False)
             import_statement = kwargs.get("import_statement", "")

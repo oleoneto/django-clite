@@ -69,7 +69,7 @@ class Directory:
 
         # Recursively create children items
         for child in self._children:
-            child.create(parent=path)
+            child.create(parent=path, **kwargs)
 
     def __str__(self) -> str:
         return self.name

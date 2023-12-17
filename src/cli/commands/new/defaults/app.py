@@ -63,7 +63,7 @@ def new_app(name: str) -> Directory:
     return app
 
 
-def application_callback(ctx, param, value):
+def application_callback(ctx, param, value) -> list[Directory]:
     apps = []
 
     for name in value:

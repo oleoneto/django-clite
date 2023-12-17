@@ -1,8 +1,15 @@
 # cli:commands:new:defaults:project
 from cli.core.filesystem import File, Directory
+from cli.core.filesystem.transformations import MoveFile
+
+project_transformations = []
 
 
-def new_project(name: str) -> Directory:
+def new_project(name: str, **options) -> Directory:
+    project_transformations.append(
+        MoveFile("settings.py", "settings/__init__.py"),
+    )
+
     proj = Directory(
         name=name,
         children=[
@@ -10,16 +17,12 @@ def new_project(name: str) -> Directory:
                 name="settings",
                 children=[
                     File(name="api.py", template="project/api.tpl"),
-                    File(name="database.py", template="project/database.tpl"),
-                    File(name="settings.py", template="project/settings.tpl"),
                     File(name="storage.py", template="project/storage.tpl"),
                 ],
             ),
             File(name="__init__.py", template="shared/init.tpl"),
             File(name="urls.py", template="project/urls.tpl"),
-            File(name="asgi.py", template="project/asgi.tpl"),
-            File(name="wsgi.py", template="project/wsgi.tpl"),
-            File(name="constants.py", template="project/empty.tpl"),
+            File(name="constants.py", content="# your constants go here"),
         ],
     )
 
@@ -27,16 +30,6 @@ def new_project(name: str) -> Directory:
         name=name,
         children=[
             proj,
-            Directory(
-                ".github",
-                children=[
-                    File(name="ci.yml", template="github/ci.tpl"),
-                    File(
-                        name="pull_request_template.md",
-                        template="github/pull_request_template.tpl",
-                    ),
-                ],
-            ),
             Directory(name="staticfiles"),
             Directory(
                 name="templates",
@@ -45,17 +38,50 @@ def new_project(name: str) -> Directory:
                     File(name="500.html", template="app/500.tpl"),
                 ],
             ),
-            File(name="manage.py", template="project/manage.tpl"),
             File(name=".env", template="project/env.tpl"),
-            File(name=".env-example", template="project/env.tpl"),
             File(name=".gitignore", template="project/gitignore.tpl"),
-            File(name=".dockerignore", template="docker/dockerignore.tpl"),
-            File(name="Dockerfile", template="docker/dockerfile.tpl"),
-            File(name="docker-compose.yml", template="docker/docker-compose.tpl"),
-            File(name="docker-entrypoint.sh", template="docker/docker-entrypoint.tpl"),
             File(name="README.md", template="project/README.tpl"),
             File(name="requirements.txt", template="project/requirements.tpl"),
         ]
     )
+
+    # Handle user options
+
+    if options.get("github", False):
+        root.add_children([Directory(".github", children=[
+                File(name="ci.yml", template="github/ci.tpl"),
+                File(name="pull_request_template.md", template="github/pull_request_template.tpl"),
+            ],
+        )])
+
+    if options.get("docker", False):
+        root.add_children([
+            File(name=".dockerignore", template="docker/dockerignore.tpl"),
+            File(name="Dockerfile", template="docker/dockerfile.tpl"),
+            File(name="docker-compose.yml", template="docker/docker-compose.tpl"),
+            File(name="docker-entrypoint.sh", template="docker/docker-entrypoint.tpl"),
+        ])
+
+    if options.get("kubernetes", False):
+        root.add_children([
+            Directory(".kubernetes", children=[
+                File(name="deployment.yaml", template="kubernetes/deployment.tpl"),
+                File(name="service.yaml", template="kubernetes/service.tpl"),
+                File(name="ingress.yaml", template="kubernetes/ingress.tpl"),
+                File(name="configmap.yaml", template="kubernetes/configmap.tpl"),
+            ]),
+        ])
+
+    # TODO: implement celery option
+    # if options.get("celery", False):
+
+    # TODO: implement drf option
+    # if options.get("drf", False):
+
+    # TODO: implement dokku option
+    # if options.get("dokku", False):
+
+    # TODO: implement heroku option
+    # if options.get("heroku", False):
 
     return root

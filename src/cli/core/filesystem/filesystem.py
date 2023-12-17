@@ -1,8 +1,28 @@
 # cli:core:filesystem
+import os
 from pathlib import Path
+from contextlib import contextmanager
+
 from .protocols import SystemProtocol, WriteCommandResult
 from cli.decorators.singleton import singleton
 from cli.core.logger import logger
+
+
+@contextmanager
+def working_directory(directory):
+    # Based on: https://stackoverflow.com/a/53993508/7899348
+
+    cwd = os.getcwd()
+
+    try:
+        os.chdir(directory)
+        yield directory
+    except FileNotFoundError as _:
+        yield
+    except TypeError as _:
+        yield
+    finally:
+        os.chdir(cwd)
 
 
 @singleton
@@ -84,3 +104,5 @@ class FileSystem:
             print(repr(err))
 
         return WriteCommandResult(path=Path(), success=success)
+
+
