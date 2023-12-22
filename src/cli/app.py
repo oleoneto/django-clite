@@ -6,7 +6,7 @@ from cli.extensions import AliasedAndDiscoverableGroup
 from cli.core.filesystem.system import NullOS, SystemOS
 from cli.core.filesystem.filesystem import FileSystem
 from cli.core.templates.template import TemplateParser
-from cli.utils import core_project_files, project_and_app_names
+from cli.core.filesystem.finder import core_project_files, project_and_app_names
 from cli.constants import (
     DJANGO_FILES_KEY,
     ENABLE_DRY_RUN_KEY,

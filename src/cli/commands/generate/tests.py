@@ -1,7 +1,7 @@
 import click
 import inflection
 
-from cli.utils import sanitized_string, sanitized_string_callback
+from cli.commands.callbacks import sanitized_string, sanitized_string_callback
 from cli.core.filesystem.files import File
 from cli.core.templates.template import TemplateParser
 from cli.decorators.scope import scoped, Scope

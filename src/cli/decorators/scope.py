@@ -1,7 +1,8 @@
 # cli:decorators:scope
 import click
 from enum import Enum
-from cli.utils import core_project_files
+
+from cli.core.filesystem.finder import core_project_files
 
 
 class Scope(Enum):

@@ -5,10 +5,10 @@ from django.core.management.commands import startproject
 
 from .defaults.project import new_project, project_transformations
 from .defaults.app import application_callback
-from cli.utils import sanitized_string_callback
+from cli.commands.callbacks import sanitized_string_callback
 from cli.constants import ENABLE_DRY_RUN_KEY
 from cli.core.filesystem.filesystem import working_directory
-from .app import apps
+from .app import apps as apps_cmd
 
 
 @click.command()
@@ -58,7 +58,7 @@ def project(ctx, name, apps, docker, github, kubernetes):  # TODO: dokku, heroku
 
         # Create nested apps
         with working_directory(name):
-            ctx.invoke(apps, names=apps)
+            ctx.invoke(apps_cmd, names=apps)
 
         # TODO: Initialize git repository?
 

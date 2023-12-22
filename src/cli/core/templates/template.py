@@ -23,7 +23,7 @@ class TemplateParser(TemplateParserProtocol):
         return environment.get_template(filepath).render(self.context)
 
     def parse_string(self, content, variables) -> str:
-        self.context.update(variables)
+        variables.update(self.context)
 
         environment = Environment(autoescape=select_autoescape()).from_string(content)
-        return environment.render(self.context)
+        return environment.render(variables)

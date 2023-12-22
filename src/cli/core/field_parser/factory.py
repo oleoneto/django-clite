@@ -30,7 +30,7 @@ class Field:
         kind: str,
         name: str = "",
         model: str = "",
-        options: dict = {},
+        options: dict = None,
         supports_admin: bool = True,
         is_fk_relationship: bool = False,
         is_many_to_many_relationship: bool = False,
@@ -41,7 +41,7 @@ class Field:
         self.supported_in_admin = supports_admin
         self.is_fk_relationship = is_fk_relationship
         self.is_many_relationship = is_many_to_many_relationship
-        self._options = options
+        self._options = {} if options is None else options
 
     @property
     def is_relationship(self) -> bool:
@@ -64,7 +64,7 @@ class Field:
         if not self.is_media_field:
             return ""
 
-        return f"uploads/{inflection.pluralize(self.model)}/{inflection.pluralize(self.name)}/"
+        return f"uploads/{inflection.pluralize(self.model.lower())}/{inflection.pluralize(self.name)}/"
 
     @property
     def example_value(self):
@@ -76,7 +76,7 @@ class Field:
     def options(self):
         if self.is_relationship:
             self._options.update(
-                {"related_name": f"'{inflection.singularize(self.model)}'"}
+                {"related_name": f"'{inflection.singularize(self.model.lower())}'"}
             )
 
         options = [self.klass_name] if self.is_relationship else []
@@ -154,13 +154,15 @@ __fields = {
     # Relationships
     # - FK
     "belongsto": __foreign_key_relationship_field,
+    "belongs-to": __foreign_key_relationship_field,
     "fk": __foreign_key_relationship_field,
     "foreignkey": __foreign_key_relationship_field,
     "foreign-key": __foreign_key_relationship_field,
     # - One
     "one": __one_to_one_relationship_field,
-    "hasone": __one_to_one_relationship_field,
     "one-to-one": __one_to_one_relationship_field,
+    "hasone": __one_to_one_relationship_field,
+    "has-one": __one_to_one_relationship_field,
     # - Many
     "hasmany": __many_to_many_relationship_field,
     "has-many": __many_to_many_relationship_field,

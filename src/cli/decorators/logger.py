@@ -1,11 +1,9 @@
 # cli:decorators:logger
 import functools
 import re
-from types import FunctionType, MethodType
 from typing import Callable
 
 from cli.core.logger import logger
-from cli.utils import modify_and_import, get_source
 
 
 def _log(msg: str, *args, **kwargs):
