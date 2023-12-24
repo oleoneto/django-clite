@@ -29,11 +29,6 @@ def generate(ctx, project, app):
 
     ctx.ensure_object(dict)
 
-    context = {"project": project, "app": app}
-    context.update(ctx.obj)
-
-    TemplateParser().context.update(context)
-
 
 [
     generate.add_command(cmd)

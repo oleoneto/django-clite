@@ -1,8 +1,7 @@
-# cli:core:fieldparser
+# cli:core:field_parser
 import inflection
 
-
-__json_compatible_fields = {
+json_compatible_fields = {
     "BigIntegerField": "pyint",
     "BooleanField": "pybool",
     "CharField": "text",
@@ -26,14 +25,14 @@ __json_compatible_fields = {
 
 class Field:
     def __init__(
-        self,
-        kind: str,
-        name: str = "",
-        model: str = "",
-        options: dict = None,
-        supports_admin: bool = True,
-        is_fk_relationship: bool = False,
-        is_many_to_many_relationship: bool = False,
+            self,
+            kind: str,
+            name: str = "",
+            model: str = "",
+            options: dict = None,
+            supports_admin: bool = True,
+            is_fk_relationship: bool = False,
+            is_many_to_many_relationship: bool = False,
     ):
         self.model = model
         self.kind = kind
@@ -68,7 +67,7 @@ class Field:
 
     @property
     def example_value(self):
-        if __json_compatible_fields.get(self.kind):
+        if json_compatible_fields.get(self.kind):
             return ""
         return None
 

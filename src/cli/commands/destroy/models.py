@@ -4,6 +4,7 @@ from cli.commands.callbacks import sanitized_string_callback
 from cli.core.filesystem.files import File
 from cli.decorators.scope import scoped, Scope
 from cli.core.logger import logger
+from cli.commands import command_defaults
 
 
 @scoped(to=Scope.APP)
@@ -42,7 +43,12 @@ def model(
         logger.error("Flags --api and --full cannot be used simultaneously.")
         raise click.Abort()
 
-    File(name=f"models/{name}.py").destroy(**ctx.obj)
+    File(name=f"models/{name}.py").destroy(
+        **{
+            "import_statement": command_defaults.model(name),
+            **ctx.obj,
+        }
+    )
 
     def destroy_related_resources():
         if admin or api or full:

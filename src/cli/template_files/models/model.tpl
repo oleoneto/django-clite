@@ -9,7 +9,7 @@ from {{ project }}.{{ app }}.models.{{ field.module_name }} import {{ field.klas
 
 class {{ classname }}(models.Model):
     {% for f in fields -%}
-    {{f.name}} = {{f.kind}}({{ f.options }})
+    {{f.name}} = models.{{f.kind}}({{ f.options }})
     {% endfor %}
     # Default fields. Used for record-keeping.
     uuid = models.UUIDField(default=uuid.uuid4, editable=False)

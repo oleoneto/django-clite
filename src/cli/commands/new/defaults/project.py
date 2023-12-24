@@ -1,5 +1,6 @@
 # cli:commands:new:defaults:project
-from cli.core.filesystem import File, Directory
+from cli.core.filesystem.files import File
+from cli.core.filesystem.directories import Directory
 from cli.core.filesystem.transformations import MoveFile
 
 project_transformations = []

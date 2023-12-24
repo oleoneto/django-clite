@@ -5,6 +5,7 @@ from cli.commands.callbacks import sanitized_string, sanitized_string_callback
 from cli.core.filesystem.files import File
 from cli.decorators.scope import scoped, Scope
 from cli.core.logger import logger
+from cli.commands import command_defaults
 
 
 SUPPORTED_SCOPES = [
@@ -32,4 +33,4 @@ def test(ctx, name, scope, full):
 
     for s in scopes:
         file = File(name=f"{inflection.pluralize(s)}/{sanitized_string(name)}_test.py")
-        file.destroy(**ctx.obj)
+        file.destroy(**{"import_statement": command_defaults.test(name), **ctx.obj})

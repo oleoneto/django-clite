@@ -3,8 +3,8 @@ import inflection
 
 from cli.commands.callbacks import sanitized_string_callback
 from cli.core.filesystem.files import File
-from cli.core.templates.template import TemplateParser
 from cli.decorators.scope import scoped, Scope
+from cli.commands import command_defaults
 
 from .template import template
 
@@ -55,17 +55,13 @@ def view(ctx, name, class_, full, skip_templates, skip_import):
         )
 
         file.create(
-            import_statement=TemplateParser().parse_string(
-                content="from .{{name}} import {{classname}}",
-                variables={
-                    "name": f"{name}{'_' + k if k else ''}",
-                    "classname": f"{inflection.camelize(name)+inflection.camelize(k)+'View' if k else name}",
-                },
-            ),
+            import_statement=command_defaults.view(name, k),
             add_import_statement=not skip_import,
             **ctx.obj,
         )
 
-    if not skip_templates:
-        for class_ in classes:
-            ctx.invoke(template, name=name, class_=class_)
+    if skip_templates:
+        return
+
+    for class_ in classes:
+        ctx.invoke(template, name=name, class_=class_)

@@ -1,8 +1,8 @@
 # cli:core:filesystem
 from pathlib import Path
 from cli.core.logger import logger
+from .transformations import AddLineToFile, RemoveLineFromFile
 from cli.core.templates.template import TemplateParser
-from .filesystem import FileSystem
 
 
 class File:
@@ -42,6 +42,10 @@ class File:
 
         logger.info(f"create: {path}")
 
+        if path.exists():
+            logger.error(f"File already exists: {path}")
+            return
+
         # NOTE: Handle missing intermediate directories
         if not path.absolute().parent.exists():
             missing = []  # stack up folders that need to be created
@@ -64,14 +68,17 @@ class File:
 
             should_be_imported = kwargs.get("add_import_statement", False)
             import_statement = kwargs.get("import_statement", "")
-            import_location = path.parent.absolute() / "__init__.py"
+            import_location = path.parent / "__init__.py"
+
+            # TODO: Add import statement
 
             if should_be_imported:
-                FileSystem().add_line(
-                    import_location,
-                    import_statement,
+                transformation = AddLineToFile(
+                    target=import_location,
+                    statement=import_statement,
                     prevent_duplicates=True,
                 )
+                transformation.run()
 
     def destroy(self, parent: Path = None, **kwargs):
         path = self.path(parent)
@@ -80,8 +87,17 @@ class File:
 
         path.unlink(missing_ok=True)
 
-        # TODO: remove import statement if applicable
-        # FileSystem().pop_line()
+        # TODO: Yank import statement
+
+        import_statement = kwargs.get("import_statement", "")
+        import_location = path.parent / "__init__.py"
+
+        transformation = RemoveLineFromFile(
+            target=import_location,
+            statement=import_statement,
+        )
+
+        transformation.run()
 
     def __str__(self) -> str:
         return self.name

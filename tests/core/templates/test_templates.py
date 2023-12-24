@@ -1,12 +1,13 @@
 import unittest
-from cli.core.templates import TemplateParser
+from pathlib import Path
+from cli.core.templates.template import TemplateParser
 
 
 class TemplatesTestCase(unittest.TestCase):
     def setUp(self):
         self.parser = TemplateParser(
+            templates_dir=Path(""),
             context={},
-            templates_dir="",
         )
 
     def test_parse_string(self):

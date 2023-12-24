@@ -3,6 +3,7 @@ import click
 from cli.commands.callbacks import sanitized_string_callback
 from cli.core.filesystem.files import File
 from cli.decorators.scope import scoped, Scope
+from cli.commands import command_defaults
 
 
 @scoped(to=Scope.APP)
@@ -14,4 +15,7 @@ def tag(ctx, name):
     Generate a template tag.
     """
 
-    File(name=f"templatetags/{name}.py").destroy(**ctx.obj)
+    File(name=f"templatetags/{name}.py").destroy(**{
+        "import_statement": command_defaults.tag(name),
+        **ctx.obj,
+    })

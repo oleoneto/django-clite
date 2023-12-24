@@ -3,9 +3,6 @@ import logging
 from pathlib import Path
 from cli import VERSION
 from cli.extensions import AliasedAndDiscoverableGroup
-from cli.core.filesystem.system import NullOS, SystemOS
-from cli.core.filesystem.filesystem import FileSystem
-from cli.core.templates.template import TemplateParser
 from cli.core.filesystem.finder import core_project_files, project_and_app_names
 from cli.constants import (
     DJANGO_FILES_KEY,
@@ -13,7 +10,10 @@ from cli.constants import (
     ENABLE_DEBUG_KEY,
     ENABLE_FORCE_KEY,
     ENABLE_VERBOSITY_KEY,
+    PROJECT_NAME_KEY,
+    APPLICATION_NAME_KEY,
 )
+from cli.core.templates.template import TemplateParser
 
 
 @click.command(cls=AliasedAndDiscoverableGroup)
@@ -76,20 +76,12 @@ def cli(ctx, debug, dry, force, verbose, project, app, settings):
     django_files = core_project_files()
     project_name, app_name = project_and_app_names(django_files)
 
-    FileSystem(
-        dry=dry,
-        debug=debug,
-        verbose=verbose,
-        force=force,
-        system=NullOS() if dry else SystemOS(),
-    )
-
     TemplateParser(
+        templates_dir=Path(__file__).resolve().parent / "template_files",
         context={
             "project": project or project_name,
             "app": app or app_name,
         },
-        templates_dir=Path(__file__).resolve().parent / "template_files",
     )
 
     ctx.obj[DJANGO_FILES_KEY] = django_files
@@ -97,6 +89,8 @@ def cli(ctx, debug, dry, force, verbose, project, app, settings):
     ctx.obj[ENABLE_DRY_RUN_KEY] = dry
     ctx.obj[ENABLE_FORCE_KEY] = force
     ctx.obj[ENABLE_VERBOSITY_KEY] = verbose
+    ctx.obj[PROJECT_NAME_KEY] = project or project_name
+    ctx.obj[APPLICATION_NAME_KEY] = app or app_name
 
 
 if __name__ == "__main__":

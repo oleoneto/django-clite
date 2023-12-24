@@ -5,6 +5,7 @@ from cli.commands.callbacks import sanitized_string_callback, fields_callback
 from cli.core.filesystem.files import File
 from cli.core.templates.template import TemplateParser
 from cli.decorators.scope import scoped, Scope
+from cli.commands import command_defaults
 
 
 @scoped(to=Scope.APP)
@@ -41,13 +42,7 @@ def admin(ctx, name, fields, permissions, skip_import):
     )
 
     file.create(
-        import_statement=TemplateParser().parse_string(
-            content="from .{{name}} import {{classname}}Admin",
-            variables={
-                "name": name,
-                "classname": inflection.camelize(name),
-            },
-        ),
+        import_statement=command_defaults.admin(name),
         add_import_statement=not skip_import,
         **ctx.obj,
     )
@@ -78,13 +73,7 @@ def admin_inline(ctx, name, skip_import):
     )
 
     file.create(
-        import_statement=TemplateParser().parse_string(
-            content="from .{{name}} import {{classname}}Inline",
-            variables={
-                "name": name,
-                "classname": inflection.camelize(name),
-            },
-        ),
+        import_statement=command_defaults.admin_inline(name),
         add_import_statement=not skip_import,
         **ctx.obj,
     )

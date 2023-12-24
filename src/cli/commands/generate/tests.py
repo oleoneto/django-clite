@@ -3,9 +3,9 @@ import inflection
 
 from cli.commands.callbacks import sanitized_string, sanitized_string_callback
 from cli.core.filesystem.files import File
-from cli.core.templates.template import TemplateParser
 from cli.decorators.scope import scoped, Scope
 from cli.core.logger import logger
+from cli.commands import command_defaults
 
 
 SUPPORTED_SCOPES = [
@@ -50,13 +50,7 @@ def test(ctx, name, scope, full, skip_import):
         )
 
         file.create(
-            import_statement=TemplateParser().parse_string(
-                content="from .{{module}} import {{classname}}TestCase",
-                variables={
-                    "module": name,
-                    "classname": inflection.camelize(name),
-                },
-            ),
+            import_statement=command_defaults.test(name),
             add_import_statement=not skip_import,
             **ctx.obj,
         )

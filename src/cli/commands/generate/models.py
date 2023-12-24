@@ -6,6 +6,7 @@ from cli.core.filesystem.files import File
 from cli.core.templates.template import TemplateParser
 from cli.decorators.scope import scoped, Scope
 from cli.core.logger import logger
+from cli.commands import command_defaults
 
 
 @scoped(to=Scope.APP)
@@ -41,7 +42,6 @@ def model(
     fixtures,
     form,
     serializers,
-    templates,
     tests,
     views,
     viewsets,
@@ -78,13 +78,7 @@ def model(
     )
 
     file.create(
-        import_statement=TemplateParser().parse_string(
-            content="from .{{name}} import {{classname}}",
-            variables={
-                "name": name,
-                "classname": inflection.camelize(name),
-            },
-        ),
+        import_statement=command_defaults.model(name),
         add_import_statement=not skip_import,
         **ctx.obj,
     )
@@ -109,11 +103,6 @@ def model(
             from .serializers import serializer as cmd
 
             ctx.invoke(cmd, name=name, skip_import=skip_import)
-
-        if templates or api or full:
-            from .template import template as cmd
-
-            ctx.invoke(cmd, name=name, full=full)
 
         if tests or api or full:
             from .tests import test as cmd

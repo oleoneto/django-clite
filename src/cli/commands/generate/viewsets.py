@@ -3,8 +3,8 @@ import inflection
 
 from cli.commands.callbacks import sanitized_string_callback
 from cli.core.filesystem.files import File
-from cli.core.templates.template import TemplateParser
 from cli.decorators.scope import scoped, Scope
+from cli.commands import command_defaults
 
 
 @scoped(to=Scope.APP)
@@ -37,13 +37,7 @@ def viewset(ctx, name, read_only, full, skip_import):
     )
 
     file.create(
-        import_statement=TemplateParser().parse_string(
-            content="from .{{module}} import {{classname}}ViewSet",
-            variables={
-                "module": name,
-                "classname": inflection.camelize(name),
-            },
-        ),
+        import_statementw=command_defaults.viewset(name),
         add_import_statement=not skip_import,
         **ctx.obj,
     )
