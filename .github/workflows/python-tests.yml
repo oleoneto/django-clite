@@ -25,4 +25,5 @@ jobs:
 
     - name: Run tests
       run: |
-        python -m unittest tests/
+        ls -lah
+        python -m unittest discover tests/
