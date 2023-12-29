@@ -15,7 +15,6 @@ from cli.commands.generate.tests import test
 from cli.commands.generate.validators import validator
 from cli.commands.generate.views import view
 from cli.commands.generate.viewsets import viewset
-from cli.core.templates.template import TemplateParser
 
 
 @click.group()

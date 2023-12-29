@@ -3,10 +3,10 @@ from typing import Self
 from pathlib import Path
 from rich.tree import Tree
 from rich.text import Text
+
+from cli.core.logger import logger
 from .protocols import FileProtocol
 from .files import File
-from .transformations import DeleteFile
-from cli.core.logger import logger
 
 
 class Directory:

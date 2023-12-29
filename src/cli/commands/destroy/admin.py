@@ -15,10 +15,12 @@ def admin(ctx, name):
     Destroy an admin model.
     """
 
-    File(name=f"admin/{name}.py").destroy(**{
-        "import_statement": command_defaults.admin(name),
-        **ctx.obj,
-    })
+    File(name=f"admin/{name}.py").destroy(
+        **{
+            "import_statement": command_defaults.admin(name),
+            **ctx.obj,
+        }
+    )
 
 
 @scoped(to=Scope.APP)

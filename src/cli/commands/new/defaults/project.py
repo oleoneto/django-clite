@@ -21,8 +21,6 @@ def new_project(name: str, **options) -> Directory:
                     File(name="storage.py", template="project/storage.tpl"),
                 ],
             ),
-            File(name="__init__.py", template="shared/init.tpl"),
-            File(name="urls.py", template="project/urls.tpl"),
             File(name="constants.py", content="# your constants go here"),
         ],
     )

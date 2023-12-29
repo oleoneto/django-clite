@@ -20,7 +20,7 @@ from cli.commands import command_defaults
 @click.option("--fixtures", is_flag=True, help="Create model fixture")
 @click.option("--form", is_flag=True, help="Create model form")
 @click.option("--serializers", is_flag=True, help="Create serializers")
-@click.option("--templates", is_flag=True, help="Create templates")
+# @click.option("--templates", is_flag=True, help="Create templates")
 @click.option("--tests", is_flag=True, help="Create tests")
 @click.option("--views", is_flag=True, help="Create views")
 @click.option("--viewsets", is_flag=True, help="Create viewsets")
@@ -42,6 +42,7 @@ def model(
     fixtures,
     form,
     serializers,
+    # templates,
     tests,
     views,
     viewsets,

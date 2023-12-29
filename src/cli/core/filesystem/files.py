@@ -1,8 +1,9 @@
 # cli:core:filesystem
 from pathlib import Path
+
 from cli.core.logger import logger
-from .transformations import AddLineToFile, RemoveLineFromFile
 from cli.core.templates.template import TemplateParser
+from .transformations import AddLineToFile, RemoveLineFromFile
 
 
 class File:
@@ -31,10 +32,7 @@ class File:
 
             return content
 
-        content = TemplateParser().parse_string(
-            self._content,
-            variables=self.context
-        )
+        content = TemplateParser().parse_string(self._content, variables=self.context)
 
         return content
 

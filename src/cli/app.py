@@ -2,7 +2,7 @@ import click
 import logging
 from pathlib import Path
 from cli import VERSION
-from cli.extensions import AliasedAndDiscoverableGroup
+from cli.extensions.combined import AliasedAndDiscoverableGroup
 from cli.core.filesystem.finder import core_project_files, project_and_app_names
 from cli.constants import (
     DJANGO_FILES_KEY,
@@ -23,10 +23,9 @@ from cli.core.templates.template import TemplateParser
 @click.option("--verbose", is_flag=True, help="Enable verbosity.")
 @click.option("--project", help="Project name.")
 @click.option("--app", help="Application name.")
-@click.option("--settings", help="Path to project's settings file.")
 @click.version_option(version=VERSION)
 @click.pass_context
-def cli(ctx, debug, dry, force, verbose, project, app, settings):
+def cli(ctx, debug, dry, force, verbose, project, app):
     """
     django-clite by Leo Neto
 

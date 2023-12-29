@@ -15,7 +15,9 @@ def serializer(ctx, name):
     Destroy a serializer for a given model.
     """
 
-    File(name=f"serializers/{name}.py").destroy(**{
-        "import_statement": command_defaults.serializer(name),
-        **ctx.obj,
-    })
+    File(name=f"serializers/{name}.py").destroy(
+        **{
+            "import_statement": command_defaults.serializer(name),
+            **ctx.obj,
+        }
+    )

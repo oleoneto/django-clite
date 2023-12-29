@@ -2,7 +2,7 @@
 {% if author %}Author: {{ author }} {% endif %}
 
 #### Requirements
-[Requirements](Pipfile)
+[Requirements](requirements.txt)
 
 ----
 
@@ -11,8 +11,8 @@ Run `pipenv install --deploy` to install all dependencies listed in the Pipfile.
 
 {% if custom_auth %}
 ----
-### Authentication with custom AUTH_USER_MODEL
-Authentication is overridden in favor of [`authentication.User`]({{ project }}/authentication/models/user.py). 
+### Authentication with custom `AUTH_USER_MODEL`
+Authentication is overridden in favor of [`authentication.User`]({{ project }}/authentication/models/user.py).
 If you haven't already, add the following line to your project's [settings.py]({{ project }}/settings.py):
 ```python
 AUTH_USER_MODEL = 'authentication.User'
@@ -25,7 +25,7 @@ python manage.py migrate authentication && \
 python manage.py migrate
 ```
 
-This ensures the AUTH_USER_MODEL is set to `authentication.User`. 
+This ensures the `AUTH_USER_MODEL` is set to `authentication.User`.
 It is important to follow the order above because of how django sets up the database.
 {% endif %}
 

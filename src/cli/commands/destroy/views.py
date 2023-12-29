@@ -35,10 +35,12 @@ def view(ctx, name, class_, full, include_templates):
     classes = SUPPORTED_CLASSES if full else [class_]
 
     for k in classes:
-        File(name=f"views/{name}{'_' + k if k else ''}.py").destroy(**{
-            "import_statement": command_defaults.view(name, k),
-            **ctx.obj,
-        })
+        File(name=f"views/{name}{'_' + k if k else ''}.py").destroy(
+            **{
+                "import_statement": command_defaults.view(name, k),
+                **ctx.obj,
+            }
+        )
 
     if include_templates:
         for class_ in classes:

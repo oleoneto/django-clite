@@ -25,14 +25,14 @@ json_compatible_fields = {
 
 class Field:
     def __init__(
-            self,
-            kind: str,
-            name: str = "",
-            model: str = "",
-            options: dict = None,
-            supports_admin: bool = True,
-            is_fk_relationship: bool = False,
-            is_many_to_many_relationship: bool = False,
+        self,
+        kind: str,
+        name: str = "",
+        model: str = "",
+        options: dict = None,
+        supports_admin: bool = True,
+        is_fk_relationship: bool = False,
+        is_many_to_many_relationship: bool = False,
     ):
         self.model = model
         self.kind = kind

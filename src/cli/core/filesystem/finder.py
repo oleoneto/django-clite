@@ -2,7 +2,7 @@
 import os
 from pathlib import Path
 
-from cli.core.filesystem.protocols import FinderProtocol
+from .protocols import FinderProtocol
 
 
 class Finder(FinderProtocol):
@@ -16,16 +16,11 @@ class Finder(FinderProtocol):
         return matches
 
 
-def core_project_files() -> dict:
-    return Finder().find(
-        path=Path(os.getcwd()),
-        patterns=[
-            "apps.py",
-            "asgi.py",
-            "manage.py",
-            "wsgi.py",
-        ],
-    )
+def core_project_files(location: str = None) -> dict:
+    patterns = ["apps.py", "asgi.py", "manage.py", "wsgi.py"]
+    path = Path(os.getcwd()) if location is None else Path(location)
+
+    return Finder().find(path=path, patterns=patterns)
 
 
 def project_and_app_names(django_files: dict) -> tuple[str, str]:

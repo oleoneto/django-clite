@@ -2,18 +2,18 @@ import subprocess
 
 from .protocols import Git
 from cli.decorators.singleton import singleton
-from cli.core.logger import logger
+# from cli.core.logger import logger
 
 
 @singleton
 class GitHandler(Git):
     def initialize(self) -> bool:
         try:
-            # subprocess.check_output(["git", "init"])
-            # subprocess.check_output(["git", "add", "--all"])
-            # subprocess.check_output(["git", "commit", "-m", "feat: initial commit"])
+            subprocess.check_output(["git", "init"])
+            subprocess.check_output(["git", "add", "--all"])
+            subprocess.check_output(["git", "commit", "-m", "feat: initial commit"])
             return True
-        except subprocess.CalledProcessError as error:
+        except subprocess.CalledProcessError as _:
             pass
 
         return False

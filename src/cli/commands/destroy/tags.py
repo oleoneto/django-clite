@@ -15,7 +15,9 @@ def tag(ctx, name):
     Generate a template tag.
     """
 
-    File(name=f"templatetags/{name}.py").destroy(**{
-        "import_statement": command_defaults.tag(name),
-        **ctx.obj,
-    })
+    File(name=f"templatetags/{name}.py").destroy(
+        **{
+            "import_statement": command_defaults.tag(name),
+            **ctx.obj,
+        }
+    )

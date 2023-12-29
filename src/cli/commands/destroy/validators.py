@@ -15,7 +15,9 @@ def validator(ctx, name):
     Destroy a validator.
     """
 
-    File(name=f"models/validators/{name}.py").destroy(**{
-        "import_statement": command_defaults.validator(name),
-        **ctx.obj,
-    })
+    File(name=f"models/validators/{name}.py").destroy(
+        **{
+            "import_statement": command_defaults.validator(name),
+            **ctx.obj,
+        }
+    )

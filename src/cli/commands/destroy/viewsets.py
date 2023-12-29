@@ -16,10 +16,12 @@ def viewset(ctx, name, full):
     Destroy a viewset for a serializable model.
     """
 
-    File(name=f"viewsets/{name}.py").destroy(**{
-        "import_statement": command_defaults.viewset(name),
-        **ctx.obj,
-    })
+    File(name=f"viewsets/{name}.py").destroy(
+        **{
+            "import_statement": command_defaults.viewset(name),
+            **ctx.obj,
+        }
+    )
 
     if full:
         from .tests import test as cmd

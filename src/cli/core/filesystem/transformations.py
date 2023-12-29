@@ -64,14 +64,14 @@ class RemoveLineFromFile(FileTransformation):
 
         try:
             # Find and yank matched line from file
-            with open(self.target, mode='r') as f:
+            with open(self.target, mode="r") as f:
                 lines = f.readlines()
                 for pos, line in enumerate(lines):
                     if line.startswith(self.statement):
                         lines.pop(pos)
                         break
 
-            with open(self.target, mode='w') as f:
+            with open(self.target, mode="w") as f:
                 f.writelines(lines)
         except (FileNotFoundError, OSError) as _:
             pass

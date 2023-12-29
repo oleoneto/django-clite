@@ -15,7 +15,9 @@ def signal(ctx, name):
     Destroy a signal.
     """
 
-    File(name=f"models/signals/{name}.py").destroy(**{
-        "import_statement": command_defaults.signal(name),
-        **ctx.obj,
-    })
+    File(name=f"models/signals/{name}.py").destroy(
+        **{
+            "import_statement": command_defaults.signal(name),
+            **ctx.obj,
+        }
+    )

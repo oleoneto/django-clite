@@ -14,18 +14,27 @@ def dockerfile(ctx, docker_compose):
     """
 
     files = [
-        File(name=f"Dockerfile", template="docker/dockerfile.tpl", context={}),
+        File(name="Dockerfile", template="docker/dockerfile.tpl", context={}),
     ]
 
     if docker_compose:
         files.append(
             File(
-                name=f"docker-compose.yaml",
+                name="docker-compose.yaml",
                 template="docker/docker-compose.tpl",
                 context={
-                    "services": [],
+                    "services": [
+                        "database",
+                        "redis",
+                        "celery",
+                    ],
                 },
             )
         )
 
-    [file.create(**ctx.obj,) for file in files]
+    [
+        file.create(
+            **ctx.obj,
+        )
+        for file in files
+    ]

@@ -54,12 +54,8 @@ def scoped(to: Scope):
                 return noop_cmd
 
             # 3. No django project detected
-            elif (
-                to == Scope.PROJECT
-                and 1
-                > len(
-                    [django_files.get(x, None) for x in ["manage.py", "wsgi.py", "asgi.py"]]
-                )
+            elif to == Scope.PROJECT and 1 > len(
+                [django_files.get(x, None) for x in ["manage.py", "wsgi.py", "asgi.py"]]
             ):
                 return noop_cmd
 

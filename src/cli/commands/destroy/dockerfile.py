@@ -9,23 +9,20 @@ from cli.decorators.scope import scoped, Scope
 @click.option("--docker-compose", is_flag=True)
 @click.pass_context
 def dockerfile(ctx, docker_compose):
-"""
-Generate a Dockerfile.
-"""
+    """
+    Destroy a Dockerfile (and docker-compose.yaml).
+    """
 
-files = [
-File(name=f"Dockerfile", template="docker/dockerfile.tpl", context={}),
-]
+    files = [
+        File(name="Dockerfile"),
+    ]
 
-if docker_compose:
-files.append(
-File(
-name=f"docker-compose.yaml",
-template="docker/docker-compose.tpl",
-context={
-"services": [],
-},
-)
-)
+    if docker_compose:
+        files.append(File(name="docker-compose.yaml"))
 
-[file.create(**ctx.obj,) for file in files]
+    [
+        file.destroy(
+            **ctx.obj,
+        )
+        for file in files
+    ]
