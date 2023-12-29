@@ -31,7 +31,12 @@ class File:
 
             return content
 
-        return self._content
+        content = TemplateParser().parse_string(
+            self._content,
+            variables=self.context
+        )
+
+        return content
 
     def path(self, parent: Path = None) -> Path:
         value = Path(self.name) if parent is None else parent / self.name

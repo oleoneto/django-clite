@@ -5,6 +5,8 @@ from rich.tree import Tree
 from rich.text import Text
 from .protocols import FileProtocol
 from .files import File
+from .transformations import DeleteFile
+from cli.core.logger import logger
 
 
 class Directory:
@@ -63,13 +65,23 @@ class Directory:
     def create(self, parent: Path = None, **kwargs):
         path = self.path(parent=parent)
 
-        print(f"Create {path.name}")
+        logger.info(f"create: {path.name}")
 
         path.mkdir(exist_ok=True)
 
         # Recursively create children items
         for child in self._children:
             child.create(parent=path, **kwargs)
+
+    def destroy(self, parent: Path = None, **kwargs):
+        path = self.path(parent)
+
+        logger.info(f"delete: {path}")
+
+        for child in self._children:
+            child.destroy(parent=path, **kwargs)
+
+        path.rmdir()
 
     def __str__(self) -> str:
         return self.name
