@@ -6,6 +6,15 @@ runner = CliRunner()
 
 
 class FileTestCase(unittest.TestCase):
+    def setUp(self):
+        from pathlib import Path
+        from cli.core.templates.template import TemplateParser
+
+        TemplateParser(
+            templates_dir=Path("temp/"),
+            context={},
+        )
+
     def test_create_file(self):
         with runner.isolated_filesystem():
             file = File("new.scratch", content="{{greeting}} world!", context={"greeting": "Hello"})
