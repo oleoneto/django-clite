@@ -1,6 +1,5 @@
 # cli:core:filesystem
 from __future__ import annotations
-from typing import Self
 from pathlib import Path
 from rich.tree import Tree
 from rich.text import Text
@@ -23,7 +22,7 @@ class Directory:
         [self._children.append(f) for f in dirs]
 
     @property
-    def dirs(self) -> list[Self]:
+    def dirs(self) -> list[Directory]:
         return [f for f in self._children if type(f) is Directory]
 
     @property
