@@ -1,22 +1,22 @@
 {
-  "name": "django-clite",
-  "version": "0.16.1",
-  "main": "index.js",
-  "author": "Leo Neto <leo@ekletik.com>",
-  "license": "BSD-3-Clause",
-  "devDependencies": {
-    "husky": "^7.0.0",
-    "standard-version": "^9.3.2"
-  },
-  "scripts": {
-    "prepare": "husky install",
-    "release": "standard-version",
-    "release:minor": "standard-version --release-as minor",
-    "release:patch": "standard-version --release-as patch",
-    "release:major": "standard-version --release-as major"
-  },
-  "dependencies": {
-    "@commitlint/cli": "^17.8.1",
-    "@commitlint/config-conventional": "^15.0.0"
-  }
+	"name": "django-clite",
+	"version": "1.0.0",
+	"main": "index.js",
+	"author": "Leo Neto <leo@ekletik.com>",
+	"license": "BSD-3-Clause",
+	"devDependencies": {
+		"husky": "^7.0.0",
+		"standard-version": "^9.3.2"
+	},
+	"scripts": {
+		"prepare": "husky install",
+		"release": "standard-version",
+		"release:minor": "standard-version --release-as minor",
+		"release:patch": "standard-version --release-as patch",
+		"release:major": "standard-version --release-as major"
+	},
+	"dependencies": {
+		"@commitlint/cli": "^17.8.1",
+		"@commitlint/config-conventional": "^15.0.0"
+	}
 }

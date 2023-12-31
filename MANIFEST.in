@@ -1,5 +1,8 @@
+include INSTALL
+include LICENSE
 include README.md
-include .gitignore
-recursive-include cli
-recursive-include tests *.json *.py *.txt *.tpl
-recursive-include cli/ *.tpl
+include MANIFEST.in
+graft src
+graft tests
+global-exclude __pycache__
+global-exclude *.py[co]
