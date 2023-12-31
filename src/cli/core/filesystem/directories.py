@@ -1,4 +1,5 @@
 # cli:core:filesystem
+from __future__ import annotations
 from typing import Self
 from pathlib import Path
 from rich.tree import Tree
