@@ -1,11 +1,12 @@
 # cli:core:filesystem
 import os
+from typing import Union
 from os import PathLike
 from contextlib import contextmanager
 
 
 @contextmanager
-def working_directory(directory: PathLike | str):
+def working_directory(directory: Union[PathLike, str]):
     # Based on: https://stackoverflow.com/a/53993508/7899348
 
     cwd = os.getcwd()
