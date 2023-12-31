@@ -1,7 +1,6 @@
 # cli:core:filesystem
-import io
 from pathlib import Path
-from typing import Protocol, NamedTuple
+from typing import Protocol
 
 
 class FinderProtocol(Protocol):
