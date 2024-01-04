@@ -82,7 +82,7 @@ def tag(name: str):
 
 def test(name: str):
     return TemplateParser().parse_string(
-        content="from .{{name}} import {{classname}}TestCase",
+        content="from .{{name}}_test import {{classname}}TestCase",
         variables={
             "name": name,
             "classname": inflection.camelize(name),

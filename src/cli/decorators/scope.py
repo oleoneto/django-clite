@@ -21,17 +21,17 @@ def scoped(to: Scope):
     @click.pass_context
     def decorator(ctx, cmd: click.Command):
         noop_cmd = NoOpCommand(
-            name=cmd.name,
-            params=cmd.params,
-            context_settings=cmd.context_settings,
-            hidden=cmd.hidden,
-            callback=cmd.callback,
-            help=cmd.help,
             add_help_option=cmd.add_help_option,
+            callback=cmd.callback,
+            context_settings=cmd.context_settings,
             deprecated=cmd.deprecated,
             epilog=cmd.epilog,
+            help=cmd.help,
+            hidden=cmd.hidden,
+            name=cmd.name,
             no_args_is_help=cmd.no_args_is_help,
             options_metavar=cmd.options_metavar,
+            params=cmd.params,
             short_help=cmd.short_help,
         )
 

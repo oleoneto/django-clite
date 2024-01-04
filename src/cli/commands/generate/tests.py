@@ -38,14 +38,17 @@ def test(ctx, name, scope, full, skip_import):
     scopes = SUPPORTED_SCOPES if full else [scope]
 
     for s in scopes:
+        filename = f"tests/{inflection.pluralize(s)}/{sanitized_string(name)}_test.py"
+
         file = File(
-            name=f"{inflection.pluralize(s)}/{sanitized_string(name)}_test.py",
+            name=filename,
             template=f"{inflection.pluralize(s)}/test.tpl",
             context={
                 "name": name,
                 "module": name,
                 "classname": inflection.camelize(name),
                 "namespace": inflection.pluralize(name),
+                "scope": inflection.pluralize(scope),
             },
         )
 

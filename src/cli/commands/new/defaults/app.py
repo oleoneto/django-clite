@@ -29,7 +29,7 @@ def new_app(name: str) -> Directory:
     ])
 
     tests = Directory("tests", children=[
-        File(name="__init__.py", template="app/viewsets_init.tpl"),
+        File(name="__init__.py", content="from .models import *\nfrom .viewsets import *"),
         generic_package("models"),
         generic_package("viewsets"),
     ])
