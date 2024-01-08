@@ -1,4 +1,6 @@
 # cli:decorators:scope
+import os
+
 import click
 from enum import Enum
 
@@ -11,16 +13,44 @@ class Scope(Enum):
 
 
 def scoped(to: Scope):
-    class NoOpCommand(click.Command):
-        def invoke(self, ctx):
-            click.echo(
-                f"Command {self.name} has '{to.value}' scope but the {to.value} was not detected"
-            )
-            raise click.Abort()
+    def decorator(cmd: click.Command):
+        def allowed_to_continue() -> bool:
+            django_files = core_project_files(os.getcwd())
 
-    @click.pass_context
-    def decorator(ctx, cmd: click.Command):
-        noop_cmd = NoOpCommand(
+            # TODO: Handle forceful creation
+
+            # 1. Probably not inside a django project directory
+            if len(django_files) == 0:
+                return False
+
+            # 2. Possibly inside a django project, but no app detected
+            if to == Scope.APP and django_files.get("apps.py", None):
+                return True
+
+            # 3. No django project detected
+            matched_project_files = [
+                x
+                for x in django_files.keys()
+                if x in ["manage.py", "wsgi.py", "asgi.py"]
+            ]
+            if to == Scope.PROJECT and len(matched_project_files) > 0:
+                return True
+
+            return False
+
+        class ScopedCommand(click.Command):
+            def invoke(self, ctx):
+                if allowed_to_continue():
+                    super().invoke(ctx)
+                    return
+
+                click.echo(
+                    f"Command {cmd.name} has '{to.value}' scope but the {to.value} was not detected",
+                    err=True,
+                )
+                raise click.Abort()
+
+        return ScopedCommand(
             add_help_option=cmd.add_help_option,
             callback=cmd.callback,
             context_settings=cmd.context_settings,
@@ -34,31 +64,5 @@ def scoped(to: Scope):
             params=cmd.params,
             short_help=cmd.short_help,
         )
-
-        django_files = core_project_files()
-
-        # NOTE: Handle forceful creation
-        force = ctx.params.get("force", False)
-        parent = ctx.parent
-        while parent is not None:
-            force = parent.params.get("force", False)
-            parent = parent.parent
-
-        if not force:
-            # 1. Probably not inside a django project directory
-            if len(django_files) == 0:
-                return noop_cmd
-
-            # 2. Possibly inside a django project, but no app detected
-            elif to == Scope.APP and not django_files.get("apps.py", None):
-                return noop_cmd
-
-            # 3. No django project detected
-            elif to == Scope.PROJECT and 1 > len(
-                [django_files.get(x, None) for x in ["manage.py", "wsgi.py", "asgi.py"]]
-            ):
-                return noop_cmd
-
-        return cmd
 
     return decorator
