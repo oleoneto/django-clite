@@ -16,16 +16,25 @@ from cli.constants import (
 from cli.core.templates.template import TemplateParser
 
 
-@click.command(cls=AliasedAndDiscoverableGroup)
+@click.command(
+    cls=AliasedAndDiscoverableGroup, context_settings=dict(ignore_unknown_options=True)
+)
 @click.option("--debug", is_flag=True, help="Enable debug logs.")
 @click.option("--dry", is_flag=True, help="Do not modify the file system.")
 @click.option("-f", "--force", is_flag=True, help="Override any conflicting files.")
 @click.option("--verbose", is_flag=True, help="Enable verbosity.")
 @click.option("--project", help="Project name.")
 @click.option("--app", help="Application name.")
+@click.option(
+    "--templates-dir",
+    "-t",
+    envvar="DJANGO_CLITE_TEMPLATES_DIR",
+    help="Template directory.",
+    type=click.Path(),
+)
 @click.version_option(version=VERSION)
 @click.pass_context
-def cli(ctx, debug, dry, force, verbose, project, app):
+def cli(ctx, debug, dry, force, verbose, project, app, templates_dir):
     """
     django-clite by Leo Neto
 
@@ -75,8 +84,13 @@ def cli(ctx, debug, dry, force, verbose, project, app):
     django_files = core_project_files()
     project_name, app_name = project_and_app_names(django_files)
 
+    templates = [Path(__file__).resolve().parent / "template_files"]
+
+    if templates_dir is not None:
+        templates.append(Path(templates_dir))
+
     TemplateParser(
-        templates_dir=Path(__file__).resolve().parent / "template_files",
+        templates_dir=templates,
         context={
             "project": project or project_name,
             "app": app or app_name,
