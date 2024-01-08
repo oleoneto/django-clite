@@ -14,7 +14,9 @@ from .app import apps as apps_cmd
 @click.command()
 @click.argument("name", callback=sanitized_string_callback)
 @click.argument("apps", nargs=-1, callback=application_callback)
-@click.option("--docker", is_flag=True, help="Render Dockerfile and other docker-related files.")
+@click.option(
+    "--docker", is_flag=True, help="Render Dockerfile and other docker-related files."
+)
 @click.option("--github", is_flag=True, help="Render GitHub CI template.")
 @click.option("--kubernetes", is_flag=True, help="Render Kubernetes deployment files.")
 # @click.option("--dokku", is_flag=True, help="Render Dokku deployment files.")
@@ -63,7 +65,5 @@ def project(ctx, name, apps, docker, github, kubernetes):  # TODO: dokku, heroku
         # TODO: Initialize git repository?
 
     except CommandError as err:
-        click.echo(
-            f"Command returned an error {repr(err)}"
-        )
+        click.echo(f"Command returned an error {repr(err)}")
         raise click.Abort()

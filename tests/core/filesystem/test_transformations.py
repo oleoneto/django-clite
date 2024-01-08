@@ -6,7 +6,7 @@ from cli.core.filesystem.transformations import (
     DeleteFile,
     MoveFile,
     AddLineToFile,
-    RemoveLineFromFile
+    RemoveLineFromFile,
 )
 
 runner = CliRunner()
@@ -20,10 +20,10 @@ class TransformationsTestCase(unittest.TestCase):
             file.write_text("line_1\n")
 
             AddLineToFile(file, "line_2").run()
-            self.assertEqual("line_1\nline_2\n", file.read_text('utf-8'))
+            self.assertEqual("line_1\nline_2\n", file.read_text("utf-8"))
 
             AddLineToFile(file, "line_3").run()
-            self.assertEqual("line_1\nline_2\nline_3\n", file.read_text('utf-8'))
+            self.assertEqual("line_1\nline_2\nline_3\n", file.read_text("utf-8"))
 
     def test_remove_line(self):
         file = Path("new.scratch")
@@ -33,11 +33,11 @@ class TransformationsTestCase(unittest.TestCase):
 
             # Do nothing
             RemoveLineFromFile(file, "line_3").run()
-            self.assertEqual("line_1\nline_2\n", file.read_text('utf-8'))
+            self.assertEqual("line_1\nline_2\n", file.read_text("utf-8"))
 
             # Pop string
             RemoveLineFromFile(file, "line_1").run()
-            self.assertEqual("line_2\n", file.read_text('utf-8'))
+            self.assertEqual("line_2\n", file.read_text("utf-8"))
 
     def test_move_file(self):
         source = "file.py"

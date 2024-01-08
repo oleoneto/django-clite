@@ -10,7 +10,7 @@ runner = CliRunner()
 
 class FileSystemTestCase(unittest.TestCase):
     def test_change_working_directory(self):
-        with (runner.isolated_filesystem()):
+        with runner.isolated_filesystem():
             parent = "project"
             child1 = "project/child1"
             child2 = "project/child2"
@@ -33,7 +33,7 @@ class FileSystemTestCase(unittest.TestCase):
                 self.assertTrue(os.getcwd().endswith(child2))
 
     def test_change_to_unknown_working_directory(self):
-        with (runner.isolated_filesystem()):
+        with runner.isolated_filesystem():
             child1 = "project/child1"
             child2 = "project/child2"
 
@@ -46,7 +46,7 @@ class FileSystemTestCase(unittest.TestCase):
                 self.assertFalse(os.getcwd().endswith(child2))
 
     def test_invalid_param_as_working_directory(self):
-        with (runner.isolated_filesystem()):
+        with runner.isolated_filesystem():
             location = "location."
 
             cwd = os.getcwd()

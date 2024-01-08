@@ -92,12 +92,12 @@ def test(name: str):
 
 def validator(name: str):
     return TemplateParser().parse_string(
-            content="from .{{name}} import {{name}}_validator",
-            variables={
-                "name": name,
-                "classname": inflection.camelize(name),
-            },
-        )
+        content="from .{{name}} import {{name}}_validator",
+        variables={
+            "name": name,
+            "classname": inflection.camelize(name),
+        },
+    )
 
 
 def view(name: str, klass: str):

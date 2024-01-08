@@ -154,7 +154,9 @@ class FieldFactoryTestCase(unittest.TestCase):
             self.assertEqual("UUIDField", field.kind)
             self.assertEqual("id", field.name)
             self.assertEqual("Album", field.model)
-            self.assertEqual("_('id'), default=uuid.uuid4, editable=False", field.options)
+            self.assertEqual(
+                "_('id'), default=uuid.uuid4, editable=False", field.options
+            )
 
             self.assertFalse(field.is_media_field)
             self.assertFalse(field.is_relationship)
@@ -173,7 +175,10 @@ class FieldFactoryTestCase(unittest.TestCase):
             self.assertEqual("FileField", field.kind)
             self.assertEqual("file", field.name)
             self.assertEqual("Album", field.model)
-            self.assertEqual("_('file'), blank=False, upload_to='uploads/albums/files/'", field.options)
+            self.assertEqual(
+                "_('file'), blank=False, upload_to='uploads/albums/files/'",
+                field.options,
+            )
 
             self.assertTrue(field.is_media_field)
             self.assertFalse(field.is_relationship)
@@ -190,7 +195,10 @@ class FieldFactoryTestCase(unittest.TestCase):
             self.assertEqual("FilePathField", field.kind)
             self.assertEqual("file", field.name)
             self.assertEqual("Album", field.model)
-            self.assertEqual("_('file'), blank=True, upload_to='uploads/albums/files/'", field.options)
+            self.assertEqual(
+                "_('file'), blank=True, upload_to='uploads/albums/files/'",
+                field.options,
+            )
 
             self.assertTrue(field.is_media_field)
             self.assertFalse(field.is_relationship)
@@ -207,7 +215,10 @@ class FieldFactoryTestCase(unittest.TestCase):
             self.assertEqual("ImageField", field.kind)
             self.assertEqual("image", field.name)
             self.assertEqual("Album", field.model)
-            self.assertEqual("_('image'), blank=False, upload_to='uploads/albums/images/'", field.options)
+            self.assertEqual(
+                "_('image'), blank=False, upload_to='uploads/albums/images/'",
+                field.options,
+            )
 
             self.assertTrue(field.is_media_field)
             self.assertFalse(field.is_relationship)

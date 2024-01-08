@@ -22,7 +22,11 @@ class FileTestCase(unittest.TestCase):
 
     def test_create_file_and_intermittent_directories(self):
         with runner.isolated_filesystem():
-            file = File("files/1/2/new.scratch", content="{{greeting}} world!", context={"greeting": "Hello"})
+            file = File(
+                "files/1/2/new.scratch",
+                content="{{greeting}} world!",
+                context={"greeting": "Hello"},
+            )
             file.create()
 
             self.assertTrue(file.path().exists())
@@ -31,7 +35,11 @@ class FileTestCase(unittest.TestCase):
 
     def test_delete_file(self):
         with runner.isolated_filesystem():
-            file = File("new.scratch", content="{{greeting}} world!", context={"greeting": "Hello"})
+            file = File(
+                "new.scratch",
+                content="{{greeting}} world!",
+                context={"greeting": "Hello"},
+            )
             file.create()
 
             self.assertTrue(file.path().exists())

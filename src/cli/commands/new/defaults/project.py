@@ -41,35 +41,57 @@ def new_project(name: str, **options) -> Directory:
             File(name=".gitignore", template="project/gitignore.tpl"),
             File(name="README.md", template="project/README.tpl"),
             File(name="requirements.txt", template="project/requirements.tpl"),
-        ]
+        ],
     )
 
     # Handle user options
 
     if options.get("github", False):
-        root.add_children([Directory(".github", children=[
-                File(name="ci.yml", template="github/ci.tpl"),
-                File(name="pull_request_template.md", template="github/pull_request_template.tpl"),
-            ],
-        )])
+        root.add_children(
+            [
+                Directory(
+                    ".github",
+                    children=[
+                        File(name="ci.yml", template="github/ci.tpl"),
+                        File(
+                            name="pull_request_template.md",
+                            template="github/pull_request_template.tpl",
+                        ),
+                    ],
+                )
+            ]
+        )
 
     if options.get("docker", False):
-        root.add_children([
-            File(name=".dockerignore", template="docker/dockerignore.tpl"),
-            File(name="Dockerfile", template="docker/dockerfile.tpl"),
-            File(name="docker-compose.yml", template="docker/docker-compose.tpl"),
-            File(name="docker-entrypoint.sh", template="docker/docker-entrypoint.tpl"),
-        ])
+        root.add_children(
+            [
+                File(name=".dockerignore", template="docker/dockerignore.tpl"),
+                File(name="Dockerfile", template="docker/dockerfile.tpl"),
+                File(name="docker-compose.yml", template="docker/docker-compose.tpl"),
+                File(
+                    name="docker-entrypoint.sh", template="docker/docker-entrypoint.tpl"
+                ),
+            ]
+        )
 
     if options.get("kubernetes", False):
-        root.add_children([
-            Directory(".kubernetes", children=[
-                File(name="deployment.yaml", template="kubernetes/deployment.tpl"),
-                File(name="service.yaml", template="kubernetes/service.tpl"),
-                File(name="ingress.yaml", template="kubernetes/ingress.tpl"),
-                File(name="configmap.yaml", template="kubernetes/configmap.tpl"),
-            ]),
-        ])
+        root.add_children(
+            [
+                Directory(
+                    ".kubernetes",
+                    children=[
+                        File(
+                            name="deployment.yaml", template="kubernetes/deployment.tpl"
+                        ),
+                        File(name="service.yaml", template="kubernetes/service.tpl"),
+                        File(name="ingress.yaml", template="kubernetes/ingress.tpl"),
+                        File(
+                            name="configmap.yaml", template="kubernetes/configmap.tpl"
+                        ),
+                    ],
+                ),
+            ]
+        )
 
     # TODO: implement celery option
     # if options.get("celery", False):
