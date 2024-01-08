@@ -7,17 +7,23 @@ from cli.decorators.singleton import singleton
 
 @singleton
 class TemplateParser(TemplateParserProtocol):
-    def __init__(self, templates_dir: Path, context: dict = None):
+    def __init__(self, templates_dir: list[Path] = None, context: dict = None):
+        if context is None:
+            context = {}
+
+        if templates_dir is None:
+            templates_dir = []
+
         self.project = context.get("project", "")
         self.app = context.get("app", "")
         self.context = context
-        self.template_directories = templates_dir
+        self.templates = templates_dir
 
     def parse_file(self, filepath, variables) -> str:
         variables.update(self.context)
 
         environment = Environment(
-            loader=FileSystemLoader(self.template_directories),
+            loader=FileSystemLoader(self.templates),
             autoescape=select_autoescape(),
         )
 

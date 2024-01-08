@@ -24,11 +24,14 @@ class DirectoryTestCase(unittest.TestCase):
         with runner.isolated_filesystem():
             name = "project"
 
-            d = Directory(name, children=[
-                File(name="file1.txt"),
-                File(name="file2.md"),
-                Directory("folder"),
-            ])
+            d = Directory(
+                name,
+                children=[
+                    File(name="file1.txt"),
+                    File(name="file2.md"),
+                    Directory("folder"),
+                ],
+            )
 
             d.create()
 
@@ -51,11 +54,14 @@ class DirectoryTestCase(unittest.TestCase):
             file2 = File(name="file2.md", content="File 2")
             dir1 = Directory("folder")
 
-            d = Directory(parent, children=[
-                file1,
-                file2,
-                dir1,
-            ])
+            d = Directory(
+                parent,
+                children=[
+                    file1,
+                    file2,
+                    dir1,
+                ],
+            )
 
             d.create()
 
@@ -78,11 +84,14 @@ class DirectoryTestCase(unittest.TestCase):
         with runner.isolated_filesystem():
             name = "project"
 
-            d = Directory(name, children=[
-                File(name="file1.txt"),
-                File(name="file2.md"),
-                Directory("folder"),
-            ])
+            d = Directory(
+                name,
+                children=[
+                    File(name="file1.txt"),
+                    File(name="file2.md"),
+                    Directory("folder"),
+                ],
+            )
 
             d.create()
 

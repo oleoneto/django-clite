@@ -2,6 +2,7 @@
 import click
 
 from cli.commands.generate.admin import admin, admin_inline as admin_inline
+from cli.commands.generate.dockerfile import dockerfile
 from cli.commands.generate.fixtures import fixture
 from cli.commands.generate.forms import form
 from cli.commands.generate.management import management
@@ -34,6 +35,7 @@ def generate(ctx, project, app):
     for cmd in [
         admin,
         admin_inline,
+        dockerfile,
         fixture,
         form,
         management,
