@@ -4,7 +4,7 @@ import os
 import click
 from enum import Enum
 
-from cli.core.filesystem.finder import core_project_files
+from geny.core.filesystem.finder import core_project_files
 
 
 class Scope(Enum):

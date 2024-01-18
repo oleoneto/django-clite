@@ -4,7 +4,7 @@ from click.testing import CliRunner
 from django.core.management import call_command
 from django.core.management.commands import startapp, startproject
 
-from cli.core.filesystem.filesystem import working_directory
+from geny.core.filesystem.filesystem import working_directory
 from cli.commands.generate.main import generate
 
 
@@ -76,9 +76,7 @@ class GeneratorTestCase(unittest.TestCase):
 
                 self.assertEqual(0, res.exit_code)
                 self.assertIn(resource_dir, os.listdir())
-                self.assertIn(
-                    "article.json", os.listdir(resource_dir)
-                )  # FIX: fixture file should be plural
+                self.assertIn("article.json", os.listdir(resource_dir))
 
     def test_generate_form(self):
         with runner.isolated_filesystem():

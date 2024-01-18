@@ -1,7 +1,7 @@
 # cli:commands:new:defaults:project
-from cli.core.filesystem.files import File
-from cli.core.filesystem.directories import Directory
-from cli.core.filesystem.transformations import MoveFile
+from geny.core.filesystem.files import File
+from geny.core.filesystem.directories import Directory
+from geny.core.filesystem.transformations import MoveFile
 
 project_transformations = []
 

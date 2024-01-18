@@ -1,9 +1,12 @@
 import click
 import logging
 from pathlib import Path
-from cli import VERSION
+
 from cli.extensions.combined import AliasedAndDiscoverableGroup
-from cli.core.filesystem.finder import core_project_files, project_and_app_names
+from geny.core.filesystem.finder import core_project_files, project_and_app_names
+from geny.core.templates.template import TemplateParser
+
+from cli import VERSION
 from cli.constants import (
     DJANGO_FILES_KEY,
     ENABLE_DRY_RUN_KEY,
@@ -13,7 +16,6 @@ from cli.constants import (
     PROJECT_NAME_KEY,
     APPLICATION_NAME_KEY,
 )
-from cli.core.templates.template import TemplateParser
 
 
 @click.command(
