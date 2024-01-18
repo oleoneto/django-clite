@@ -1,9 +1,9 @@
 name: publish
 
 on:
-  push:
-    tags:
-      - 'v*'
+  release:
+    types:
+      - released
 
 jobs:
   build:
@@ -12,17 +12,6 @@ jobs:
     - name: Checkout code
       id: checkout_code
       uses: actions/checkout@master
-
-    - name: Create release
-      id: create_release
-      uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        tag_name: ${{ github.ref }}
-        release_name: Release ${{ github.ref }}
-        draft: false
-        prerelease: false
 
     - name: Set up Python
       uses: actions/setup-python@v4

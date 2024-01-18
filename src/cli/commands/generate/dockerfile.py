@@ -1,6 +1,6 @@
 import click
 
-from cli.core.filesystem.files import File
+from geny.core.filesystem.files import File
 from cli.decorators.scope import scoped, Scope
 
 

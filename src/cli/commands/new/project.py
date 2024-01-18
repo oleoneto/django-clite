@@ -3,11 +3,12 @@ from pathlib import Path
 from django.core.management import call_command, CommandError
 from django.core.management.commands import startproject
 
-from .defaults.project import new_project, project_transformations
-from .defaults.app import application_callback
+from geny.core.filesystem.filesystem import working_directory
 from cli.commands.callbacks import sanitized_string_callback
 from cli.constants import ENABLE_DRY_RUN_KEY
-from cli.core.filesystem.filesystem import working_directory
+
+from .defaults.project import new_project, project_transformations
+from .defaults.app import application_callback
 from .app import apps as apps_cmd
 
 

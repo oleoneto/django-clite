@@ -1,0 +1,1 @@
+# cli:commands:new:defaults

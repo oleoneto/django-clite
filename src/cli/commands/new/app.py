@@ -1,7 +1,7 @@
 import click
 
-from .defaults.app import application_callback
 from cli.constants import ENABLE_DRY_RUN_KEY
+from .defaults.app import application_callback
 
 
 @click.command()

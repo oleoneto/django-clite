@@ -1,8 +1,8 @@
 import click
 import inflection
 
+from geny.core.filesystem.files import File
 from cli.commands.callbacks import sanitized_string_callback, fields_callback
-from cli.core.filesystem.files import File
 from cli.decorators.scope import scoped, Scope
 
 

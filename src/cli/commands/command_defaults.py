@@ -1,5 +1,5 @@
 import inflection
-from cli.core.templates.template import TemplateParser
+from geny.core.templates.template import TemplateParser
 
 
 def generic(name: str):

@@ -1,6 +1,6 @@
 # # cli:commands:new:defaults:app
-from cli.core.filesystem.files import File
-from cli.core.filesystem.directories import Directory
+from geny.core.filesystem.files import File
+from geny.core.filesystem.directories import Directory
 
 
 def generic_package(n: str) -> Directory:
