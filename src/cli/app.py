@@ -6,7 +6,6 @@ from cli.extensions.combined import AliasedAndDiscoverableGroup
 from geny.core.filesystem.finder import core_project_files, project_and_app_names
 from geny.core.templates.template import TemplateParser
 
-from cli import VERSION
 from cli.constants import (
     DJANGO_FILES_KEY,
     ENABLE_DRY_RUN_KEY,
@@ -34,7 +33,7 @@ from cli.constants import (
     help="Template directory.",
     type=click.Path(),
 )
-@click.version_option(version=VERSION)
+@click.version_option(package_name="django-clite")
 @click.pass_context
 def cli(ctx, debug, dry, force, verbose, project, app, templates_dir):
     """
