@@ -4,7 +4,7 @@
 """
 import os
 
-__version__ = "0.19.0"
+__version__ = "0.19.1"
 __license__ = "BSD 3-Clause"
 __author__ = "Leo Neto"
 __copyright__ = "Copyright 2019-2023 Leo Neto"
