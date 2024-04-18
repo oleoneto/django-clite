@@ -87,9 +87,9 @@ prepending or appending any number of underscores (`_`). Any code contained with
 The flag `--templates-dir` can be used to configure an additional path wherein the CLI can look for resource templates.
 Alternatively, you can use the environment variable `DJANGO_CLITE_TEMPLATES_DIR` for the same purpose.
 
-Take a look at the [template files directory](src/cli/template_files) for a reference of what files can be overriden. The
+Take a look at the [template files directory](django_clite/cli/template_files) for a reference of what files can be overriden. The
 paths of the templates you wish to override need to match the provided template. For example, if you wish to override the
-model template, which is defined under [`src/cli/template_files/models/model.tpl`](src/cli/template_files/models/model.tpl),
+model template, which is defined under [`src/cli/template_files/models/model.tpl`](django_clite/cli/template_files/models/model.tpl),
 you should define your own model template under your desired directory, i.e `/path/to/templates/models/model.tpl`.
 
 ## Development

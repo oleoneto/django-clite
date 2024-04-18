@@ -5,7 +5,7 @@ from django.core.management import call_command
 from django.core.management.commands import startapp, startproject
 
 from geny.core.filesystem.filesystem import working_directory
-from cli.commands.generate.main import generate
+from django_clite.commands.generate.main import generate
 
 
 runner = CliRunner()
