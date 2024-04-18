@@ -17,4 +17,4 @@ COPY . .
 # Install dependencies
 RUN apk add gcc musl-dev linux-headers && pip install -e .
 
-ENTRYPOINT ["django-clite"]
+CMD ["django-clite"]
