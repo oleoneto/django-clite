@@ -53,3 +53,6 @@ Issues = "https://github.com/oleoneto/django-clite/issues"
 
 [project.scripts]
 django-clite = "django_clite.cli.cli:cli"
+
+[tool.setuptools]
+packages = ["django_clite"]
