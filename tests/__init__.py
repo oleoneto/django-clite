@@ -3,8 +3,8 @@ import unittest
 
 from pathlib import Path
 
-from cli import template_files
 from geny.core.templates.template import TemplateParser
+from django_clite import template_files
 
 parser = TemplateParser(
     templates_dir=[Path(template_files.__file__).resolve().parent],
