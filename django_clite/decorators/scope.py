@@ -39,7 +39,7 @@ def scoped(to: Scope):
 
         class ScopedCommand(click.Command):
             def invoke(self, ctx):
-                if ctx.obj[ENABLE_FORCE_KEY] or allowed_to_continue():
+                if ctx.obj.get(ENABLE_FORCE_KEY, False) or allowed_to_continue():
                     super().invoke(ctx)
                     return
 

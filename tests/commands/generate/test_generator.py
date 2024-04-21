@@ -31,8 +31,9 @@ class GeneratorTestCase(unittest.TestCase):
             }
 
             for command in commands:
-                res = runner.invoke(generate, [command, "article"])
+                res = runner.invoke(generate, [command, "article"])  # noqa
                 self.assertNotEqual(0, res.exit_code)
+
                 self.assertIn("app was not detected", res.output)
 
     # App-level resources
@@ -43,7 +44,7 @@ class GeneratorTestCase(unittest.TestCase):
             call_command(startapp.Command(), app, verbosity=0)
 
             with working_directory(app):
-                res = runner.invoke(generate, ["admin", "article"])
+                res = runner.invoke(generate, ["admin", "article"])  # noqa
 
                 self.assertEqual(0, res.exit_code)
                 self.assertIn("admin", os.listdir())
@@ -55,7 +56,7 @@ class GeneratorTestCase(unittest.TestCase):
             call_command(startapp.Command(), app, verbosity=0)
 
             with working_directory(app):
-                res = runner.invoke(generate, ["admin-inline", "article"])
+                res = runner.invoke(generate, ["admin-inline", "article"])  # noqa
 
                 self.assertEqual(0, res.exit_code)
                 self.assertIn("admin", os.listdir())
@@ -72,7 +73,7 @@ class GeneratorTestCase(unittest.TestCase):
                 command = "fixture"
                 resource_dir = "fixtures"
 
-                res = runner.invoke(generate, [command, resource])
+                res = runner.invoke(generate, [command, resource])  # noqa
 
                 self.assertEqual(0, res.exit_code)
                 self.assertIn(resource_dir, os.listdir())
@@ -88,7 +89,7 @@ class GeneratorTestCase(unittest.TestCase):
                 command = "form"
                 resource_dir = "forms"
 
-                res = runner.invoke(generate, [command, resource])
+                res = runner.invoke(generate, [command, resource])  # noqa
 
                 self.assertEqual(0, res.exit_code)
                 self.assertIn(resource_dir, os.listdir())
@@ -104,7 +105,7 @@ class GeneratorTestCase(unittest.TestCase):
                 command = "manager"
                 resource_dir = "managers"
 
-                res = runner.invoke(generate, [command, resource])
+                res = runner.invoke(generate, [command, resource])  # noqa
 
                 self.assertEqual(0, res.exit_code)
                 self.assertIn(resource_dir, os.listdir("models"))
@@ -120,7 +121,7 @@ class GeneratorTestCase(unittest.TestCase):
                 command = "model"
                 resource_dir = "models"
 
-                res = runner.invoke(generate, [command, resource])
+                res = runner.invoke(generate, [command, resource])  # noqa
 
                 self.assertEqual(0, res.exit_code)
                 self.assertIn(resource_dir, os.listdir())
@@ -136,7 +137,7 @@ class GeneratorTestCase(unittest.TestCase):
                 command = "serializer"
                 resource_dir = "serializers"
 
-                res = runner.invoke(generate, [command, resource])
+                res = runner.invoke(generate, [command, resource])  # noqa
 
                 self.assertEqual(0, res.exit_code)
                 self.assertIn(resource_dir, os.listdir())
@@ -152,7 +153,7 @@ class GeneratorTestCase(unittest.TestCase):
                 command = "signal"
                 resource_dir = "signals"
 
-                res = runner.invoke(generate, [command, resource])
+                res = runner.invoke(generate, [command, resource])  # noqa
 
                 self.assertEqual(0, res.exit_code)
                 self.assertIn(resource_dir, os.listdir("models"))
@@ -170,7 +171,7 @@ class GeneratorTestCase(unittest.TestCase):
                 command = "tag"
                 resource_dir = "templatetags"
 
-                res = runner.invoke(generate, [command, resource])
+                res = runner.invoke(generate, [command, resource])  # noqa
 
                 self.assertEqual(0, res.exit_code)
                 self.assertIn(resource_dir, os.listdir())
@@ -186,7 +187,7 @@ class GeneratorTestCase(unittest.TestCase):
                 command = "template"
                 resource_dir = "templates"
 
-                res = runner.invoke(generate, [command, resource, "--full"])
+                res = runner.invoke(generate, [command, resource, "--full"])  # noqa
 
                 self.assertEqual(0, res.exit_code)
                 self.assertIn(resource_dir, os.listdir())
@@ -210,7 +211,7 @@ class GeneratorTestCase(unittest.TestCase):
                 command = "test"
                 resource_dir = "models"
 
-                res = runner.invoke(generate, [command, resource, "--scope", "model"])
+                res = runner.invoke(generate, [command, resource, "--scope", "model"])  # noqa
 
                 self.assertEqual(0, res.exit_code)
                 self.assertIn(resource_dir, os.listdir("tests"))
@@ -221,7 +222,7 @@ class GeneratorTestCase(unittest.TestCase):
                 command = "test"
                 resource_dir = "viewsets"
 
-                res = runner.invoke(generate, [command, resource, "--scope", "viewset"])
+                res = runner.invoke(generate, [command, resource, "--scope", "viewset"])  # noqa
 
                 self.assertEqual(0, res.exit_code)
                 self.assertIn(resource_dir, os.listdir("tests"))
@@ -237,7 +238,7 @@ class GeneratorTestCase(unittest.TestCase):
                 command = "validator"
                 resource_dir = "validators"
 
-                res = runner.invoke(generate, [command, resource])
+                res = runner.invoke(generate, [command, resource])  # noqa
 
                 self.assertEqual(0, res.exit_code)
                 self.assertIn(resource_dir, os.listdir("models"))
@@ -253,7 +254,7 @@ class GeneratorTestCase(unittest.TestCase):
                 command = "view"
                 resource_dir = "views"
 
-                res = runner.invoke(generate, [command, resource])
+                res = runner.invoke(generate, [command, resource])  # noqa
 
                 self.assertEqual(0, res.exit_code)
                 self.assertIn(resource_dir, os.listdir())
@@ -269,7 +270,7 @@ class GeneratorTestCase(unittest.TestCase):
                 command = "viewset"
                 resource_dir = "viewsets"
 
-                res = runner.invoke(generate, [command, resource])
+                res = runner.invoke(generate, [command, resource])  # noqa
 
                 self.assertEqual(0, res.exit_code)
                 self.assertIn(resource_dir, os.listdir())
@@ -278,7 +279,7 @@ class GeneratorTestCase(unittest.TestCase):
     # Project-level resource
 
     def test_generate_dockerfile_requires_project_dir(self):
-        res = runner.invoke(generate, ["dockerfile"])
+        res = runner.invoke(generate, ["dockerfile"])  # noqa
         self.assertNotEqual(0, res.exit_code)
         self.assertIn("project was not detected", res.output)
 
@@ -288,7 +289,7 @@ class GeneratorTestCase(unittest.TestCase):
             call_command(startapp.Command(), app, verbosity=0)
 
             with working_directory(app):
-                res = runner.invoke(generate, ["dockerfile"])
+                res = runner.invoke(generate, ["dockerfile"])  # noqa
                 self.assertNotEqual(0, res.exit_code)
                 self.assertIn("project was not detected", res.output)
 
@@ -298,7 +299,7 @@ class GeneratorTestCase(unittest.TestCase):
             call_command(startproject.Command(), project, verbosity=0)
 
             with working_directory(project):
-                res = runner.invoke(generate, ["dockerfile"])
+                res = runner.invoke(generate, ["dockerfile"])  # noqa
 
                 self.assertEqual(0, res.exit_code)
                 self.assertIn("Dockerfile", os.listdir())
@@ -308,7 +309,7 @@ class GeneratorTestCase(unittest.TestCase):
             call_command(startproject.Command(), project, verbosity=0)
 
             with working_directory(project):
-                res = runner.invoke(generate, ["dockerfile", "--docker-compose"])
+                res = runner.invoke(generate, ["dockerfile", "--docker-compose"])  # noqa
 
                 self.assertEqual(0, res.exit_code)
                 self.assertIn("Dockerfile", os.listdir())
