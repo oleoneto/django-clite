@@ -1,7 +1,9 @@
 import click
+import pathlib
 import inflection
 
 from geny.core.filesystem.files import File
+from geny.core.filesystem.transformations import AddLineToFile, TouchFile
 from django_clite.core.logger import logger
 from django_clite.decorators.scope import scoped, Scope
 from django_clite.commands import command_defaults
@@ -48,12 +50,21 @@ def test(ctx, name, scope, full, skip_import):
                 "module": name,
                 "classname": inflection.camelize(name),
                 "namespace": inflection.pluralize(name),
-                "scope": inflection.pluralize(scope),
+                "scope": "" if scope is None else inflection.pluralize(scope),
             },
         )
 
-        file.create(
-            import_statement=command_defaults.test(name),
-            add_import_statement=not skip_import,
-            **ctx.obj,
-        )
+        after_hooks = [
+            TouchFile(f'tests/{inflection.pluralize(s)}/__init__.py')
+        ]
+
+        if not skip_import:
+            after_hooks.append(
+                AddLineToFile(
+                    pathlib.Path(f'tests/{inflection.pluralize(s)}/__init__.py'),
+                    command_defaults.test(name),
+                    prevent_duplicates=True,
+                )
+            )
+
+        file.create(after_hooks=after_hooks, **ctx.obj)

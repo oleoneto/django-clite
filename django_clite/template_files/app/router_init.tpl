@@ -1,2 +1,2 @@
-from .api import urlpatterns
-from .router import router
+from .urls import router
+from .urls import urlpatterns

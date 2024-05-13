@@ -1,6 +1,8 @@
 import click
 
+from pathlib import Path
 from geny.core.filesystem.files import File
+from geny.core.filesystem.transformations import RemoveLineFromFile
 from django_clite.decorators.scope import scoped, Scope
 from django_clite.commands import command_defaults
 from django_clite.commands.callbacks import sanitized_string_callback
@@ -17,11 +19,15 @@ def viewset(ctx, name, full):
     """
 
     File(name=f"viewsets/{name}.py").destroy(
-        **{
-            "import_statement": command_defaults.viewset(name),
-            **ctx.obj,
-        }
+        after_hooks=[
+            RemoveLineFromFile(
+                Path(f"viewsets/__init__.py"),
+                command_defaults.viewset(name)
+            ),
+        ],
+        **ctx.obj
     )
+
 
     if full:
         from .tests import test as cmd

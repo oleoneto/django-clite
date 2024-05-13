@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from {{ project }}.{{ app }}.models import {{ classname }}
+from ..models import {{ classname }}
 
 
 class {{ classname }}Serializer(serializers.ModelSerializer):

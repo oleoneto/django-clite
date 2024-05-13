@@ -14,9 +14,8 @@ urlpatterns = [
 """
 
 from django.urls import include, path
-from .router import api
+from .router.urls import urlpatterns as urls
 
 app_name = "{{ app }}"
 
-urlpatterns = [] \
-    + api.urlpatterns
+urlpatterns = [] + urls

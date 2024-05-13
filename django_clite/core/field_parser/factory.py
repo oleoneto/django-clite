@@ -69,7 +69,7 @@ class FieldOptions:
 
         if self.is_relationship:
             self.options.update(
-                {"related_name": f"'{inflection.singularize(model_name.lower())}'"}
+                {"related_name": f"'{inflection.pluralize(inflection.dasherize(model_name.lower()))}'"}
             )
 
         options = [self.klass_name(attr_name)] if self.is_relationship else []
@@ -161,7 +161,7 @@ field_registry = {
 
     # Numeric
     "big": FieldOptions(kind="BigIntegerField"),
-    "decimal": FieldOptions(kind="DecimalField"),
+    "decimal": FieldOptions(kind="DecimalField", options={"decimal_places": 2, "max_digits": 8}),
     "float": FieldOptions(kind="FloatField"),
     "int": FieldOptions(kind="IntegerField"),
 

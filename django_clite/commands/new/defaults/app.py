@@ -32,8 +32,7 @@ def new_app(name: str) -> Directory:
         "router",
         children=[
             File(name="__init__.py", template="app/router_init.tpl"),
-            File(name="api.py", template="app/api.tpl"),
-            File(name="router.py", template="app/router.tpl"),
+            File(name="urls.py", template="app/router_urls.tpl"),
         ],
     )
 

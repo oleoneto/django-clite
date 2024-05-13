@@ -1,6 +1,8 @@
 import click
 
+from pathlib import Path
 from geny.core.filesystem.files import File
+from geny.core.filesystem.transformations import RemoveLineFromFile
 from django_clite.core.logger import logger
 from django_clite.decorators.scope import scoped, Scope
 from django_clite.commands import command_defaults
@@ -44,10 +46,13 @@ def model(
         raise click.Abort()
 
     File(name=f"models/{name}.py").destroy(
-        **{
-            "import_statement": command_defaults.model(name),
-            **ctx.obj,
-        }
+        after_hooks=[
+            RemoveLineFromFile(
+                Path(f"models/__init__.py"),
+                command_defaults.model(name)
+            ),
+        ],
+        **ctx.obj
     )
 
     def destroy_related_resources():
@@ -100,7 +105,7 @@ def model(
 @click.pass_context
 def scaffold(ctx, name):
     """
-    Generate all resources for a given model.
+    Delete all resources for a given model.
     """
 
     ctx.invoke(model, name=name, full=True)

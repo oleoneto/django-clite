@@ -1,5 +1,5 @@
 from django import forms
-from {{ project }}.{{ app }}.models.{{ name }} import {{ classname }}
+from ..models.{{ name }} import {{ classname }}
 
 
 class {{ classname }}Form(forms.ModelForm):

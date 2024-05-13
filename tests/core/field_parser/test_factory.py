@@ -31,7 +31,7 @@ class FieldFactoryTestCase(unittest.TestCase):
             field = AttributeFactory().field_options(alias, attr_name)
 
             self.assertEqual("DecimalField", field.kind)
-            self.assertEqual("_('price')", field.field_options(attr_name, model_name))
+            self.assertEqual("_('price'), decimal_places=2, max_digits=8", field.field_options(attr_name, model_name))
 
             self.assertFalse(field.is_media_field)
             self.assertFalse(field.is_relationship)
@@ -363,7 +363,7 @@ class FieldFactoryTestCase(unittest.TestCase):
 
             self.assertEqual("ForeignKey", field.kind)
             self.assertEqual(
-                "Singer, _('singer'), blank=False, on_delete=models.DO_NOTHING, related_name='album'",
+                "Singer, _('singer'), blank=False, on_delete=models.DO_NOTHING, related_name='albums'",
                 field.field_options(attr_name, model_name),
             )
 
@@ -385,7 +385,7 @@ class FieldFactoryTestCase(unittest.TestCase):
 
             self.assertEqual("OneToOneField", field.kind)
             self.assertEqual(
-                "Ssn, _('ssn'), blank=False, on_delete=models.CASCADE, primary_key=True, related_name='person'",
+                "Ssn, _('ssn'), blank=False, on_delete=models.CASCADE, primary_key=True, related_name='people'",
                 field.field_options(attr_name, model_name),
             )
 
@@ -407,7 +407,7 @@ class FieldFactoryTestCase(unittest.TestCase):
 
             self.assertEqual("ManyToManyField", field.kind)
             self.assertEqual(
-                "Song, _('songs'), blank=True, on_delete=models.DO_NOTHING, related_name='album'",
+                "Song, _('songs'), blank=True, on_delete=models.DO_NOTHING, related_name='albums'",
                 field.field_options(attr_name, model_name),
             )
 

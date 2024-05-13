@@ -1,5 +1,5 @@
 from django.contrib import admin
-from {{ project }}.{{ app }}.models import {{ classname }}
+from ...models import {{ classname }}
 
 
 class {{ classname }}Inline(admin.StackedInline):

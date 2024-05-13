@@ -1,11 +1,13 @@
 import click
 import inflection
 
+from pathlib import Path
 from geny.core.filesystem.files import File
+from geny.core.filesystem.transformations import RemoveLineFromFile
 from django_clite.core.logger import logger
 from django_clite.decorators.scope import scoped, Scope
 from django_clite.commands import command_defaults
-from django_clite.commands.callbacks import sanitized_string, sanitized_string_callback
+from django_clite.commands.callbacks import sanitized_string_callback
 
 
 SUPPORTED_SCOPES = [
@@ -32,5 +34,14 @@ def test(ctx, name, scope, full):
     scopes = SUPPORTED_SCOPES if full else [scope]
 
     for s in scopes:
-        file = File(name=f"{inflection.pluralize(s)}/{sanitized_string(name)}_test.py")
-        file.destroy(**{"import_statement": command_defaults.test(name), **ctx.obj})
+        file = File(name=f"tests/{inflection.pluralize(s)}/{name}_test.py")
+
+        file.destroy(
+            after_hooks=[
+                RemoveLineFromFile(
+                    Path(f"tests/{inflection.pluralize(s)}/__init__.py"),
+                    command_defaults.test(name)
+                ),
+            ],
+            **ctx.obj
+        )

@@ -1,6 +1,8 @@
 import click
 
+from pathlib import Path
 from geny.core.filesystem.files import File
+from geny.core.filesystem.transformations import RemoveLineFromFile
 from django_clite.decorators.scope import scoped, Scope
 from django_clite.commands import command_defaults
 from django_clite.commands.callbacks import sanitized_string_callback
@@ -16,10 +18,13 @@ def admin(ctx, name):
     """
 
     File(name=f"admin/{name}.py").destroy(
-        **{
-            "import_statement": command_defaults.admin(name),
-            **ctx.obj,
-        }
+        after_hooks=[
+            RemoveLineFromFile(
+                Path(f"admin/__init__.py"),
+                command_defaults.admin(name)
+            ),
+        ],
+        **ctx.obj,
     )
 
 
@@ -32,4 +37,12 @@ def admin_inline(ctx, name):
     Destroy an inline admin model.
     """
 
-    File(name=f"admin/inlines/{name}.py").destroy(**ctx.obj)
+    File(name=f"admin/inlines/{name}.py").destroy(
+        after_hooks=[
+            RemoveLineFromFile(
+                Path(f"admin/inlines/__init__.py"),
+                command_defaults.admin_inline(name)
+            ),
+        ],
+        **ctx.obj
+    )

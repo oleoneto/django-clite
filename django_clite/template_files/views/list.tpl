@@ -1,7 +1,7 @@
 from django.urls import path
 from django.views.generic import ListView
-from {{ project }}.{{ app }}.urls import urlpatterns
-from {{ project }}.{{ app }}.models import {{ classname }}
+from ..urls import urlpatterns
+from ..models import {{ classname }}
 
 
 class {{ classname }}ListView(ListView):

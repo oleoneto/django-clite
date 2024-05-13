@@ -1,7 +1,7 @@
 import click
 
 from geny.core.filesystem.files import File
-from cli.decorators.scope import scoped, Scope
+from django_clite.decorators.scope import scoped, Scope
 
 
 @scoped(to=Scope.PROJECT)

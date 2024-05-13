@@ -1,6 +1,9 @@
 import click
+import pathlib
+import inflection
 
 from geny.core.filesystem.files import File
+from geny.core.filesystem.transformations import AddLineToFile, TouchFile
 from django_clite.decorators.scope import scoped, Scope
 from django_clite.commands import command_defaults
 from django_clite.commands.callbacks import sanitized_string_callback
@@ -26,11 +29,21 @@ def manager(ctx, name, skip_import):
         template="models/manager.tpl",
         context={
             "name": name,
+            "classname": inflection.camelize(name),
         },
     )
 
-    file.create(
-        import_statement=command_defaults.manager(name),
-        add_import_statement=not skip_import,
-        **ctx.obj,
-    )
+    after_hooks = [
+        TouchFile('models/managers/__init__.py')
+    ]
+
+    if not skip_import:
+        after_hooks.append(
+            AddLineToFile(
+                pathlib.Path('models/managers/__init__.py'),
+                command_defaults.manager(name),
+                prevent_duplicates=True,
+            )
+        )
+
+    file.create(after_hooks=after_hooks, **ctx.obj)

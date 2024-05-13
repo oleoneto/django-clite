@@ -1,5 +1,4 @@
 from django.test import TestCase
-from {{ project }}.{{ app }}.{{ scope }}.{{ module }} import {{ classname }}
 
 
 class {{ classname }}TestCase(TestCase):

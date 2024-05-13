@@ -4,7 +4,7 @@ from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 from django.template.defaultfilters import slugify
 {% for attr_name, field in imports.items() -%}
-from {{ project }}.{{ app }}.models.{{ field.module_name(attr_name) }} import {{ field.klass_name(attr_name) }}
+from ..models.{{ field.module_name(attr_name) }} import {{ field.klass_name(attr_name) }}
 {% endfor %}
 
 class {{ classname }}(models.Model):
