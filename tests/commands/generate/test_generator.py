@@ -56,8 +56,6 @@ class GeneratorTestCase(unittest.TestCase):
                 with open(pathlib.Path("admin") / "__init__.py", "r") as f:
                     self.assertEqual("from .article import ArticleAdmin\n", f.read())
 
-                    print(f.read())
-
     def test_generate_admin_inline(self):
         with runner.isolated_filesystem():
             app = "blog"

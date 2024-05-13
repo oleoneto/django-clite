@@ -266,9 +266,6 @@ class DestroyerTestCase(unittest.TestCase):
                 _ = runner.invoke(generate, [command, resource, "--scope", "viewset"])  # noqa
                 res = runner.invoke(destroy, [command, resource, "--scope", "viewset"])  # noqa
 
-                print(res.return_value)
-                print(res.output)
-
                 self.assertEqual(0, res.exit_code)
                 self.assertIn(resource_dir, os.listdir("tests"))
                 self.assertNotIn("article_test.py", os.listdir(f"tests/{resource_dir}"))
