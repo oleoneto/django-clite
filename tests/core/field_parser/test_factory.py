@@ -7,8 +7,8 @@ class FieldFactoryTestCase(unittest.TestCase):
 
     def test_make_bigint_field(self):
         aliases = ["big", "bigint", "big-int"]
-        attr_name = 'id'
-        model_name = 'Album'
+        attr_name = "id"
+        model_name = "Album"
 
         for alias in aliases:
             field = AttributeFactory().field_options(alias, attr_name)
@@ -24,14 +24,17 @@ class FieldFactoryTestCase(unittest.TestCase):
 
     def test_make_decimal_field(self):
         aliases = ["decimal"]
-        attr_name = 'price'
-        model_name = 'Album'
+        attr_name = "price"
+        model_name = "Album"
 
         for alias in aliases:
             field = AttributeFactory().field_options(alias, attr_name)
 
             self.assertEqual("DecimalField", field.kind)
-            self.assertEqual("_('price')", field.field_options(attr_name, model_name))
+            self.assertEqual(
+                "_('price'), decimal_places=2, max_digits=8",
+                field.field_options(attr_name, model_name),
+            )
 
             self.assertFalse(field.is_media_field)
             self.assertFalse(field.is_relationship)
@@ -41,8 +44,8 @@ class FieldFactoryTestCase(unittest.TestCase):
 
     def test_make_float_field(self):
         aliases = ["float"]
-        attr_name = 'price'
-        model_name = 'Album'
+        attr_name = "price"
+        model_name = "Album"
 
         for alias in aliases:
             field = AttributeFactory().field_options(alias, attr_name)
@@ -58,8 +61,8 @@ class FieldFactoryTestCase(unittest.TestCase):
 
     def test_make_integer_field(self):
         aliases = ["int", "integer"]
-        attr_name = 'tracks'
-        model_name = 'Album'
+        attr_name = "tracks"
+        model_name = "Album"
 
         for alias in aliases:
             field = AttributeFactory().field_options(alias, attr_name)
@@ -77,14 +80,17 @@ class FieldFactoryTestCase(unittest.TestCase):
 
     def test_make_boolean_field(self):
         aliases = ["bool", "boolean"]
-        attr_name = 'is_compilation'
-        model_name = 'Album'
+        attr_name = "is_compilation"
+        model_name = "Album"
 
         for alias in aliases:
             field = AttributeFactory().field_options(alias, attr_name)
 
             self.assertEqual("BooleanField", field.kind)
-            self.assertEqual("_('is_compilation'), default=False", field.field_options(attr_name, model_name))
+            self.assertEqual(
+                "_('is_compilation'), default=False",
+                field.field_options(attr_name, model_name),
+            )
 
             self.assertFalse(field.is_media_field)
             self.assertFalse(field.is_relationship)
@@ -96,14 +102,17 @@ class FieldFactoryTestCase(unittest.TestCase):
 
     def test_make_char_field(self):
         aliases = ["char"]
-        attr_name = 'title'
-        model_name = 'Album'
+        attr_name = "title"
+        model_name = "Album"
 
         for alias in aliases:
             field = AttributeFactory().field_options(alias, attr_name)
 
             self.assertEqual("CharField", field.kind)
-            self.assertEqual("_('title'), max_length=100, blank=False", field.field_options(attr_name, model_name))
+            self.assertEqual(
+                "_('title'), max_length=100, blank=False",
+                field.field_options(attr_name, model_name),
+            )
 
             self.assertFalse(field.is_media_field)
             self.assertFalse(field.is_relationship)
@@ -120,7 +129,9 @@ class FieldFactoryTestCase(unittest.TestCase):
             field = AttributeFactory().field_options(alias, attr_name)
 
             self.assertEqual("SlugField", field.kind)
-            self.assertEqual("_('slug'), unique=True", field.field_options(attr_name, model_name))
+            self.assertEqual(
+                "_('slug'), unique=True", field.field_options(attr_name, model_name)
+            )
 
             self.assertFalse(field.is_media_field)
             self.assertFalse(field.is_relationship)
@@ -137,7 +148,10 @@ class FieldFactoryTestCase(unittest.TestCase):
             field = AttributeFactory().field_options(alias, attr_name)
 
             self.assertEqual("TextField", field.kind)
-            self.assertEqual("_('description'), blank=False", field.field_options(attr_name, model_name))
+            self.assertEqual(
+                "_('description'), blank=False",
+                field.field_options(attr_name, model_name),
+            )
 
             self.assertFalse(field.is_media_field)
             self.assertFalse(field.is_relationship)
@@ -155,7 +169,8 @@ class FieldFactoryTestCase(unittest.TestCase):
 
             self.assertEqual("UUIDField", field.kind)
             self.assertEqual(
-                "_('id'), default=uuid.uuid4, editable=False", field.field_options(attr_name, model_name)
+                "_('id'), default=uuid.uuid4, editable=False",
+                field.field_options(attr_name, model_name),
             )
 
             self.assertFalse(field.is_media_field)
@@ -237,7 +252,9 @@ class FieldFactoryTestCase(unittest.TestCase):
             field = AttributeFactory().field_options(alias, attr_name)
 
             self.assertEqual("EmailField", field.kind)
-            self.assertEqual("_('email_address')", field.field_options(attr_name, model_name))
+            self.assertEqual(
+                "_('email_address')", field.field_options(attr_name, model_name)
+            )
 
             self.assertFalse(field.is_media_field)
             self.assertFalse(field.is_relationship)
@@ -290,7 +307,9 @@ class FieldFactoryTestCase(unittest.TestCase):
             field = AttributeFactory().field_options(alias, attr_name)
 
             self.assertEqual("DateField", field.kind)
-            self.assertEqual("_('date'), auto_now=True", field.field_options(attr_name, model_name))
+            self.assertEqual(
+                "_('date'), auto_now=True", field.field_options(attr_name, model_name)
+            )
 
             self.assertFalse(field.is_media_field)
             self.assertFalse(field.is_relationship)
@@ -307,7 +326,10 @@ class FieldFactoryTestCase(unittest.TestCase):
             field = AttributeFactory().field_options(alias, attr_name)
 
             self.assertEqual("DateTimeField", field.kind)
-            self.assertEqual("_('datetime'), auto_now=True", field.field_options(attr_name, model_name))
+            self.assertEqual(
+                "_('datetime'), auto_now=True",
+                field.field_options(attr_name, model_name),
+            )
 
             self.assertFalse(field.is_media_field)
             self.assertFalse(field.is_relationship)
@@ -324,7 +346,9 @@ class FieldFactoryTestCase(unittest.TestCase):
             field = AttributeFactory().field_options(alias, attr_name)
 
             self.assertEqual("DurationField", field.kind)
-            self.assertEqual("_('duration')", field.field_options(attr_name, model_name))
+            self.assertEqual(
+                "_('duration')", field.field_options(attr_name, model_name)
+            )
 
             self.assertFalse(field.is_media_field)
             self.assertFalse(field.is_relationship)
@@ -341,7 +365,9 @@ class FieldFactoryTestCase(unittest.TestCase):
             field = AttributeFactory().field_options(alias, attr_name)
 
             self.assertEqual("TimeField", field.kind)
-            self.assertEqual("_('time'), auto_now=True", field.field_options(attr_name, model_name))
+            self.assertEqual(
+                "_('time'), auto_now=True", field.field_options(attr_name, model_name)
+            )
 
             self.assertFalse(field.is_media_field)
             self.assertFalse(field.is_relationship)
@@ -363,7 +389,7 @@ class FieldFactoryTestCase(unittest.TestCase):
 
             self.assertEqual("ForeignKey", field.kind)
             self.assertEqual(
-                "Singer, _('singer'), blank=False, on_delete=models.DO_NOTHING, related_name='album'",
+                "Singer, _('singer'), blank=False, on_delete=models.DO_NOTHING, related_name='albums'",
                 field.field_options(attr_name, model_name),
             )
 
@@ -377,15 +403,15 @@ class FieldFactoryTestCase(unittest.TestCase):
 
     def test_make_one_to_one_field(self):
         aliases = ["one", "hasone", "has-one", "one-to-one"]
-        attr_name = 'ssn'
-        model_name = 'Person'
+        attr_name = "ssn"
+        model_name = "Person"
 
         for alias in aliases:
             field = AttributeFactory().field_options(alias, attr_name)
 
             self.assertEqual("OneToOneField", field.kind)
             self.assertEqual(
-                "Ssn, _('ssn'), blank=False, on_delete=models.CASCADE, primary_key=True, related_name='person'",
+                "Ssn, _('ssn'), blank=False, on_delete=models.CASCADE, primary_key=True, related_name='people'",
                 field.field_options(attr_name, model_name),
             )
 
@@ -407,7 +433,7 @@ class FieldFactoryTestCase(unittest.TestCase):
 
             self.assertEqual("ManyToManyField", field.kind)
             self.assertEqual(
-                "Song, _('songs'), blank=True, on_delete=models.DO_NOTHING, related_name='album'",
+                "Song, _('songs'), blank=True, on_delete=models.DO_NOTHING, related_name='albums'",
                 field.field_options(attr_name, model_name),
             )
 

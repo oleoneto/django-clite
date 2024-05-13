@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand
 from django.db.utils import IntegrityError
-# from {{ project }}.{{ app }}.models import MyModel
+# from ..models import MyModel
 
 
 class Command(BaseCommand):

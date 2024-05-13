@@ -64,7 +64,7 @@ class DiscoverableGroup(MultiCommand):
         to have been added as sub-commands of `read` already.
         """
 
-        debug_mode = (os.getenv(DEV_MODE_ENV_VAR, 'false').lower() == 'true')
+        debug_mode = os.getenv(DEV_MODE_ENV_VAR, "false").lower() == "true"
 
         for func, path in commands.items():
             # Skip packages beginning or ending in underscores (_)

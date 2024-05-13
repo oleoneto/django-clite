@@ -1,7 +1,9 @@
 import click
+import pathlib
 import inflection
 
 from geny.core.filesystem.files import File
+from geny.core.filesystem.transformations import AddLineToFile, TouchFile
 from geny.core.templates.template import TemplateParser
 from django_clite.core.logger import logger
 from django_clite.decorators.scope import scoped, Scope
@@ -76,11 +78,18 @@ def model(
         },
     )
 
-    file.create(
-        import_statement=command_defaults.model(name),
-        add_import_statement=not skip_import,
-        **ctx.obj,
-    )
+    after_hooks = [TouchFile("models/__init__.py")]
+
+    if not skip_import:
+        after_hooks.append(
+            AddLineToFile(
+                pathlib.Path("models/__init__.py"),
+                command_defaults.model(name),
+                prevent_duplicates=True,
+            )
+        )
+
+    file.create(after_hooks=after_hooks, **ctx.obj)
 
     def generate_related_resources():
         if admin or api or full:
@@ -125,10 +134,11 @@ def model(
 @click.command()
 @click.argument("name", required=True, callback=sanitized_string_callback)
 @click.argument("fields", nargs=-1, required=False, callback=fields_callback)
+@click.option("--api", is_flag=True, help="Destroy only related api resources")
 @click.pass_context
-def scaffold(ctx, name, fields):
+def scaffold(ctx, name, fields, api):
     """
     Generate all resources for a given model.
     """
 
-    ctx.invoke(model, name=name, fields=fields, full=True)
+    ctx.invoke(model, name=name, fields=fields, full=not api, api=api)

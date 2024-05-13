@@ -23,7 +23,13 @@ from django_clite.constants import (
 )
 @click.option("--debug", is_flag=True, help="Enable debug logs.")
 @click.option("--dry", is_flag=True, help="Do not modify the file system.")
-@click.option("-f", "--force", is_flag=True, envvar=ENABLE_FORCE_KEY, help="Override any conflicting files.")
+@click.option(
+    "-f",
+    "--force",
+    is_flag=True,
+    envvar=ENABLE_FORCE_KEY,
+    help="Override any conflicting files.",
+)
 @click.option("--verbose", is_flag=True, help="Enable verbosity.")
 @click.option("--project", help="Project name.")
 @click.option("--app", help="Application name.")

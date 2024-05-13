@@ -1,5 +1,7 @@
 import os
+import pathlib
 import unittest
+
 from click.testing import CliRunner
 from django.core.management import call_command
 from django.core.management.commands import startapp, startproject
@@ -50,6 +52,10 @@ class GeneratorTestCase(unittest.TestCase):
                 self.assertIn("admin", os.listdir())
                 self.assertIn("article.py", os.listdir("admin"))
 
+                # Inspect imports
+                with open(pathlib.Path("admin") / "__init__.py", "r") as f:
+                    self.assertEqual("from .article import ArticleAdmin\n", f.read())
+
     def test_generate_admin_inline(self):
         with runner.isolated_filesystem():
             app = "blog"
@@ -62,6 +68,10 @@ class GeneratorTestCase(unittest.TestCase):
                 self.assertIn("admin", os.listdir())
                 self.assertIn("inlines", os.listdir("admin"))
                 self.assertIn("article.py", os.listdir("admin/inlines"))
+
+                # Inspect imports
+                with open(pathlib.Path("admin/inlines") / "__init__.py", "r") as f:
+                    self.assertEqual("from .article import ArticleInline\n", f.read())
 
     def test_generate_fixture(self):
         with runner.isolated_filesystem():
@@ -95,6 +105,10 @@ class GeneratorTestCase(unittest.TestCase):
                 self.assertIn(resource_dir, os.listdir())
                 self.assertIn("article.py", os.listdir(resource_dir))
 
+                # Inspect imports
+                with open(pathlib.Path(resource_dir) / "__init__.py", "r") as f:
+                    self.assertEqual("from .article import ArticleForm\n", f.read())
+
     def test_generate_manager(self):
         with runner.isolated_filesystem():
             app_dir = "blog"
@@ -111,6 +125,12 @@ class GeneratorTestCase(unittest.TestCase):
                 self.assertIn(resource_dir, os.listdir("models"))
                 self.assertIn("article.py", os.listdir(f"models/{resource_dir}"))
 
+                # Inspect imports
+                with open(
+                    pathlib.Path(f"models/{resource_dir}") / "__init__.py", "r"
+                ) as f:
+                    self.assertEqual("from .article import ArticleManager\n", f.read())
+
     def test_generate_model(self):
         with runner.isolated_filesystem():
             app_dir = "blog"
@@ -125,7 +145,12 @@ class GeneratorTestCase(unittest.TestCase):
 
                 self.assertEqual(0, res.exit_code)
                 self.assertIn(resource_dir, os.listdir())
+                self.assertIn("__init__.py", os.listdir(resource_dir))
                 self.assertIn("article.py", os.listdir(resource_dir))
+
+                # Inspect imports
+                with open(pathlib.Path(resource_dir) / "__init__.py", "r") as f:
+                    self.assertEqual("from .article import Article\n", f.read())
 
     def test_generate_serializer(self):
         with runner.isolated_filesystem():
@@ -142,6 +167,12 @@ class GeneratorTestCase(unittest.TestCase):
                 self.assertEqual(0, res.exit_code)
                 self.assertIn(resource_dir, os.listdir())
                 self.assertIn("article.py", os.listdir(resource_dir))
+
+                # Inspect imports
+                with open(pathlib.Path(resource_dir) / "__init__.py", "r") as f:
+                    self.assertEqual(
+                        "from .article import ArticleSerializer\n", f.read()
+                    )
 
     def test_generate_signal(self):
         with runner.isolated_filesystem():
@@ -161,6 +192,14 @@ class GeneratorTestCase(unittest.TestCase):
                     "article_created.py", os.listdir(f"models/{resource_dir}")
                 )
 
+                # Inspect imports
+                with open(
+                    pathlib.Path(f"models/{resource_dir}") / "__init__.py", "r"
+                ) as f:
+                    self.assertEqual(
+                        "from .article_created import article_created\n", f.read()
+                    )
+
     def test_generate_tag(self):
         with runner.isolated_filesystem():
             app_dir = "blog"
@@ -176,6 +215,10 @@ class GeneratorTestCase(unittest.TestCase):
                 self.assertEqual(0, res.exit_code)
                 self.assertIn(resource_dir, os.listdir())
                 self.assertIn("now.py", os.listdir(resource_dir))
+
+                # Inspect imports
+                with open(pathlib.Path(resource_dir) / "__init__.py", "r") as f:
+                    self.assertEqual("from .now import now\n", f.read())
 
     def test_generate_templates(self):
         with runner.isolated_filesystem():
@@ -244,13 +287,21 @@ class GeneratorTestCase(unittest.TestCase):
                 self.assertIn(resource_dir, os.listdir("models"))
                 self.assertIn("phone_number.py", os.listdir(f"models/{resource_dir}"))
 
+                # Inspect imports
+                with open(
+                    pathlib.Path(f"models/{resource_dir}") / "__init__.py", "r"
+                ) as f:
+                    self.assertEqual(
+                        "from .phone_number import phone_number_validator\n", f.read()
+                    )
+
     def test_generate_views(self):
         with runner.isolated_filesystem():
             app_dir = "blog"
             call_command(startapp.Command(), app_dir, verbosity=0)
 
             with working_directory(app_dir):
-                resource = "article"
+                resource = "homepage"
                 command = "view"
                 resource_dir = "views"
 
@@ -258,7 +309,11 @@ class GeneratorTestCase(unittest.TestCase):
 
                 self.assertEqual(0, res.exit_code)
                 self.assertIn(resource_dir, os.listdir())
-                self.assertIn("article.py", os.listdir(resource_dir))
+                self.assertIn("homepage.py", os.listdir(resource_dir))
+
+                # Inspect imports
+                with open(pathlib.Path(resource_dir) / "__init__.py", "r") as f:
+                    self.assertEqual("from .homepage import homepage\n", f.read())
 
     def test_generate_viewset(self):
         with runner.isolated_filesystem():
@@ -275,6 +330,10 @@ class GeneratorTestCase(unittest.TestCase):
                 self.assertEqual(0, res.exit_code)
                 self.assertIn(resource_dir, os.listdir())
                 self.assertIn("article.py", os.listdir(resource_dir))
+
+                # Inspect imports
+                with open(pathlib.Path(resource_dir) / "__init__.py", "r") as f:
+                    self.assertEqual("from .article import ArticleViewSet\n", f.read())
 
     # Project-level resource
 

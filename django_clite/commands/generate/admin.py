@@ -1,7 +1,10 @@
+import pathlib
+
 import click
 import inflection
 
 from geny.core.filesystem.files import File
+from geny.core.filesystem.transformations import AddLineToFile, TouchFile
 from django_clite.commands import command_defaults
 from django_clite.commands.callbacks import sanitized_string_callback, fields_callback
 from django_clite.decorators.scope import scoped, Scope
@@ -39,11 +42,18 @@ def admin(ctx, name, fields, permissions, skip_import):
         },
     )
 
-    file.create(
-        import_statement=command_defaults.admin(name),
-        add_import_statement=not skip_import,
-        **ctx.obj,
-    )
+    after_hooks = [TouchFile("admin/__init__.py")]
+
+    if not skip_import:
+        after_hooks.append(
+            AddLineToFile(
+                pathlib.Path("admin/__init__.py"),
+                command_defaults.admin(name),
+                prevent_duplicates=True,
+            )
+        )
+
+    file.create(after_hooks=after_hooks, **ctx.obj)
 
 
 @scoped(to=Scope.APP)
@@ -70,8 +80,15 @@ def admin_inline(ctx, name, skip_import):
         },
     )
 
-    file.create(
-        import_statement=command_defaults.admin_inline(name),
-        add_import_statement=not skip_import,
-        **ctx.obj,
-    )
+    after_hooks = [TouchFile("admin/inlines/__init__.py")]
+
+    if not skip_import:
+        after_hooks.append(
+            AddLineToFile(
+                pathlib.Path("admin/inlines/__init__.py"),
+                command_defaults.admin_inline(name),
+                prevent_duplicates=True,
+            )
+        )
+
+    file.create(after_hooks=after_hooks, **ctx.obj)

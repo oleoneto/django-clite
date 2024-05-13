@@ -1,7 +1,9 @@
 import click
+import pathlib
 import inflection
 
 from geny.core.filesystem.files import File
+from geny.core.filesystem.transformations import AddLineToFile, TouchFile
 from django_clite.decorators.scope import scoped, Scope
 from django_clite.commands import command_defaults
 from django_clite.commands.callbacks import sanitized_string_callback
@@ -31,8 +33,15 @@ def form(ctx, name, skip_import):
         },
     )
 
-    file.create(
-        import_statement=command_defaults.form(name),
-        add_import_statement=not skip_import,
-        **ctx.obj,
-    )
+    after_hooks = [TouchFile("forms/__init__.py")]
+
+    if not skip_import:
+        after_hooks.append(
+            AddLineToFile(
+                pathlib.Path("forms/__init__.py"),
+                command_defaults.form(name),
+                prevent_duplicates=True,
+            )
+        )
+
+    file.create(after_hooks=after_hooks, **ctx.obj)

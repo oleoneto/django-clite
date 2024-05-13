@@ -1,6 +1,8 @@
 import click
 
+from pathlib import Path
 from geny.core.filesystem.files import File
+from geny.core.filesystem.transformations import RemoveLineFromFile
 from django_clite.decorators.scope import scoped, Scope
 from django_clite.commands import command_defaults
 from django_clite.commands.callbacks import sanitized_string_callback
@@ -21,13 +23,13 @@ SUPPORTED_CLASSES = [
 @click.option("--class_", type=click.Choice(SUPPORTED_CLASSES))
 @click.option("--full", is_flag=True, help="Delete all CRUD views")
 @click.option(
-    "--include-templates",
+    "--keep-templates",
     is_flag=True,
     default=False,
     help="Destroy related templates.",
 )
 @click.pass_context
-def view(ctx, name, class_, full, include_templates):
+def view(ctx, name, class_, full, keep_templates):
     """
     Destroy a view function or class.
     """
@@ -36,12 +38,17 @@ def view(ctx, name, class_, full, include_templates):
 
     for k in classes:
         File(name=f"views/{name}{'_' + k if k else ''}.py").destroy(
-            **{
-                "import_statement": command_defaults.view(name, k),
-                **ctx.obj,
-            }
+            after_hooks=[
+                RemoveLineFromFile(
+                    Path("views/__init__.py"),
+                    command_defaults.view(name, klass=k),
+                ),
+            ],
+            **ctx.obj,
         )
 
-    if include_templates:
-        for class_ in classes:
-            ctx.invoke(template, name=name, class_=class_)
+    if keep_templates:
+        return
+
+    for class_ in classes:
+        ctx.invoke(template, name=name, class_=class_)

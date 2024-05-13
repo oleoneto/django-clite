@@ -17,7 +17,20 @@ class CallbackTestCase(unittest.TestCase):
         )
 
         field_names = sorted(fields.keys())
-        self.assertEqual(['desc', 'name', 'owner', 'rating', 'title', 'total', 'user'], field_names)
+        self.assertEqual(
+            ["desc", "name", "owner", "rating", "title", "total", "user"], field_names
+        )
 
         field_values = list(map(lambda x: x.kind, fields.values()))
-        self.assertEqual(['CharField', 'CharField', 'ForeignKey', 'CharField', 'IntegerField', 'ForeignKey', 'IntegerField'], field_values)
+        self.assertEqual(
+            [
+                "CharField",
+                "CharField",
+                "ForeignKey",
+                "CharField",
+                "IntegerField",
+                "ForeignKey",
+                "IntegerField",
+            ],
+            field_values,
+        )

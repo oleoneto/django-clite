@@ -1,8 +1,8 @@
 from django.urls import path
 from django.views.generic import CreateView
-from {{ project }}.{{ app }}.urls import urlpatterns
-from {{ project }}.{{ app }}.models import {{ classname }}
-from {{ project }}.{{ app }}.forms import {{ classname }}Form
+from ..urls import urlpatterns
+from ..models import {{ classname }}
+from ..forms import {{ classname }}Form
 
 
 class {{ classname }}CreateView(CreateView):

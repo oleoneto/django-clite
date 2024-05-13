@@ -1,16 +1,11 @@
 import datetime
-from django.shortcuts import HttpResponse
 from django.shortcuts import render
-from django.urls import path
-from {{ project }}.{{ app }}.url import urlpatterns
 # from django.views.decorators.cache import cache_page
+# from django.shortcuts import HttpResponse
 
 
-"""
-Enable caching if needed. For example, to cache this view for 15 minutes, do:
-@cache_page(60 * 15)
-"""
-def {{ name }}_view(request):
+# @cache_page(60 * 1)  # cache for 1 minute
+def {{ name }}(request):
     template = '{{ name }}.html'
     context = {
         'date': datetime.datetime.now,
@@ -22,8 +17,3 @@ def {{ name }}_view(request):
     return HttpResponse(html)
     """
     return render(request, template, context)
-
-
-urlpatterns.append(
-    path('{{ name }}', {{ name }}_view, name='{{ name }}')
-)
