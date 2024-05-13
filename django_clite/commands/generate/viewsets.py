@@ -50,14 +50,12 @@ def viewset(ctx, name, read_only, full, skip_import):
     #
     # router.create(**ctx.obj)
 
-    after_hooks = [
-        TouchFile('viewsets/__init__.py')
-    ]
+    after_hooks = [TouchFile("viewsets/__init__.py")]
 
     if not skip_import:
         after_hooks.append(
             AddLineToFile(
-                pathlib.Path('viewsets/__init__.py'),
+                pathlib.Path("viewsets/__init__.py"),
                 command_defaults.viewset(name),
                 prevent_duplicates=True,
             )

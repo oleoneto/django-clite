@@ -20,9 +20,8 @@ def validator(ctx, name):
     File(name=f"models/validators/{name}.py").destroy(
         after_hooks=[
             RemoveLineFromFile(
-                Path(f"models/validators/__init__.py"),
-                command_defaults.validator(name)
+                Path("models/validators/__init__.py"), command_defaults.validator(name)
             ),
         ],
-        **ctx.obj
+        **ctx.obj,
     )

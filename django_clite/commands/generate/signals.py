@@ -31,14 +31,12 @@ def signal(ctx, name, skip_import):
         },
     )
 
-    after_hooks = [
-        TouchFile('models/signals/__init__.py')
-    ]
+    after_hooks = [TouchFile("models/signals/__init__.py")]
 
     if not skip_import:
         after_hooks.append(
             AddLineToFile(
-                pathlib.Path('models/signals/__init__.py'),
+                pathlib.Path("models/signals/__init__.py"),
                 command_defaults.signal(name),
                 prevent_duplicates=True,
             )

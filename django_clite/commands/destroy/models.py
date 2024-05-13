@@ -48,11 +48,10 @@ def model(
     File(name=f"models/{name}.py").destroy(
         after_hooks=[
             RemoveLineFromFile(
-                Path(f"models/__init__.py"),
-                command_defaults.model(name)
+                Path("models/__init__.py"), command_defaults.model(name)
             ),
         ],
-        **ctx.obj
+        **ctx.obj,
     )
 
     def destroy_related_resources():

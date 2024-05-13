@@ -30,8 +30,8 @@ class DestroyerTestCase(unittest.TestCase):
                 self.assertNotIn("article.py", os.listdir("admin"))
 
                 # Inspect imports
-                with open(pathlib.Path("admin") / '__init__.py', 'r') as f:
-                    self.assertEqual('', f.read())
+                with open(pathlib.Path("admin") / "__init__.py", "r") as f:
+                    self.assertEqual("", f.read())
 
     def test_destroy_admin_inline(self):
         with runner.isolated_filesystem():
@@ -48,8 +48,8 @@ class DestroyerTestCase(unittest.TestCase):
                 self.assertNotIn("article.py", os.listdir("admin/inlines"))
 
                 # Inspect imports
-                with open(pathlib.Path('admin/inlines') / '__init__.py', 'r') as f:
-                    self.assertNotIn('from .article import ArticleInline', f.read())
+                with open(pathlib.Path("admin/inlines") / "__init__.py", "r") as f:
+                    self.assertNotIn("from .article import ArticleInline", f.read())
 
     def test_destroy_fixture(self):
         with runner.isolated_filesystem():
@@ -86,8 +86,8 @@ class DestroyerTestCase(unittest.TestCase):
                 self.assertNotIn("article.py", os.listdir(resource_dir))
 
                 # Inspect imports
-                with open(pathlib.Path(resource_dir) / '__init__.py', 'r') as f:
-                    self.assertNotIn('from .article import ArticleForm', f.read())
+                with open(pathlib.Path(resource_dir) / "__init__.py", "r") as f:
+                    self.assertNotIn("from .article import ArticleForm", f.read())
 
     def test_destroy_manager(self):
         with runner.isolated_filesystem():
@@ -107,8 +107,10 @@ class DestroyerTestCase(unittest.TestCase):
                 self.assertNotIn("article.py", os.listdir(f"models/{resource_dir}"))
 
                 # Inspect imports
-                with open(pathlib.Path(f"models/{resource_dir}") / '__init__.py', 'r') as f:
-                    self.assertNotIn('from .article import ArticleManager', f.read())
+                with open(
+                    pathlib.Path(f"models/{resource_dir}") / "__init__.py", "r"
+                ) as f:
+                    self.assertNotIn("from .article import ArticleManager", f.read())
 
     def test_destroy_model(self):
         with runner.isolated_filesystem():
@@ -129,8 +131,8 @@ class DestroyerTestCase(unittest.TestCase):
                 self.assertNotIn("article.py", os.listdir(resource_dir))
 
                 # Inspect imports
-                with open(pathlib.Path(resource_dir) / '__init__.py', 'r') as f:
-                    self.assertNotIn('from .article import Article', f.read())
+                with open(pathlib.Path(resource_dir) / "__init__.py", "r") as f:
+                    self.assertNotIn("from .article import Article", f.read())
 
     def test_destroy_serializer(self):
         with runner.isolated_filesystem():
@@ -150,8 +152,8 @@ class DestroyerTestCase(unittest.TestCase):
                 self.assertNotIn("article.py", os.listdir(resource_dir))
 
                 # Inspect imports
-                with open(pathlib.Path(resource_dir) / '__init__.py', 'r') as f:
-                    self.assertNotIn('from .article import Article', f.read())
+                with open(pathlib.Path(resource_dir) / "__init__.py", "r") as f:
+                    self.assertNotIn("from .article import Article", f.read())
 
     def test_destroy_signal(self):
         with runner.isolated_filesystem():
@@ -173,8 +175,12 @@ class DestroyerTestCase(unittest.TestCase):
                 )
 
                 # Inspect imports
-                with open(pathlib.Path(f"models/{resource_dir}") / '__init__.py', 'r') as f:
-                    self.assertNotIn('from .article_created import article_created', f.read())
+                with open(
+                    pathlib.Path(f"models/{resource_dir}") / "__init__.py", "r"
+                ) as f:
+                    self.assertNotIn(
+                        "from .article_created import article_created", f.read()
+                    )
 
     def test_destroy_tag(self):
         with runner.isolated_filesystem():
@@ -194,8 +200,8 @@ class DestroyerTestCase(unittest.TestCase):
                 self.assertNotIn("now.py", os.listdir(resource_dir))
 
                 # Inspect imports
-                with open(pathlib.Path(resource_dir) / '__init__.py', 'r') as f:
-                    self.assertNotIn('from .now import now', f.read())
+                with open(pathlib.Path(resource_dir) / "__init__.py", "r") as f:
+                    self.assertNotIn("from .now import now", f.read())
 
     def test_destroy_templates(self):
         with runner.isolated_filesystem():
@@ -240,8 +246,12 @@ class DestroyerTestCase(unittest.TestCase):
                 self.assertNotIn("article_test.py", os.listdir(f"tests/{resource_dir}"))
 
                 # Inspect imports
-                with open(pathlib.Path(f"tests/{resource_dir}") / '__init__.py', 'r') as f:
-                    self.assertNotIn('from .article_test import ArticleTestCase', f.read())
+                with open(
+                    pathlib.Path(f"tests/{resource_dir}") / "__init__.py", "r"
+                ) as f:
+                    self.assertNotIn(
+                        "from .article_test import ArticleTestCase", f.read()
+                    )
 
     def test_destroy_viewset_tests(self):
         with runner.isolated_filesystem():
@@ -264,8 +274,12 @@ class DestroyerTestCase(unittest.TestCase):
                 self.assertNotIn("article_test.py", os.listdir(f"tests/{resource_dir}"))
 
                 # Inspect imports
-                with open(pathlib.Path(f"tests/{resource_dir}") / '__init__.py', 'r') as f:
-                    self.assertNotIn('from .article_test import ArticleTestCase', f.read())
+                with open(
+                    pathlib.Path(f"tests/{resource_dir}") / "__init__.py", "r"
+                ) as f:
+                    self.assertNotIn(
+                        "from .article_test import ArticleTestCase", f.read()
+                    )
 
     def test_destroy_validator(self):
         with runner.isolated_filesystem():
@@ -282,11 +296,15 @@ class DestroyerTestCase(unittest.TestCase):
 
                 self.assertEqual(0, res.exit_code)
                 self.assertIn(resource_dir, os.listdir("models"))
-                self.assertNotIn("phone_number.py", os.listdir(f"models/{resource_dir}"))
+                self.assertNotIn(
+                    "phone_number.py", os.listdir(f"models/{resource_dir}")
+                )
 
                 # Inspect imports
-                with open(pathlib.Path(f"models/{resource_dir}") / '__init__.py', 'r') as f:
-                    self.assertNotIn('from .phone_number import phone_number', f.read())
+                with open(
+                    pathlib.Path(f"models/{resource_dir}") / "__init__.py", "r"
+                ) as f:
+                    self.assertNotIn("from .phone_number import phone_number", f.read())
 
     def test_destroy_views(self):
         with runner.isolated_filesystem():
@@ -306,8 +324,8 @@ class DestroyerTestCase(unittest.TestCase):
                 self.assertNotIn("homepage.py", os.listdir(resource_dir))
 
                 # Inspect imports
-                with open(pathlib.Path(resource_dir) / '__init__.py', 'r') as f:
-                    self.assertNotIn('from .homepage import homepage', f.read())
+                with open(pathlib.Path(resource_dir) / "__init__.py", "r") as f:
+                    self.assertNotIn("from .homepage import homepage", f.read())
 
     def test_destroy_viewset(self):
         with runner.isolated_filesystem():
@@ -327,5 +345,5 @@ class DestroyerTestCase(unittest.TestCase):
                 self.assertNotIn("article.py", os.listdir(resource_dir))
 
                 # Inspect imports
-                with open(pathlib.Path(resource_dir) / '__init__.py', 'r') as f:
-                    self.assertNotIn('from .article import ArticleViewSet', f.read())
+                with open(pathlib.Path(resource_dir) / "__init__.py", "r") as f:
+                    self.assertNotIn("from .article import ArticleViewSet", f.read())

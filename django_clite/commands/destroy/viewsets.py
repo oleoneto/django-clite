@@ -21,13 +21,11 @@ def viewset(ctx, name, full):
     File(name=f"viewsets/{name}.py").destroy(
         after_hooks=[
             RemoveLineFromFile(
-                Path(f"viewsets/__init__.py"),
-                command_defaults.viewset(name)
+                Path("viewsets/__init__.py"), command_defaults.viewset(name)
             ),
         ],
-        **ctx.obj
+        **ctx.obj,
     )
-
 
     if full:
         from .tests import test as cmd

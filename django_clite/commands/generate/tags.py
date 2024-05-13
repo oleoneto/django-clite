@@ -30,14 +30,12 @@ def tag(ctx, name, skip_import):
             "name": name,
         },
     )
-    after_hooks = [
-        TouchFile('templatetags/__init__.py')
-    ]
+    after_hooks = [TouchFile("templatetags/__init__.py")]
 
     if not skip_import:
         after_hooks.append(
             AddLineToFile(
-                pathlib.Path('templatetags/__init__.py'),
+                pathlib.Path("templatetags/__init__.py"),
                 command_defaults.tag(name),
                 prevent_duplicates=True,
             )

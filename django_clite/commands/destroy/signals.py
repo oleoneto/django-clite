@@ -20,9 +20,8 @@ def signal(ctx, name):
     File(name=f"models/signals/{name}.py").destroy(
         after_hooks=[
             RemoveLineFromFile(
-                Path(f"models/signals/__init__.py"),
-                command_defaults.signal(name)
+                Path("models/signals/__init__.py"), command_defaults.signal(name)
             ),
         ],
-        **ctx.obj
+        **ctx.obj,
     )

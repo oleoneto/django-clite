@@ -56,14 +56,12 @@ def view(ctx, name, class_, full, skip_templates, skip_import):
             },
         )
 
-        after_hooks = [
-            TouchFile('views/__init__.py')
-        ]
+        after_hooks = [TouchFile("views/__init__.py")]
 
         if not skip_import:
             after_hooks.append(
                 AddLineToFile(
-                    pathlib.Path('views/__init__.py'),
+                    pathlib.Path("views/__init__.py"),
                     command_defaults.view(name, klass=k),
                     prevent_duplicates=True,
                 )

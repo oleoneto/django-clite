@@ -78,14 +78,12 @@ def model(
         },
     )
 
-    after_hooks = [
-        TouchFile('models/__init__.py')
-    ]
+    after_hooks = [TouchFile("models/__init__.py")]
 
     if not skip_import:
         after_hooks.append(
             AddLineToFile(
-                pathlib.Path('models/__init__.py'),
+                pathlib.Path("models/__init__.py"),
                 command_defaults.model(name),
                 prevent_duplicates=True,
             )

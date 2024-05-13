@@ -54,14 +54,12 @@ def test(ctx, name, scope, full, skip_import):
             },
         )
 
-        after_hooks = [
-            TouchFile(f'tests/{inflection.pluralize(s)}/__init__.py')
-        ]
+        after_hooks = [TouchFile(f"tests/{inflection.pluralize(s)}/__init__.py")]
 
         if not skip_import:
             after_hooks.append(
                 AddLineToFile(
-                    pathlib.Path(f'tests/{inflection.pluralize(s)}/__init__.py'),
+                    pathlib.Path(f"tests/{inflection.pluralize(s)}/__init__.py"),
                     command_defaults.test(name),
                     prevent_duplicates=True,
                 )

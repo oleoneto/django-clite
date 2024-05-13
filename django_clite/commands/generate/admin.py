@@ -42,14 +42,12 @@ def admin(ctx, name, fields, permissions, skip_import):
         },
     )
 
-    after_hooks = [
-        TouchFile('admin/__init__.py')
-    ]
+    after_hooks = [TouchFile("admin/__init__.py")]
 
     if not skip_import:
         after_hooks.append(
             AddLineToFile(
-                pathlib.Path('admin/__init__.py'),
+                pathlib.Path("admin/__init__.py"),
                 command_defaults.admin(name),
                 prevent_duplicates=True,
             )
@@ -82,14 +80,12 @@ def admin_inline(ctx, name, skip_import):
         },
     )
 
-    after_hooks = [
-        TouchFile('admin/inlines/__init__.py')
-    ]
+    after_hooks = [TouchFile("admin/inlines/__init__.py")]
 
     if not skip_import:
         after_hooks.append(
             AddLineToFile(
-                pathlib.Path('admin/inlines/__init__.py'),
+                pathlib.Path("admin/inlines/__init__.py"),
                 command_defaults.admin_inline(name),
                 prevent_duplicates=True,
             )

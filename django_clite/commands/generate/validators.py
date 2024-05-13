@@ -31,14 +31,12 @@ def validator(ctx, name, skip_import):
         },
     )
 
-    after_hooks = [
-        TouchFile('models/validators/__init__.py')
-    ]
+    after_hooks = [TouchFile("models/validators/__init__.py")]
 
     if not skip_import:
         after_hooks.append(
             AddLineToFile(
-                pathlib.Path('models/validators/__init__.py'),
+                pathlib.Path("models/validators/__init__.py"),
                 command_defaults.validator(name),
                 prevent_duplicates=True,
             )

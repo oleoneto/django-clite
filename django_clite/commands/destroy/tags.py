@@ -20,9 +20,8 @@ def tag(ctx, name):
     File(name=f"templatetags/{name}.py").destroy(
         after_hooks=[
             RemoveLineFromFile(
-                Path(f"templatetags/__init__.py"),
-                command_defaults.tag(name)
+                Path("templatetags/__init__.py"), command_defaults.tag(name)
             ),
         ],
-        **ctx.obj
+        **ctx.obj,
     )

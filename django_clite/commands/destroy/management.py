@@ -22,10 +22,8 @@ def management(ctx, name):
     File(name=f"admin/inlines/{name}.py").destroy(
         after_hooks=[
             RemoveLineFromFile(
-                Path(f"admin/inlines/__init__.py"),
-                command_defaults.admin(name)
+                Path("admin/inlines/__init__.py"), command_defaults.admin(name)
             ),
         ],
-        **ctx.obj
+        **ctx.obj,
     )
-

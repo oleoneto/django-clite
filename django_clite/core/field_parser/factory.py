@@ -1,5 +1,6 @@
 # cli:core:field_parser
 import inflection
+
 # from typing import NamedTuple
 from dataclasses import dataclass
 from geny.core.decorators.singleton import singleton
@@ -69,7 +70,9 @@ class FieldOptions:
 
         if self.is_relationship:
             self.options.update(
-                {"related_name": f"'{inflection.pluralize(inflection.dasherize(model_name.lower()))}'"}
+                {
+                    "related_name": f"'{inflection.pluralize(inflection.dasherize(model_name.lower()))}'"
+                }
             )
 
         options = [self.klass_name(attr_name)] if self.is_relationship else []
@@ -109,7 +112,7 @@ class AttributeFactory:
         return options
 
     def parsed_fields(self, values: list[str]) -> dict[str, FieldOptions]:
-        pairs = dict(arg.split(':') for arg in values)
+        pairs = dict(arg.split(":") for arg in values)
 
         fields = {}
         for n, k in pairs.items():
@@ -144,46 +147,57 @@ attribute_aliases = {
 
 field_registry = {
     # Relationships
-    "fk": FieldOptions(kind="ForeignKey", options={"blank": False, "on_delete": "models.DO_NOTHING"}, is_fk_relationship=True),
+    "fk": FieldOptions(
+        kind="ForeignKey",
+        options={"blank": False, "on_delete": "models.DO_NOTHING"},
+        is_fk_relationship=True,
+    ),
     "one": FieldOptions(
         kind="OneToOneField",
-        options={"blank": False, "on_delete": "models.CASCADE", "primary_key": True}, is_fk_relationship=True
+        options={"blank": False, "on_delete": "models.CASCADE", "primary_key": True},
+        is_fk_relationship=True,
     ),
     "hasmany": FieldOptions(
         kind="ManyToManyField",
         options={"blank": True, "on_delete": "models.DO_NOTHING"},
         supports_admin=False,
-        is_many_relationship=True
+        is_many_relationship=True,
     ),
-
     # Boolean
     "bool": FieldOptions(kind="BooleanField", options={"default": False}),
-
     # Numeric
     "big": FieldOptions(kind="BigIntegerField"),
-    "decimal": FieldOptions(kind="DecimalField", options={"decimal_places": 2, "max_digits": 8}),
+    "decimal": FieldOptions(
+        kind="DecimalField", options={"decimal_places": 2, "max_digits": 8}
+    ),
     "float": FieldOptions(kind="FloatField"),
     "int": FieldOptions(kind="IntegerField"),
-
     # Text
     "char": FieldOptions(kind="CharField", options={"max_length": 100, "blank": False}),
     "email": FieldOptions(kind="EmailField"),
     "slug": FieldOptions(kind="SlugField", options={"unique": True}),
-    "text": FieldOptions(kind="TextField", options={"blank": False}, supports_admin=False),
+    "text": FieldOptions(
+        kind="TextField", options={"blank": False}, supports_admin=False
+    ),
     "url": FieldOptions(kind="URLField"),
-    "uuid": FieldOptions(kind="UUIDField", options={"default": "uuid.uuid4", "editable": False}),
-
+    "uuid": FieldOptions(
+        kind="UUIDField", options={"default": "uuid.uuid4", "editable": False}
+    ),
     # Files
-    "file": FieldOptions(kind="FileField", options={"blank": False}, supports_admin=False),
-    "filepath": FieldOptions(kind="FilePathField", options={"blank": True}, supports_admin=False),
-    "image": FieldOptions(kind="ImageField", options={"blank": False}, supports_admin=False),
-
+    "file": FieldOptions(
+        kind="FileField", options={"blank": False}, supports_admin=False
+    ),
+    "filepath": FieldOptions(
+        kind="FilePathField", options={"blank": True}, supports_admin=False
+    ),
+    "image": FieldOptions(
+        kind="ImageField", options={"blank": False}, supports_admin=False
+    ),
     # Date
     "date": FieldOptions(kind="DateField", options={"auto_now": True}),
     "datetime": FieldOptions(kind="DateTimeField", options={"auto_now": True}),
     "duration": FieldOptions(kind="DurationField"),
     "time": FieldOptions(kind="TimeField", options={"auto_now": True}),
-
     # Ip
     "ip": FieldOptions(kind="GenericIPAddressField"),
 }

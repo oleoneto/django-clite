@@ -40,11 +40,11 @@ def view(ctx, name, class_, full, keep_templates):
         File(name=f"views/{name}{'_' + k if k else ''}.py").destroy(
             after_hooks=[
                 RemoveLineFromFile(
-                    Path(f"views/__init__.py"),
+                    Path("views/__init__.py"),
                     command_defaults.view(name, klass=k),
                 ),
             ],
-            **ctx.obj
+            **ctx.obj,
         )
 
     if keep_templates:

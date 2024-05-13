@@ -19,11 +19,7 @@ def form(ctx, name):
 
     File(name=f"forms/{name}.py").destroy(
         after_hooks=[
-            RemoveLineFromFile(
-                Path(f"forms/__init__.py"),
-                command_defaults.form(name)
-            ),
+            RemoveLineFromFile(Path("forms/__init__.py"), command_defaults.form(name)),
         ],
-        **ctx.obj
+        **ctx.obj,
     )
-

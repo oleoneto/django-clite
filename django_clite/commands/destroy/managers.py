@@ -20,9 +20,8 @@ def manager(ctx, name):
     File(name=f"models/managers/{name}.py").destroy(
         after_hooks=[
             RemoveLineFromFile(
-                Path(f"models/managers/__init__.py"),
-                command_defaults.manager(name)
+                Path("models/managers/__init__.py"), command_defaults.manager(name)
             ),
         ],
-        **ctx.obj
+        **ctx.obj,
     )

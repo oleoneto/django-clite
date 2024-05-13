@@ -40,8 +40,8 @@ def test(ctx, name, scope, full):
             after_hooks=[
                 RemoveLineFromFile(
                     Path(f"tests/{inflection.pluralize(s)}/__init__.py"),
-                    command_defaults.test(name)
+                    command_defaults.test(name),
                 ),
             ],
-            **ctx.obj
+            **ctx.obj,
         )

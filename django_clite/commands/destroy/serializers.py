@@ -20,9 +20,8 @@ def serializer(ctx, name):
     File(name=f"serializers/{name}.py").destroy(
         after_hooks=[
             RemoveLineFromFile(
-                Path(f"serializers/__init__.py"),
-                command_defaults.serializer(name)
+                Path("serializers/__init__.py"), command_defaults.serializer(name)
             ),
         ],
-        **ctx.obj
+        **ctx.obj,
     )

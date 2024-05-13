@@ -36,14 +36,12 @@ def serializer(ctx, name, skip_import):
         },
     )
 
-    after_hooks = [
-        TouchFile('serializers/__init__.py')
-    ]
+    after_hooks = [TouchFile("serializers/__init__.py")]
 
     if not skip_import:
         after_hooks.append(
             AddLineToFile(
-                pathlib.Path('serializers/__init__.py'),
+                pathlib.Path("serializers/__init__.py"),
                 command_defaults.serializer(name),
                 prevent_duplicates=True,
             )

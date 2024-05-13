@@ -19,10 +19,7 @@ def admin(ctx, name):
 
     File(name=f"admin/{name}.py").destroy(
         after_hooks=[
-            RemoveLineFromFile(
-                Path(f"admin/__init__.py"),
-                command_defaults.admin(name)
-            ),
+            RemoveLineFromFile(Path("admin/__init__.py"), command_defaults.admin(name)),
         ],
         **ctx.obj,
     )
@@ -40,9 +37,8 @@ def admin_inline(ctx, name):
     File(name=f"admin/inlines/{name}.py").destroy(
         after_hooks=[
             RemoveLineFromFile(
-                Path(f"admin/inlines/__init__.py"),
-                command_defaults.admin_inline(name)
+                Path("admin/inlines/__init__.py"), command_defaults.admin_inline(name)
             ),
         ],
-        **ctx.obj
+        **ctx.obj,
     )
