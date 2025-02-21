@@ -1,0 +1,21 @@
+# django_clite
+
+# CLI configuration
+
+CLI_NAME_KEY = "django-clite"
+DJANGO_FILES_KEY = "django_files"
+ENABLE_DEBUG_KEY = "enable_debug"
+ENABLE_DRY_RUN_KEY = "enable_dry"
+ENABLE_FORCE_KEY = "GENY_ENABLE_FORCE"
+ENABLE_VERBOSITY_KEY = "enable_verbosity"
+
+TEMPLATES_KEY = "templates"
+TEMPLATES_DIRECTORY_ENV_VAR = "DJANGO_CLITE_TEMPLATES_DIR"
+PLUGINS_ENV_VAR = "DJANGO_CLITE_PLUGINS"
+
+DEV_MODE_ENV_VAR = "DJANGO_CLITE_DEV_MODE"
+
+# Project information
+
+APPLICATION_NAME_KEY = "app"
+PROJECT_NAME_KEY = "project"
