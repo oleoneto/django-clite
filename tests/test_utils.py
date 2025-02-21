@@ -1,6 +1,5 @@
 import unittest
-from django_clite.cli.utils import inflect, sanitized_string
-
+from django_clite.utils import inflect, sanitized_string
 
 class UtilsTestCase(unittest.TestCase):
     def test_inflection(self):
