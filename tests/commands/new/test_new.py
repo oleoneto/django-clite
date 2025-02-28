@@ -30,7 +30,8 @@ class CreatorTestCase(unittest.TestCase):
                             File(name="500.html", template="# {{ project }}"),
                         ],
                     ),
-                    File(name="README.md", template="{{project}}/readme.tpl"), # TODO: switch to template file
+                    File(name="README.md", template="{{project}}/readme.tpl"),
+                    File(name="README.txt", template="project/readme.tpl"),
                     File(name="a.py", template="# {{ project }}"),
                     File(name="b.py", content="# content"),
                 ],
@@ -41,16 +42,20 @@ class CreatorTestCase(unittest.TestCase):
             self.assertTrue(proj.path().exists())
             self.assertTrue(proj.path().is_dir())
             self.assertEqual(3, len(proj.dirs))
-            self.assertEqual(3, len(proj.files))
+            self.assertEqual(4, len(proj.files))
 
-            # Template file:
+            # Template files:
             self.assertEqual("store/readme.tpl\n", proj.files[0].path(proj.path()).read_text())
 
+            with open(Path(name) / "README.txt") as f:
+                line = f.readline()
+                self.assertEqual("# store\n", line)
+
             # Template literal
-            self.assertEqual("# store\n", proj.files[1].path(proj.path()).read_text())
+            self.assertEqual("# store\n", proj.files[2].path(proj.path()).read_text())
 
             # Content literal
-            self.assertEqual("# content\n", proj.files[2].path(proj.path()).read_text())
+            self.assertEqual("# content\n", proj.files[3].path(proj.path()).read_text())
 
     def test_new_project(self):
         with runner.isolated_filesystem():

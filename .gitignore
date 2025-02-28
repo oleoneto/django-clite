@@ -130,3 +130,6 @@ venv.bak/
 node_modules
 
 .DS_Store
+
+tests/tmp/
+!tests/tmp/.keep

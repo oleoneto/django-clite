@@ -106,9 +106,12 @@ def main(ctx, debug, dry, force, verbose, project, app, templates_dir):
         ENABLE_DRY_RUN_KEY: dry,
         ENABLE_FORCE_KEY: force,
         ENABLE_VERBOSITY_KEY: verbose,
-        PROJECT_NAME_KEY: project or project_name,
         APPLICATION_NAME_KEY: app or app_name,
     }
+
+    # avoids passing an empty project name
+    if project or project_name:
+        btx[PROJECT_NAME_KEY] = project or project_name
 
     ctx.ensure_object(dict)
     ctx.obj = btx

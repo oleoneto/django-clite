@@ -49,7 +49,7 @@ def project(ctx, name, apps, docker, github, kubernetes):  # TODO: dokku, heroku
 
         click_ctx = dict(ctx.obj)
 
-        context = {"project": name, "a": name, "port": "8080", "workers": 1}
+        context = {"port": "8080", "workers": 1, "project": name}
         context.update(**click_ctx)
         context.update(**params)
 

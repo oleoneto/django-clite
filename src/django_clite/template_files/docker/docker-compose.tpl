@@ -19,7 +19,7 @@ services:
     entrypoint: /docker-entrypoint.sh
     command: "gunicorn {{ project }}.wsgi:application --bind 0.0.0.0:{{ port }} --workers {{ workers }}"
     ports:
-        - 8007:8000 # host:docker
+        - 8007:{{ port }} # host:docker
     {%- if services %}
     depends_on:
         {%- for service in services %}
@@ -31,7 +31,7 @@ services:
   {%- if 'database' in services %}
   database:
     container_name: "{{ project }}_database"
-    image: postgres:12-alpine
+    image: postgres:16-alpine
     labels:
         com.database.description: "{{ project }}: Database service"
     volumes:
@@ -49,7 +49,7 @@ services:
   {%- if 'redis' in services %}
   redis:
     container_name: "{{ project }}_redis"
-    image: redis:latest
+    image: redis:6.2.7
     labels:
         com.redis.description: "{{ project }}: Redis cache service"
     ports:
