@@ -4,7 +4,7 @@ from click.testing import CliRunner
 from geny.core.filesystem.files import File
 from geny.core.filesystem.directories import Directory
 from django_clite.commands.new.main import new
-from tests import parser as _ # noqa: F401
+from tests import parser as _  # noqa: F401
 
 
 runner = CliRunner()
@@ -45,7 +45,9 @@ class CreatorTestCase(unittest.TestCase):
             self.assertEqual(4, len(proj.files))
 
             # Template files:
-            self.assertEqual("store/readme.tpl\n", proj.files[0].path(proj.path()).read_text())
+            self.assertEqual(
+                "store/readme.tpl\n", proj.files[0].path(proj.path()).read_text()
+            )
 
             with open(Path(name) / "README.txt") as f:
                 line = f.readline()
@@ -61,10 +63,10 @@ class CreatorTestCase(unittest.TestCase):
         with runner.isolated_filesystem():
             command = "project"
             proj_name = "store"
-            res = runner.invoke(new, [command, proj_name]) # noqa
+            res = runner.invoke(new, [command, proj_name])  # noqa
 
             self.assertEqual(0, res.exit_code)
-            self.assertEqual(b'', res.stdout_bytes)
+            self.assertEqual(b"", res.stdout_bytes)
 
             proj_dir = Path(proj_name)
             self.assertTrue(proj_dir.exists())
@@ -75,4 +77,4 @@ class CreatorTestCase(unittest.TestCase):
                 self.assertEqual("# store\n", line)
 
     def test_new_app(self):
-        pass # TODO: Implement test_new_app
+        pass  # TODO: Implement test_new_app

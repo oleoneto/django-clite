@@ -6,9 +6,9 @@ from django_clite.decorators.scope import scoped, Scope
 
 @scoped(to=Scope.PROJECT)
 @click.command()
-@click.option("--docker-compose", is_flag=True)
+@click.option("--compose", is_flag=True)
 @click.pass_context
-def dockerfile(ctx, docker_compose):
+def dockerfile(ctx, compose):
     """
     Destroy a Dockerfile (and docker-compose.yaml).
     """
@@ -17,7 +17,7 @@ def dockerfile(ctx, docker_compose):
         File(name="Dockerfile"),
     ]
 
-    if docker_compose:
+    if compose:
         files.append(File(name="docker-compose.yaml"))
 
     [

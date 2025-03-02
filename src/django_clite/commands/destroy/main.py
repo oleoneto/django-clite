@@ -2,6 +2,7 @@
 import click
 
 from django_clite.commands.destroy.admin import admin, admin_inline as admin_inline
+from django_clite.commands.destroy.dockerfile import dockerfile
 from django_clite.commands.destroy.fixtures import fixture
 from django_clite.commands.destroy.forms import form
 from django_clite.commands.destroy.management import management
@@ -32,6 +33,7 @@ def destroy(ctx):
     for cmd in [
         admin,
         admin_inline,
+        dockerfile,
         fixture,
         form,
         management,

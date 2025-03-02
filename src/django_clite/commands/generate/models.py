@@ -4,11 +4,12 @@ import inflection
 
 from geny.core.filesystem.files import File
 from geny.core.filesystem.transformations import AddLineToFile, TouchFile
-from geny.core.templates.template import TemplateParser
+
 from django_clite.core.logger import logger
 from django_clite.decorators.scope import scoped, Scope
 from django_clite.commands import command_defaults
 from django_clite.commands.callbacks import sanitized_string_callback, fields_callback
+from django_clite.constants import APPLICATION_NAME_KEY
 
 
 @scoped(to=Scope.APP)
@@ -64,6 +65,8 @@ def model(
         logger.error("Flags --api and --full cannot be used simultaneously.")
         raise click.Abort()
 
+    current_app_scope = ctx.obj.get(APPLICATION_NAME_KEY)
+
     file = File(
         name=f"models/{name}.py",
         template="models/model.tpl",
@@ -74,7 +77,7 @@ def model(
             "fields": fields,
             "imports": dict((k, v) for k, v in fields.items() if v.is_relationship),
             "name": name,
-            "table_name": f"{TemplateParser().app}.{inflection.pluralize(name)}",
+            "table_name": f"{current_app_scope}.{inflection.pluralize(name)}",
         },
     )
 
