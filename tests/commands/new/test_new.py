@@ -1,3 +1,4 @@
+import os
 import unittest
 from pathlib import Path
 from click.testing import CliRunner
@@ -29,4 +30,37 @@ class CreatorTestCase(unittest.TestCase):
                 self.assertEqual("# store\n", line)
 
     def test_new_app(self):
-        pass  # TODO: Implement test_new_app
+        with runner.isolated_filesystem():
+            cmd = "apps"
+            app_name = "blogger"
+
+            res = runner.invoke(new, [cmd, app_name])  # noqa
+            self.assertEqual(0, res.exit_code)
+            self.assertEqual(b"", res.stdout_bytes)
+
+            app_dir = Path(app_name)
+            self.assertTrue(app_dir.exists())
+            self.assertTrue(app_dir.is_dir())
+
+            self.assertEqual(
+                [
+                    "__init__.py",
+                    "admin",
+                    "apps.py",
+                    "fixtures",
+                    "forms",
+                    "middleware",
+                    "migrations",
+                    "models",
+                    "router",
+                    "serializers",
+                    "tasks",
+                    "templates",
+                    "templatetags",
+                    "tests",
+                    "urls.py",
+                    "views",
+                    "viewsets",
+                ],
+                sorted(os.listdir(app_name)),
+            )
